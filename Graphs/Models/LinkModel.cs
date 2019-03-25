@@ -20,42 +20,11 @@ namespace Graphs.Models
 
         // this property remembers the curviness;
         // Double.NaN means let it use a default calculated value
-        public double Curviness
-        {
-            get { return _Curviness; }
-            set
-            {
-                if (_Curviness != value)
-                {
-                    double old = _Curviness;
-                    _Curviness = value;
-                    RaisePropertyChanged("Curviness", old, value);
-                }
-            }
-        }
         // default value of NaN causes Route to calculate it
-        private double _Curviness = Double.NaN;
 
-        public Point Offset
-        {
-            get { return _Offset; }
-            set
-            {
-                if (_Offset != value)
-                {
-                    Point old = _Offset;
-                    _Offset = value;
-                    RaisePropertyChanged("Offset", old, value);
-                }
-            }
-        }
+        public double Curviness { get; set; } = Double.NaN;
 
-        private void RaisePropertyChanged(string offset, Point old, Point value)
-        {
-            throw new NotImplementedException();
-        }
-
-        private Point _Offset = new Point(0, 0);
+        public Point Offset { get; set; } = new Point(0, 0);
 
         // write the extra property on the link data
         public override XElement MakeXElement(XName n)
