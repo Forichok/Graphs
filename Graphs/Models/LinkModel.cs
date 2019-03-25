@@ -13,20 +13,26 @@ namespace Graphs.Models
     [Serializable]
     public class LinkModel : GraphLinksModelLinkData<String, String>
     {
-        public LinkModel()
-        {
-            this.Text = "0";
-        }
-
         // this property remembers the curviness;
         // Double.NaN means let it use a default calculated value
         // default value of NaN causes Route to calculate it
 
-        public Boolean IsOriented { get; set; } = true;
+        public Boolean IsOriented { get; set; }
 
-        public double Curviness { get; set; } = Double.NaN;
+        public Boolean IsSelected { get; set; }
 
-        public Point Offset { get; set; } = new Point(0, 0);
+        public double Curviness { get; set; }
+
+        public Point Offset { get; set; } 
+
+        public LinkModel()
+        {
+            Text = "0";
+            Offset = new Point(0, 0);
+            Curviness = Double.NaN;
+            IsOriented = true;
+            IsSelected = false;
+        }
 
         // write the extra property on the link data
         public override XElement MakeXElement(XName n)

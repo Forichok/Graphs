@@ -7,6 +7,7 @@
         xmlns:local="clr-namespace:Graphs"
         xmlns:viewModels="clr-namespace:Graphs.ViewModels"
         xmlns:models="clr-namespace:Graphs.Models"
+        xmlns:converters="clr-namespace:Graphs.Converters"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
 
@@ -16,12 +17,11 @@
 
     <Window.Resources>
         <local:LinkDirectionConverter x:Key="LinkDirectionConverter" />
-
-        <go:BooleanBrushConverter x:Key="theSelectedBrushConverter"
-                              TrueColor="Blue" FalseColor="Black" />
+        <converters:PartSelectionConverter x:Key="PartSelectionConverter" />
+        
         <RadialGradientBrush x:Key="theNodeBrush">
             <GradientStop Color="White" Offset="0" />
-            <GradientStop Color="CornflowerBlue" Offset="1" />
+            <GradientStop Color="Lavender" Offset="1" />
         </RadialGradientBrush>
 
         <!-- when a node is selected this Button appears -->
@@ -46,9 +46,15 @@
                     go:Node.LinkableFrom="True" go:Node.LinkableTo="True"
                     go:Node.LinkableDuplicates="True" go:Node.LinkableSelfNode="True">
                 <go:NodeShape go:NodePanel.Figure ="{Binding Path=Data.Figure}"  Cursor="Hand"
-                   Fill="{StaticResource theNodeBrush}" StrokeThickness="2"
-                   Stroke="{Binding Path=Part.IsSelected,
-                            Converter={StaticResource theSelectedBrushConverter}}" />
+                   Fill="{StaticResource theNodeBrush}" StrokeThickness="3">
+                    <go:NodeShape.Stroke>
+                        <MultiBinding Converter="{StaticResource PartSelectionConverter}">
+                            <Binding Path="Part.IsSelected"></Binding>
+                            <Binding Path="Data.IsSelected"></Binding>
+                        </MultiBinding>
+
+                    </go:NodeShape.Stroke>
+                </go:NodeShape>
                 <TextBlock Text="{Binding Path=Data.Text, Mode=TwoWay}"
                    TextWrapping="Wrap" Margin="10" Cursor="Arrow"
                    go:Node.LinkableFrom="False" go:Node.LinkableTo="False"
@@ -76,10 +82,16 @@
                     RelinkableFrom="True" RelinkableTo="True"
                     Curviness="{Binding Path=Data.Curviness}"  />
                 </go:Link.Route>
-                <go:LinkShape x:Name="Path" StrokeThickness="2"
-                      Stroke="{Binding Path=Part.IsSelected,
-                               Converter={StaticResource theSelectedBrushConverter}}"/>
-                <Path Fill="Black" go:LinkPanel.ToArrow = "{Binding Converter={StaticResource LinkDirectionConverter },ConverterParameter=Data,Mode=OneWay}"/>
+                <go:LinkShape x:Name="Path" StrokeThickness="3">
+                    <go:LinkShape.Stroke>
+                        <MultiBinding Converter="{StaticResource PartSelectionConverter}">
+                            <Binding Path="Part.IsSelected"></Binding>
+                            <Binding Path="Data.IsSelected"></Binding>
+                        </MultiBinding>
+                            
+                    </go:LinkShape.Stroke>
+                </go:LinkShape>
+                <Path Fill="Black" go:LinkPanel.ToArrow = "{Binding Converter={StaticResource LinkDirectionConverter },Mode=OneWay}"/>
                 <go:NodePanel Sizing="Auto"
                       go:LinkPanel.Offset="{Binding Path=Data.Offset, Mode=TwoWay}">
                     <Rectangle>

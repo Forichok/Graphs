@@ -8,7 +8,7 @@ namespace Graphs.Helpers
 {
     static class NodeFigureCreator
     {
-        private static List<String> Figures = new List<string>(){"Circle","Cube","Triangle"};
+        private static List<String> Figures = new List<string>(){ "RoundedRectangle","Circle","Cube","Triangle"};
         private static int pos = 0;
 
         public static String GetFigure()

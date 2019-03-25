@@ -15,11 +15,16 @@ namespace Graphs.Models
     {
         private static Boolean isExampleCreated;
 
-        private int FigureId = 0;
-        public String Figure { get; set; } = "Cube";
+        public Boolean IsSelected { get; set; }
+
+        private int _figureId;
+        public String Figure { get; set; } 
+       
         public NodeModel()
         {
-
+            _figureId = 0;
+            Figure = NodeFigureCreator.GetFigure(ref _figureId);
+            IsSelected = false;
             if (isExampleCreated)
             {
                 String key = NodeNameCreator.GetNodeName();
@@ -37,7 +42,7 @@ namespace Graphs.Models
 
         public void ChangeFigure()
         {
-            Figure = NodeFigureCreator.GetFigure(ref FigureId);
+            Figure = NodeFigureCreator.GetFigure(ref _figureId);
         }
 
         // note that adding properties here means also overriding MakeXElement and LoadFromXElement
