@@ -1,19 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Xml.Linq;
 using Graphs.Helpers;
 using Graphs.Models;
@@ -24,15 +13,12 @@ using Northwoods.GoXam.Model;
 
 namespace Graphs
 {
+
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    ///     Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
-
-
-        
-
         public MainWindow()
         {
             InitializeComponent();
@@ -54,27 +40,26 @@ namespace Graphs
 
         private void MyDiagram_LinkDrawn(object sender, DiagramEventArgs e)
         {
-            LinkModel linkModel = e.Part.Data as LinkModel;
+            var linkModel = e.Part.Data as LinkModel;
 
 
-            linkModel.Text = ((int)(GetNode(linkModel.From).Location - GetNode(linkModel.To).Location).Length / 100).ToString();
+            linkModel.Text = ((int) (GetNode(linkModel.From).Location - GetNode(linkModel.To).Location).Length / 100)
+                .ToString();
         }
 
-        private GraphLinksModelNodeData<string> GetNode(String key)
+        private GraphLinksModelNodeData<string> GetNode(string key)
         {
             foreach (NodeModel node in myDiagram.Model.NodesSource)
-            {
                 if (node.Key == key)
                     return node;
-            }
 
             return null;
         }
 
         private void MyDiagram_NodeCreated(object sender, DiagramEventArgs e)
         {
-            NodeModel nodeModel = e.Part.Data as NodeModel;
-            String key = NodeNameCreator.GetNodeName();
+            var nodeModel = e.Part.Data as NodeModel;
+            var key = NodeNameCreator.GetNodeName();
 
             nodeModel.Text = key;
             nodeModel.Key = key;
@@ -84,11 +69,11 @@ namespace Graphs
 
         private void Load_Click(object sender, RoutedEventArgs e)
         {
-            var model = myDiagram.Model as GraphLinksModel<NodeModel, String, String, LinkModel>;
+            var model = myDiagram.Model as GraphLinksModel<NodeModel, string, string, LinkModel>;
             if (model == null) return;
             try
             {
-                XElement root = XElement.Parse(LoadFromFile());
+                var root = XElement.Parse(LoadFromFile());
                 // set the Route.Points after nodes have been built and the layout has finished
                 myDiagram.LayoutCompleted += UpdateRoutes;
                 // tell the CustomPartManager that we're loading
@@ -99,10 +84,11 @@ namespace Graphs
             {
                 MessageBox.Show(ex.ToString());
             }
+
             model.IsModified = false;
         }
 
-        private String LoadFromFile()
+        private string LoadFromFile()
         {
             var fileContent = string.Empty;
             var filePath = string.Empty;
@@ -120,7 +106,7 @@ namespace Graphs
                 //Read the contents of the file into a stream
                 var fileStream = openFileDialog.OpenFile();
 
-                using (StreamReader reader = new StreamReader(fileStream))
+                using (var reader = new StreamReader(fileStream))
                 {
                     fileContent = reader.ReadToEnd();
                 }
@@ -136,16 +122,15 @@ namespace Graphs
         {
             // just set the Route points once per Load
             myDiagram.LayoutCompleted -= UpdateRoutes;
-            foreach (Link link in myDiagram.Links)
+            foreach (var link in myDiagram.Links)
             {
-                LinkModel linkModel = link.Data as LinkModel;
+                var linkModel = link.Data as LinkModel;
                 if (linkModel != null && linkModel.Points != null && linkModel.Points.Count() > 1)
-                {
-                    link.Route.Points = (IList<Point>)linkModel.Points;
-                }
+                    link.Route.Points = (IList<Point>) linkModel.Points;
             }
-            myDiagram.PartManager.UpdatesRouteDataPoints = true;  // OK for CustomPartManager to update LinkModel.Points automatically
-        }
 
+            myDiagram.PartManager.UpdatesRouteDataPoints =
+                true; // OK for CustomPartManager to update LinkModel.Points automatically
+        }
     }
 }
