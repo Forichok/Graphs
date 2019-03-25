@@ -6,6 +6,8 @@
     xmlns:models="clr-namespace:Graphs.Models">
 
     <UserControl.Resources>
+        <local:LinkDirectionConverter x:Key="LinkDirectionConverter" />
+
         <go:BooleanBrushConverter x:Key="theSelectedBrushConverter"
                               TrueColor="Blue" FalseColor="Black" />
         <RadialGradientBrush x:Key="theNodeBrush">
@@ -27,7 +29,7 @@
         </DataTemplate>
 
         <!-- the template for nodes -->
-        <DataTemplate x:Key="NodeTemplate">
+        <DataTemplate x:Key="NodeTemplate" DataType="models:NodeModel">
             <go:NodePanel go:Node.Location="{Binding Path=Data.Location, Mode=TwoWay}"
                     Sizing="Auto"
                     go:Part.SelectionAdorned="True"
@@ -58,7 +60,7 @@
         </DataTemplate>
 
         <!-- the template for links -->
-        <DataTemplate x:Key="LinkTemplate">
+        <DataTemplate x:Key="LinkTemplate" DataType="models:LinkModel">
             <go:LinkPanel go:Link.SelectionElementName="Path" go:Part.Reshapable="True">
                 <go:Link.Route>
                     <go:Route Curve="Bezier" Adjusting="Stretch"
@@ -68,7 +70,7 @@
                 <go:LinkShape x:Name="Path" StrokeThickness="2"
                       Stroke="{Binding Path=Part.IsSelected,
                                Converter={StaticResource theSelectedBrushConverter}}"/>
-                <Path Fill="Black" go:LinkPanel.ToArrow="Standard" />
+                <Path Fill="Black" go:LinkPanel.ToArrow = "{Binding Converter={StaticResource LinkDirectionConverter },ConverterParameter=Data,Mode=OneWay}"/>
                 <go:NodePanel Sizing="Auto"
                       go:LinkPanel.Offset="{Binding Path=Data.Offset, Mode=TwoWay}">
                     <Rectangle>
@@ -85,7 +87,10 @@
                 </go:NodePanel>
                 <ContextMenuService.ContextMenu>
                     <ContextMenu>
-                        <MenuItem Header="Reverse" Click="ReverseMenuClick" />
+                        <MenuItem Header="Direction">
+                            <MenuItem Header="Reverse" Click="ReverseMenuClick" />
+                            <MenuItem Header="Change Link Type" Click="ChangeLinkTypeMenuClick" />
+                        </MenuItem>
                         <MenuItem Command="Copy" />
                         <MenuItem Command="Cut" />
                         <MenuItem Command="Paste" />

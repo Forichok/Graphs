@@ -73,6 +73,7 @@
     </ApplicationDefinition>
     <Compile Include="Helpers\NodeFigureCreator.cs" />
     <Compile Include="Helpers\NodeNameCreator.cs" />
+    <Compile Include="Converters\LinkDirectionConverter.cs" />
     <Compile Include="Models\LinkModel.cs" />
     <Compile Include="Models\NodeModel.cs" />
     <Compile Include="StateChart.xaml.cs">

@@ -224,17 +224,24 @@ namespace Graphs
             var a = sender as System.Windows.Controls.MenuItem;
             var b = (a.DataContext as PartManager.PartBinding).Data as NodeModel;
             b.Figure = NodeFigureCreator.GetFigure();
-
         }
 
         private void ReverseMenuClick(object sender, RoutedEventArgs e)
         {
             var a = sender as System.Windows.Controls.MenuItem;
-            var b = (a.DataContext as PartManager.PartBinding).Data as LinkModel;
-            var tmpStr = b.From;
-            var c = b.Category;
-            b.From = b.To;
-            b.To = tmpStr;
+            var link = (a.DataContext as PartManager.PartBinding).Data as LinkModel;
+            var tmpStr = link.From;
+            link.From = link.To;
+            link.To = tmpStr;
+        }
+
+        private void ChangeLinkTypeMenuClick(object sender, RoutedEventArgs e)
+        {
+            var menuItem = sender as System.Windows.Controls.MenuItem;
+            var link = (menuItem.DataContext as PartManager.PartBinding).Data as LinkModel;
+            link.IsOriented = false;
+            model.RemoveLink(link);
+            model.AddLink(link); //?? better way to update??
         }
     }
 }

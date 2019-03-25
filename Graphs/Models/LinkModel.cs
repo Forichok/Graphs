@@ -22,6 +22,8 @@ namespace Graphs.Models
         // Double.NaN means let it use a default calculated value
         // default value of NaN causes Route to calculate it
 
+        public Boolean IsOriented { get; set; } = true;
+
         public double Curviness { get; set; } = Double.NaN;
 
         public Point Offset { get; set; } = new Point(0, 0);
