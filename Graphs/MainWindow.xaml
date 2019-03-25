@@ -11,14 +11,10 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
 
-    <Window.DataContext>
-        <viewModels:MainViewModel/>
-    </Window.DataContext>
-
     <Window.Resources>
         <local:LinkDirectionConverter x:Key="LinkDirectionConverter" />
         <converters:PartSelectionConverter x:Key="PartSelectionConverter" />
-        
+        <viewModels:MainViewModel x:Key="Vm" />
         <RadialGradientBrush x:Key="theNodeBrush">
             <GradientStop Color="White" Offset="0" />
             <GradientStop Color="Lavender" Offset="1" />
@@ -27,7 +23,9 @@
         <!-- when a node is selected this Button appears -->
         <DataTemplate x:Key="StateSelectionTemplate">
             <go:SpotPanel>
-                <Button Click="Button_Click"
+                <Button 
+                    Command="{Binding Source={StaticResource Vm},Path=AddNewNodeCommand}" 
+                    CommandParameter="{Binding}"
                 go:SpotPanel.Spot="TopRight" go:SpotPanel.Alignment="Center">
                     <go:NodePanel>
                         <go:NodeShape go:NodePanel.Figure="ThickCross" Width="8" Height="8"
@@ -61,7 +59,7 @@
                    go:Part.TextEditable="True" />
                 <ContextMenuService.ContextMenu>
                     <ContextMenu>
-                        <MenuItem Header="Change Figure" Click="ChangeFigureClick" />
+                        <MenuItem Header="Change Figure" Command="{Binding Source={StaticResource Vm},Path=ChangeFigureMenuCommand}" CommandParameter="{Binding}"/>
                         <MenuItem Command="Copy" />
                         <MenuItem Command="Cut" />
                         <MenuItem Command="Paste" />
@@ -109,8 +107,8 @@
                 <ContextMenuService.ContextMenu>
                     <ContextMenu>
                         <MenuItem Header="Direction">
-                            <MenuItem Header="Reverse" Click="ReverseMenuClick" />
-                            <MenuItem Header="Change Link Type" Click="ChangeLinkTypeMenuClick" />
+                            <MenuItem Header="Reverse" Command="{Binding Source={StaticResource Vm},Path=ReverseMenuCommand}" CommandParameter="{Binding}"/>
+                            <MenuItem Header="Change Link Type" Command="{Binding Source={StaticResource Vm},Path=ChangeLinkDirectionMenuCommand}" CommandParameter="{Binding}"/>
                         </MenuItem>
                         <MenuItem Command="Copy" />
                         <MenuItem Command="Cut" />
@@ -125,6 +123,10 @@
         </DataTemplate>
     </Window.Resources>
 
+    <Window.DataContext>
+        <DynamicResource ResourceKey="Vm"></DynamicResource>
+    </Window.DataContext>
+
     <Grid>
         <Grid>
             <Grid.RowDefinitions>
@@ -136,9 +138,10 @@
 click on text of selected node or link to edit in-place" />
             <StackPanel Grid.Row="0" Orientation="Horizontal"
                         HorizontalAlignment="Right" VerticalAlignment="Top">
-                <Button Content="Save" Click="Save_Click" />
-                <Button Content="Load" Click="Load_Click" x:Name="LoadButton" />
-                <Button Content="Save as image" Click="SaveAsImageClick"></Button>
+                <Button Content="Save" Command="{Binding SaveCommand}" CommandParameter="{Binding ElementName=myDiagram}"/>
+                <Button Content="Load" Click="Load_Click"/>
+                <Button Content="Save as image" Command="{Binding Source={StaticResource Vm},Path=SaveAsImageCommand}"
+                        CommandParameter="{Binding ElementName=myDiagram}"></Button>
             </StackPanel>
             <go:Diagram Grid.Row="1" x:Name="myDiagram"
                         Padding="10"
@@ -149,7 +152,7 @@ click on text of selected node or link to edit in-place" />
                         NodeTemplate="{StaticResource NodeTemplate}"
                         LinkTemplate="{StaticResource LinkTemplate}"
                         Model="{Binding Model}"
-                        
+                        PartManager="{Binding PartManager}"
                         AllowDelete="True"
                         AllowCopy="True">
                 <go:Diagram.ClickCreatingTool>
