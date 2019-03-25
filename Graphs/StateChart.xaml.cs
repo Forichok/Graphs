@@ -222,6 +222,11 @@ namespace Graphs
         {
             
         }
+
+        private void LinkMenuClick(object sender, RoutedEventArgs e)
+        {
+            
+        }
     }
 
 

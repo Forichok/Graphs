@@ -41,6 +41,17 @@
                    TextWrapping="Wrap" Margin="10" Cursor="Arrow"
                    go:Node.LinkableFrom="False" go:Node.LinkableTo="False"
                    go:Part.TextEditable="True" />
+                <ContextMenuService.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="a node command" Click="NodeMenuClick" />
+                        <MenuItem Command="Copy" />
+                        <MenuItem Command="Cut" />
+                        <MenuItem Command="Paste" />
+                        <MenuItem Command="Delete" />
+                        <MenuItem Command="Undo" />
+                        <MenuItem Command="Redo" />
+                    </ContextMenu>
+                </ContextMenuService.ContextMenu>
 
             </go:NodePanel>
         </DataTemplate>
@@ -71,6 +82,18 @@
                      TextWrapping="Wrap" TextAlignment="Center"
                      go:Part.TextEditable="True" Margin="10" />
                 </go:NodePanel>
+                <ContextMenuService.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="a link command" Click="LinkMenuClick" />
+                        <MenuItem Command="Copy" />
+                        <MenuItem Command="Cut" />
+                        <MenuItem Command="Paste" />
+                        <MenuItem Command="Delete" />
+                        <MenuItem Command="Undo" />
+                        <MenuItem Command="Redo" />
+                    </ContextMenu>
+                </ContextMenuService.ContextMenu>
+
             </go:LinkPanel>
         </DataTemplate>
     </UserControl.Resources>
