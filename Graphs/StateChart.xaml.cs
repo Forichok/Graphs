@@ -6,10 +6,11 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Xml.Linq;
 using Graphs.Helpers;
+using Graphs.Models;
+using Graphs.Tools;
 using Microsoft.Win32;
 using Northwoods.GoXam;
 using Northwoods.GoXam.Model;
-using Northwoods.GoXam.Tool;
 
 namespace Graphs
 {
@@ -117,7 +118,7 @@ namespace Graphs
                 myDiagram.LayoutCompleted -= show;
             };
             myDiagram.LayoutCompleted += show;
-            myDiagram.Model.AddLink(from, "AAA", to, "BBB");
+            myDiagram.Model.AddLink(from, null, to, null);
 
             myDiagram.CommitTransaction("Add NodeModel");
         }
@@ -180,7 +181,7 @@ namespace Graphs
             var filePath = string.Empty;
 
             var openFileDialog = new OpenFileDialog();
-            openFileDialog.InitialDirectory = "c:\\";
+            openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
             openFileDialog.Filter = "All files (*.*)|*.*|xml files (*.xml)|*.xml";
             openFileDialog.FilterIndex = 2;
             openFileDialog.RestoreDirectory = true;
@@ -218,239 +219,22 @@ namespace Graphs
             myDiagram.PartManager.UpdatesRouteDataPoints = true;  // OK for CustomPartManager to update LinkModel.Points automatically
         }
 
-        private void NodeMenuClick(object sender, RoutedEventArgs e)
+        private void ChangeFigureClick(object sender, RoutedEventArgs e)
         {
-            
+            var a = sender as System.Windows.Controls.MenuItem;
+            var b = (a.DataContext as PartManager.PartBinding).Data as NodeModel;
+            b.Figure = NodeFigureCreator.GetFigure();
+
         }
 
-        private void LinkMenuClick(object sender, RoutedEventArgs e)
+        private void ReverseMenuClick(object sender, RoutedEventArgs e)
         {
-            
-        }
-    }
-
-
-    public class CustomPartManager : PartManager
-    {
-        public CustomPartManager()
-        {
-            this.UpdatesRouteDataPoints = true;  // call UpdateRouteDataPoints when Link.Route.Points has changed
-        }
-
-        // this supports undo/redo of link route reshaping
-        protected override void UpdateRouteDataPoints(Link link)
-        {
-            if (!this.UpdatesRouteDataPoints) return;   // in coordination with Load_Click and UpdateRoutes, above
-            var data = link.Data as LinkModel;
-            if (data != null)
-            {
-                data.Points = new List<Point>(link.Route.Points);
-            }
-        }
-    }
-
-
-    // the data for each node; the predefined data class is enough
-
-    [Serializable]
-    public class NodeModel : GraphLinksModelNodeData<String>
-    {
-        private static Boolean isExampleCreated;
-
-        public NodeModel()
-        {
-            
-            if (isExampleCreated)
-            {
-                String key = NodeNameCreator.GetNodeName();
-                this.Key = key;  // be sure to provide an initial non-null value for the Key
-                this.Text = key;
-            }
-            else
-                isExampleCreated = true;
-        }
-
-        public override void ChangeDataValue(ModelChangedEventArgs e, bool undo)
-        {
-            base.ChangeDataValue(e, undo);
-        }
-
-        // note that adding properties here means also overriding MakeXElement and LoadFromXElement
-    }
-
-
-    // the data for each link
-#if !SILVERLIGHT
-    [Serializable]
-#endif
-    public class LinkModel : GraphLinksModelLinkData<String, String>
-    {
-        public LinkModel()
-        {         
-            this.Text = "0";
-        }
-
-        // this property remembers the curviness;
-        // Double.NaN means let it use a default calculated value
-        public double Curviness
-        {
-            get { return _Curviness; }
-            set
-            {
-                if (_Curviness != value)
-                {
-                    double old = _Curviness;
-                    _Curviness = value;
-                    RaisePropertyChanged("Curviness", old, value);
-                }
-            }
-        }
-        // default value of NaN causes Route to calculate it
-        private double _Curviness = Double.NaN;
-
-        public Point Offset
-        {
-            get { return _Offset; }
-            set
-            {
-                if (_Offset != value)
-                {
-                    Point old = _Offset;
-                    _Offset = value;
-                    RaisePropertyChanged("Offset", old, value);
-                }
-            }
-        }
-        private Point _Offset = new Point(0, 0);
-
-        // write the extra property on the link data
-        public override XElement MakeXElement(XName n)
-        {
-            XElement e = base.MakeXElement(n);
-            e.Add(XHelper.Attribute("Curviness", this.Curviness, Double.NaN));
-            e.Add(XHelper.Attribute("Offset", this.Offset, new Point(0, 0)));
-            return e;
-        }
-
-        // read the extra property on the link data
-        public override void LoadFromXElement(XElement e)
-        {
-            base.LoadFromXElement(e);
-            this.Curviness = XHelper.Read("Curviness", e, Double.NaN);
-            this.Offset = XHelper.Read("Offset", e, new Point(0, 0));
-        }
-    }
-
-
-    // This tool only works when a Link has a LinkPanel with a single child element
-    // that is positioned at the Route.MidPoint plus some Offset.
-    public class SimpleLabelDraggingTool : DiagramTool
-    {
-        public override bool CanStart()
-        {
-            if (!base.CanStart()) return false;
-            Diagram diagram = this.Diagram;
-            if (diagram == null) return false;
-            // require left button & that it has moved far enough away from the mouse down point, so it isn't a click
-            if (!IsLeftButtonDown()) return false;
-            if (!IsBeyondDragSize()) return false;
-            return FindLabel() != null;
-        }
-
-        private FrameworkElement FindLabel()
-        {
-            var elt = this.Diagram.Panel.FindElementAt<System.Windows.Media.Visual>(this.Diagram.LastMousePointInModel, e => e, null, SearchLayers.Links);
-            if (elt == null) return null;
-            Link link = Part.FindAncestor<Link>(elt);
-            if (link == null) return null;
-            var parent = System.Windows.Media.VisualTreeHelper.GetParent(elt) as System.Windows.Media.Visual;
-            while (parent != null && parent != link && !(parent is LinkPanel))
-            {
-                elt = parent;
-                parent = System.Windows.Media.VisualTreeHelper.GetParent(elt) as System.Windows.Media.Visual;
-            }
-            if (parent is LinkPanel)
-            {
-                FrameworkElement lab = elt as FrameworkElement;
-                if (lab == null) return null;
-                // needs to be positioned relative to the MidPoint
-                if (LinkPanel.GetIndex(lab) != Int32.MinValue) return null;
-                // also check for movable-ness?
-                return lab;
-            }
-            return null;
-        }
-
-        public override void DoActivate()
-        {
-            StartTransaction("Shifted Label");
-            this.Label = FindLabel();
-            if (this.Label != null)
-            {
-                this.OriginalOffset = LinkPanel.GetOffset(this.Label);
-            }
-            base.DoActivate();
-        }
-
-        public override void DoDeactivate()
-        {
-            base.DoDeactivate();
-            StopTransaction();
-        }
-
-        private FrameworkElement Label { get; set; }
-        private Point OriginalOffset { get; set; }
-
-        public override void DoStop()
-        {
-            this.Label = null;
-            base.DoStop();
-        }
-
-        public override void DoCancel()
-        {
-            if (this.Label != null)
-            {
-                LinkPanel.SetOffset(this.Label, this.OriginalOffset);
-            }
-            base.DoCancel();
-        }
-
-        public override void DoMouseMove()
-        {
-            if (!this.Active) return;
-            UpdateLinkPanelProperties();
-        }
-
-        public override void DoMouseUp()
-        {
-            if (!this.Active) return;
-            UpdateLinkPanelProperties();
-            this.TransactionResult = "Shifted Label";
-            StopTool();
-        }
-
-        private void UpdateLinkPanelProperties()
-        {
-            if (this.Label == null) return;
-            Link link = Part.FindAncestor<Link>(this.Label);
-            if (link == null) return;
-            Point last = this.Diagram.LastMousePointInModel;
-            Point mid = link.Route.MidPoint;
-            // need to rotate this point to account for angle of middle segment
-            Point p = new Point(last.X - mid.X, last.Y - mid.Y);
-            LinkPanel.SetOffset(this.Label, RotatePoint(p, -link.Route.MidAngle));
-        }
-
-        private static Point RotatePoint(Point p, double angle)
-        {
-            if (angle == 0 || (p.X == 0 && p.Y == 0))
-                return p;
-            double rad = angle * Math.PI / 180;
-            double cosine = Math.Cos(rad);
-            double sine = Math.Sin(rad);
-            return new Point((cosine * p.X - sine * p.Y),
-                             (sine * p.X + cosine * p.Y));
+            var a = sender as System.Windows.Controls.MenuItem;
+            var b = (a.DataContext as PartManager.PartBinding).Data as LinkModel;
+            var tmpStr = b.From;
+            var c = b.Category;
+            b.From = b.To;
+            b.To = tmpStr;
         }
     }
 }

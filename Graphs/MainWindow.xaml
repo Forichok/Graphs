@@ -13,10 +13,8 @@
         <viewModels:MainViewModel/>
     </Window.DataContext>
 
-
     <Grid>
-
-        <local:StateChart>
+        <local:StateChart >
             
         </local:StateChart>
     </Grid>
