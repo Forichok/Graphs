@@ -31,8 +31,6 @@ namespace Graphs
     {
 
 
-        
-
         public MainWindow()
         {
             InitializeComponent();
