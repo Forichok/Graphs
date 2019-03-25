@@ -14,6 +14,8 @@ namespace Graphs.Models
     public class NodeModel : GraphLinksModelNodeData<String>
     {
         private static Boolean isExampleCreated;
+
+        private int FigureId = 0;
         public String Figure { get; set; } = "Cube";
         public NodeModel()
         {
@@ -31,6 +33,11 @@ namespace Graphs.Models
         public override void ChangeDataValue(ModelChangedEventArgs e, bool undo)
         {
             base.ChangeDataValue(e, undo);
+        }
+
+        public void ChangeFigure()
+        {
+            Figure = NodeFigureCreator.GetFigure(ref FigureId);
         }
 
         // note that adding properties here means also overriding MakeXElement and LoadFromXElement

@@ -18,5 +18,13 @@ namespace Graphs.Helpers
             return Figures[pos++];
         }
 
+        public static String GetFigure(ref int id)
+        {
+            if (id >= Figures.Count)
+                id = 0;
+            return Figures[id++];
+            
+        }
+
     }
 }

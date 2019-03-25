@@ -6,6 +6,7 @@
         xmlns:go="http://schemas.nwoods.com/GoXam"
         xmlns:local="clr-namespace:Graphs"
         xmlns:viewModels="clr-namespace:Graphs.ViewModels"
+        xmlns:models="clr-namespace:Graphs.Models"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
 
@@ -13,10 +14,143 @@
         <viewModels:MainViewModel/>
     </Window.DataContext>
 
+    <Window.Resources>
+        <local:LinkDirectionConverter x:Key="LinkDirectionConverter" />
+
+        <go:BooleanBrushConverter x:Key="theSelectedBrushConverter"
+                              TrueColor="Blue" FalseColor="Black" />
+        <RadialGradientBrush x:Key="theNodeBrush">
+            <GradientStop Color="White" Offset="0" />
+            <GradientStop Color="CornflowerBlue" Offset="1" />
+        </RadialGradientBrush>
+
+        <!-- when a node is selected this Button appears -->
+        <DataTemplate x:Key="StateSelectionTemplate">
+            <go:SpotPanel>
+                <Button Click="Button_Click"
+                go:SpotPanel.Spot="TopRight" go:SpotPanel.Alignment="Center">
+                    <go:NodePanel>
+                        <go:NodeShape go:NodePanel.Figure="ThickCross" Width="8" Height="8"
+                          Fill="White" Stroke="Black" StrokeThickness="1" />
+                    </go:NodePanel>
+                </Button>
+            </go:SpotPanel>
+        </DataTemplate>
+
+        <!-- the template for nodes -->
+        <DataTemplate x:Key="NodeTemplate" DataType="models:NodeModel">
+            <go:NodePanel go:Node.Location="{Binding Path=Data.Location, Mode=TwoWay}"
+                    Sizing="Auto"
+                    go:Part.SelectionAdorned="True"
+                    go:Part.SelectionAdornmentTemplate="{StaticResource StateSelectionTemplate}"
+                    go:Node.LinkableFrom="True" go:Node.LinkableTo="True"
+                    go:Node.LinkableDuplicates="True" go:Node.LinkableSelfNode="True">
+                <go:NodeShape go:NodePanel.Figure ="{Binding Path=Data.Figure}"  Cursor="Hand"
+                   Fill="{StaticResource theNodeBrush}" StrokeThickness="2"
+                   Stroke="{Binding Path=Part.IsSelected,
+                            Converter={StaticResource theSelectedBrushConverter}}" />
+                <TextBlock Text="{Binding Path=Data.Text, Mode=TwoWay}"
+                   TextWrapping="Wrap" Margin="10" Cursor="Arrow"
+                   go:Node.LinkableFrom="False" go:Node.LinkableTo="False"
+                   go:Part.TextEditable="True" />
+                <ContextMenuService.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Change Figure" Click="ChangeFigureClick" />
+                        <MenuItem Command="Copy" />
+                        <MenuItem Command="Cut" />
+                        <MenuItem Command="Paste" />
+                        <MenuItem Command="Delete" />
+                        <MenuItem Command="Undo" />
+                        <MenuItem Command="Redo" />
+                    </ContextMenu>
+                </ContextMenuService.ContextMenu>
+
+            </go:NodePanel>
+        </DataTemplate>
+
+        <!-- the template for links -->
+        <DataTemplate x:Key="LinkTemplate" DataType="models:LinkModel">
+            <go:LinkPanel go:Link.SelectionElementName="Path" go:Part.Reshapable="True">
+                <go:Link.Route>
+                    <go:Route Curve="Bezier" Adjusting="Stretch"
+                    RelinkableFrom="True" RelinkableTo="True"
+                    Curviness="{Binding Path=Data.Curviness}"  />
+                </go:Link.Route>
+                <go:LinkShape x:Name="Path" StrokeThickness="2"
+                      Stroke="{Binding Path=Part.IsSelected,
+                               Converter={StaticResource theSelectedBrushConverter}}"/>
+                <Path Fill="Black" go:LinkPanel.ToArrow = "{Binding Converter={StaticResource LinkDirectionConverter },ConverterParameter=Data,Mode=OneWay}"/>
+                <go:NodePanel Sizing="Auto"
+                      go:LinkPanel.Offset="{Binding Path=Data.Offset, Mode=TwoWay}">
+                    <Rectangle>
+                        <Shape.Fill>
+                            <RadialGradientBrush>
+                                <GradientStop Offset="0.5" Color="White" />
+                                <GradientStop Offset="1" Color="Transparent" />
+                            </RadialGradientBrush>
+                        </Shape.Fill>
+                    </Rectangle>
+                    <TextBlock Text="{Binding Path=Data.Text, Mode=TwoWay}"
+                     TextWrapping="Wrap" TextAlignment="Center"
+                     go:Part.TextEditable="True" Margin="10" />
+                </go:NodePanel>
+                <ContextMenuService.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Direction">
+                            <MenuItem Header="Reverse" Click="ReverseMenuClick" />
+                            <MenuItem Header="Change Link Type" Click="ChangeLinkTypeMenuClick" />
+                        </MenuItem>
+                        <MenuItem Command="Copy" />
+                        <MenuItem Command="Cut" />
+                        <MenuItem Command="Paste" />
+                        <MenuItem Command="Delete" />
+                        <MenuItem Command="Undo" />
+                        <MenuItem Command="Redo" />
+                    </ContextMenu>
+                </ContextMenuService.ContextMenu>
+
+            </go:LinkPanel>
+        </DataTemplate>
+    </Window.Resources>
+
     <Grid>
-        <local:StateChart >
-            
-        </local:StateChart>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Margin="5"
+                       Text="Double-click in background to create a new node;
+click on text of selected node or link to edit in-place" />
+            <StackPanel Grid.Row="0" Orientation="Horizontal"
+                        HorizontalAlignment="Right" VerticalAlignment="Top">
+                <Button Content="Save" Click="Save_Click" />
+                <Button Content="Load" Click="Load_Click" x:Name="LoadButton" />
+                <Button Content="Save as image" Click="SaveAsImageClick"></Button>
+            </StackPanel>
+            <go:Diagram Grid.Row="1" x:Name="myDiagram"
+                        Padding="10"
+                        InitialPanelSpot="Center"
+                        InitialDiagramBoundsSpot="Center"
+                        HorizontalContentAlignment="Stretch"
+                        VerticalContentAlignment="Stretch"
+                        NodeTemplate="{StaticResource NodeTemplate}"
+                        LinkTemplate="{StaticResource LinkTemplate}"
+                        Model="{Binding Model}"
+                        
+                        AllowDelete="True"
+                        AllowCopy="True">
+                <go:Diagram.ClickCreatingTool>
+                    <!-- require a double-click to create a new node -->
+                    <go:ClickCreatingTool DoubleClick="True">
+                        <go:ClickCreatingTool.PrototypeData>
+                            <!-- the node data to be copied for each new node created by this tool -->
+                            <models:NodeModel/>
+                        </go:ClickCreatingTool.PrototypeData>
+                    </go:ClickCreatingTool>
+                </go:Diagram.ClickCreatingTool>
+            </go:Diagram>
+        </Grid>
     </Grid>
 
 </Window>

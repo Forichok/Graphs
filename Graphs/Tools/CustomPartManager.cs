@@ -20,8 +20,7 @@ namespace Graphs.Tools
         protected override void UpdateRouteDataPoints(Link link)
         {
             if (!this.UpdatesRouteDataPoints) return;   // in coordination with Load_Click and UpdateRoutes, above
-            var data = link.Data as LinkModel;
-            if (data != null)
+            if (link.Data is LinkModel data)
             {
                 data.Points = new List<Point>(link.Route.Points);
             }
