@@ -21,9 +21,9 @@ namespace Graphs.Models
             _figureId = 0;
             Figure = NodeFigureCreator.GetFigure(ref _figureId);
             IsSelected = false;
-            string key = NodeNameCreator.GetNodeName();
-            this.Key = key;  // be sure to provide an initial non-null value for the Key
-            this.Text = key;
+            //string key = NodeNameCreator.GetNodeName();
+            this.Key = "0";  // be sure to provide an initial non-null value for the Key
+            this.Text = "test";
         }
 
         public NodeModel(string key, string text)

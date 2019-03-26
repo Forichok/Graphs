@@ -8,6 +8,7 @@ using System.Windows.Media.Imaging;
 using System.Xml.Linq;
 using DevExpress.Mvvm;
 using Graph.sources.mvvm.models;
+using Graphs.Helpers;
 using Graphs.Models;
 using Graphs.Tools;
 using Northwoods.GoXam;
@@ -97,7 +98,9 @@ namespace Graphs.ViewModels
                     myDiagram.StartTransaction("Add NodeModel");
                     // create a new NodeModel, add it to the model, and create a link from
                     // the selected node data to the new node data
-                    NodeModel to = new NodeModel();
+
+                    var key = NodeNameCreator.GetNodeName();
+                    NodeModel to = new NodeModel(key, key);
                     //  to.Text = "new";
                     Point p = from.Location;
                     //?? this isn't a very smart way to decide where to place the node

@@ -40,9 +40,7 @@ namespace Graphs
         {
             var linkModel = e.Part.Data as LinkModel;
 
-
-            linkModel.Text = ((int) (GetNode(linkModel.From).Location - GetNode(linkModel.To).Location).Length / 100)
-                .ToString();
+            linkModel.Text = ((int) (GetNode(linkModel.From).Location - GetNode(linkModel.To).Location).Length / 100).ToString();
         }
 
         private GraphLinksModelNodeData<string> GetNode(string key)
@@ -58,6 +56,7 @@ namespace Graphs
         {
             var nodeModel = e.Part.Data as NodeModel;
             var key = NodeNameCreator.GetNodeName();
+            var d = myDiagram.Nodes;
 
             nodeModel.Text = key;
             nodeModel.Key = key;
