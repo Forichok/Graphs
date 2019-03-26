@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:go="http://schemas.nwoods.com/GoXam"
         xmlns:local="clr-namespace:Graphs"
+        xmlns:helpers="clr-namespace:Graphs.Sources.Helpers"
         xmlns:converters="clr-namespace:Graphs.Sources.Converters"
         xmlns:viewModels="clr-namespace:Graphs.Sources.ViewModels"
         xmlns:models="clr-namespace:Graphs.Sources.Models"
@@ -95,9 +96,18 @@
                             </RadialGradientBrush>
                         </Shape.Fill>
                     </Rectangle>
-                    <TextBlock Text="{Binding Path=Data.Text, Mode=TwoWay}"
-                     TextWrapping="Wrap" TextAlignment="Center"
-                     go:Part.TextEditable="True" Margin="10" />
+                    <TextBlock 
+                        TextWrapping="Wrap" TextAlignment="Center"
+                    go:Part.TextEditable="True" Margin="10" >
+                    <TextBlock.Text>
+                        <Binding Path="Data.Text" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
+                            <Binding.ValidationRules>
+                                <helpers:NumberValidation/>
+                            </Binding.ValidationRules>
+                        </Binding>
+
+                    </TextBlock.Text>
+                    </TextBlock>
                 </go:NodePanel>
                 <ContextMenuService.ContextMenu>
                     <ContextMenu>

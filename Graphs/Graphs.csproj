@@ -75,6 +75,7 @@
     <Compile Include="Sources\Helpers\NodeFigureCreator.cs" />
     <Compile Include="Sources\Helpers\NodeKeyCreator.cs" />
     <Compile Include="Sources\Converters\LinkDirectionConverter.cs" />
+    <Compile Include="Sources\Helpers\NumberValidation.cs" />
     <Compile Include="Sources\Models\LinkModel.cs" />
     <Compile Include="Sources\Models\NodeModel.cs" />
     <Compile Include="Sources\Tasks\MainModel.cs" />
