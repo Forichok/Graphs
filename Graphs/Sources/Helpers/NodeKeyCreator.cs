@@ -1,6 +1,6 @@
 ﻿namespace Graphs.Sources.Helpers
 {
-    static class NodeNameCreator
+    static class NodeKeyCreator
     {
         private static readonly char[] Alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
         private static int _alphaPosition;

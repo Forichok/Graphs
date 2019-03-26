@@ -1,6 +1,6 @@
-Vertex{State(-83,-34)}
-Vertex{State(103,-30)}
-Vertex{State(-67,-131)}
-0 transition transition 
-0 0 0 
-0 0 0 
+Vertex{A(107,-88)}
+Vertex{B(-169,-60)}
+Vertex{C(-76,64)}
+56 1 0 
+0 0 1 
+2 0 0 

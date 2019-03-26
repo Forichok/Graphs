@@ -70,7 +70,7 @@ namespace Graphs.Sources.Tasks
                     {
                         if (splitedLine[i] == "0")
                             continue;
-                        var LinkModel = new LinkModel(nodesList[i].Key, nodesList[linesCount - 1].Key, splitedLine[i]);
+                        var LinkModel = new LinkModel(nodesList[linesCount - 1].Key, nodesList[i].Key, splitedLine[i]);
                         linksList.Add(LinkModel);
                     }
 

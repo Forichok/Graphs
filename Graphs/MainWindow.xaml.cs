@@ -55,7 +55,7 @@ namespace Graphs
         private void MyDiagram_NodeCreated(object sender, DiagramEventArgs e)
         {
             var nodeModel = e.Part.Data as NodeModel;
-            var key = NodeNameCreator.GetNodeName();
+            var key = NodeKeyCreator.GetNodeName();
             var d = myDiagram.Nodes;
 
             nodeModel.Text = key;

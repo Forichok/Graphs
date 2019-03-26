@@ -99,7 +99,7 @@ namespace Graphs.Sources.ViewModels
                     // create a new NodeModel, add it to the model, and create a link from
                     // the selected node data to the new node data
 
-                    var key = NodeNameCreator.GetNodeName();
+                    var key = NodeKeyCreator.GetNodeName();
                     NodeModel to = new NodeModel(key, key);
                     //  to.Text = "new";
                     Point p = from.Location;
