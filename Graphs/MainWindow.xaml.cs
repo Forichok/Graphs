@@ -36,24 +36,23 @@ namespace Graphs
             InitializeComponent();
             myDiagram.LayoutCompleted += UpdateRoutes;
 
-            var tool = new SimpleLabelDraggingTool();
-            tool.Diagram = myDiagram;
+            //var tool = new SimpleLabelDraggingTool();
+            //tool.Diagram = myDiagram;
 
-            myDiagram.MouseMoveTools.Insert(0, tool);
+            //myDiagram.MouseMoveTools.Insert(0, tool);
 
             myDiagram.NodeCreated += MyDiagram_NodeCreated;
 
             myDiagram.LinkDrawn += MyDiagram_LinkDrawn;
 
-            myDiagram.LinkReshaped += MyDiagram_LinkDrawn;
+            //myDiagram.LinkReshaped += MyDiagram_LinkDrawn;
 
-            myDiagram.LinkRelinked += MyDiagram_LinkDrawn;
+            //myDiagram.LinkRelinked += MyDiagram_LinkDrawn;
         }
 
         private void MyDiagram_LinkDrawn(object sender, DiagramEventArgs e)
         {
             LinkModel linkModel = e.Part.Data as LinkModel;
-
 
             linkModel.Text = ((int)(GetNode(linkModel.From).Location - GetNode(linkModel.To).Location).Length / 100).ToString();
         }
