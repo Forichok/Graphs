@@ -1,23 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Xml.Linq;
 using Graphs.Helpers;
 using Graphs.Models;
-using Graphs.Tools;
 using Microsoft.Win32;
 using Northwoods.GoXam;
 using Northwoods.GoXam.Model;
@@ -57,7 +45,7 @@ namespace Graphs
             linkModel.Text = ((int)(GetNode(linkModel.From).Location - GetNode(linkModel.To).Location).Length / 100).ToString();
         }
 
-        private GraphLinksModelNodeData<string> GetNode(String key)
+        private GraphLinksModelNodeData<string> GetNode(string key)
         {
             foreach (NodeModel node in myDiagram.Model.NodesSource)
             {
@@ -71,7 +59,7 @@ namespace Graphs
         private void MyDiagram_NodeCreated(object sender, DiagramEventArgs e)
         {
             NodeModel nodeModel = e.Part.Data as NodeModel;
-            String key = NodeNameCreator.GetNodeName();
+            string key = NodeNameCreator.GetNodeName();
 
             nodeModel.Text = key;
             nodeModel.Key = key;
@@ -81,7 +69,7 @@ namespace Graphs
 
         private void Load_Click(object sender, RoutedEventArgs e)
         {
-            var model = myDiagram.Model as GraphLinksModel<NodeModel, String, String, LinkModel>;
+            var model = myDiagram.Model as GraphLinksModel<NodeModel, string, string, LinkModel>;
             if (model == null) return;
             try
             {
@@ -99,7 +87,7 @@ namespace Graphs
             model.IsModified = false;
         }
 
-        private String LoadFromFile()
+        private string LoadFromFile()
         {
             var fileContent = string.Empty;
             var filePath = string.Empty;

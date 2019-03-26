@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Graphs.Helpers;
 using Northwoods.GoXam.Model;
 
@@ -11,33 +7,32 @@ namespace Graphs.Models
     // the data for each node; the predefined data class is enough
 
     [Serializable]
-    public class NodeModel : GraphLinksModelNodeData<String>
+    public class NodeModel : GraphLinksModelNodeData<string>
     {
-        private static Boolean isExampleCreated;
-
-        public Boolean IsSelected { get; set; }
 
         private int _figureId;
-        public String Figure { get; set; } 
+
+        public bool IsSelected { get; set; }
+        public string Figure { get; set; } 
        
+
         public NodeModel()
         {
             _figureId = 0;
             Figure = NodeFigureCreator.GetFigure(ref _figureId);
             IsSelected = false;
-            if (isExampleCreated)
-            {
-                String key = NodeNameCreator.GetNodeName();
-                this.Key = key;  // be sure to provide an initial non-null value for the Key
-                this.Text = key;
-            }
-            else
-                isExampleCreated = true;
+            string key = NodeNameCreator.GetNodeName();
+            this.Key = key;  // be sure to provide an initial non-null value for the Key
+            this.Text = key;
         }
 
-        public override void ChangeDataValue(ModelChangedEventArgs e, bool undo)
+        public NodeModel(string key, string text)
         {
-            base.ChangeDataValue(e, undo);
+            this.Key = key;  
+            this.Text = text;
+            _figureId = 0;
+            Figure = NodeFigureCreator.GetFigure(ref _figureId);
+            IsSelected = false;
         }
 
         public void ChangeFigure()
@@ -45,7 +40,8 @@ namespace Graphs.Models
             Figure = NodeFigureCreator.GetFigure(ref _figureId);
         }
 
-        // note that adding properties here means also overriding MakeXElement and LoadFromXElement
+
+        //TODO new read and write overwrite 
     }
 
 }

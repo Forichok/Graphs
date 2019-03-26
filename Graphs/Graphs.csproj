@@ -77,6 +77,7 @@
     <Compile Include="Converters\LinkDirectionConverter.cs" />
     <Compile Include="Models\LinkModel.cs" />
     <Compile Include="Models\NodeModel.cs" />
+    <Compile Include="Tasks\MainModel.cs" />
     <Compile Include="Tools\CustomPartManager.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Page Include="MainWindow.xaml">

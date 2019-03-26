@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Graphs.Helpers
 {
@@ -13,7 +9,7 @@ namespace Graphs.Helpers
         private static readonly char[] Nums = "1234567890".ToCharArray();
         
 
-        public static String GetNodeName()
+        public static string GetNodeName()
         {
             var a = _alphaPosition / (Alpha.Length);
             if (a>=1)

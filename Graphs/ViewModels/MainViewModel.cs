@@ -1,41 +1,51 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using System.Xml.Linq;
 using DevExpress.Mvvm;
+using Graph.sources.mvvm.models;
 using Graphs.Models;
 using Graphs.Tools;
-using Microsoft.Win32;
 using Northwoods.GoXam;
 using Northwoods.GoXam.Model;
+using MessageBox = System.Windows.MessageBox;
+using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
+using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
 
 
 namespace Graphs.ViewModels
 {
     class MainViewModel : ViewModelBase
     {
-        public GraphLinksModel<NodeModel, String, String, LinkModel> Model { get; set; }
+        public GraphLinksModel<NodeModel, string, string, LinkModel> Model { get; set; }
         public CustomPartManager PartManager { get; set; }
 
         public MainViewModel()
         {
-            Model = new GraphLinksModel<NodeModel, String, String, LinkModel>();
+            Model = new GraphLinksModel<NodeModel, string, string, LinkModel>()
+            {
+                Modifiable = true,
+                HasUndoManager = true
+            };
             PartManager = new CustomPartManager();
-            Model.Modifiable = true; // let the user modify the graph
-            Model.HasUndoManager = true; // support undo/redo
+             
+
+            LoadAdjencyMatrixCommand = new DelegateCommand(LoadAdjencyMatrix);
+            SaveAdjencyMatrixCommand = new DelegateCommand(SaveAdjencyMatrix);
+
+            LoadIncidenceMatrixCommand = new DelegateCommand(LoadIncidenceMatrix);
+            SaveIncidenceMatrixCommand = new DelegateCommand(SaveIncidenceMatrix);
         }
 
         public ICommand ReverseMenuCommand
         {
             get
             {
-                return new DelegateCommand<Object>((sender) =>
+                return new DelegateCommand<object>((sender) =>
                 {
                     var link = (sender as PartManager.PartBinding).Data as LinkModel;
                     var tmpStr = link.From;
@@ -49,7 +59,7 @@ namespace Graphs.ViewModels
         {
             get
             {
-                return new DelegateCommand<Object>((sender) =>
+                return new DelegateCommand<object>((sender) =>
                 {
                     var b = (sender as PartManager.PartBinding).Data as NodeModel;
                     b.ChangeFigure();
@@ -61,7 +71,7 @@ namespace Graphs.ViewModels
         {
             get
             {
-                return new DelegateCommand<Object>((sender) =>
+                return new DelegateCommand<object>((sender) =>
                 {
                     var link = (sender as PartManager.PartBinding).Data as LinkModel;
                     link.IsOriented = !link.IsOriented;
@@ -147,7 +157,7 @@ namespace Graphs.ViewModels
         {
             get
             {
-                return new DelegateCommand<Object>((sender) =>
+                return new DelegateCommand<object>((sender) =>
                 {
                     if (Model == null) return;
                     try
@@ -207,7 +217,101 @@ namespace Graphs.ViewModels
             }
         }
 
-        private String LoadFromFile()
+
+        #region Menu Commands 
+        public DelegateCommand LoadAdjencyMatrixCommand { get; }
+
+        public DelegateCommand SaveAdjencyMatrixCommand { get; }
+
+        public DelegateCommand LoadIncidenceMatrixCommand { get; }
+
+        public DelegateCommand SaveIncidenceMatrixCommand { get; }
+
+        #endregion
+
+
+        #region Menu Actions
+
+        private void LoadAdjencyMatrix()
+        {
+            var openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "Adjency matrix (*.adm)|*.adm";
+
+            if (openFileDialog.ShowDialog() != true) return;
+
+            try
+            {
+                var filePath = openFileDialog.FileName;
+                var result = MainModel.LoadAdjencyMatrix(filePath);
+                UpdateMatrix(result.Key, result.Value);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message, "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void SaveAdjencyMatrix()
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "Adjency matrix (*.adm)|*.adm";
+            if (saveFileDialog.ShowDialog() == true)
+                try
+                {
+                    MainModel.SaveAdjencyMatrix(saveFileDialog.FileName, Model);
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.Message, "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+
+        }
+
+        private void LoadIncidenceMatrix()
+        {
+            var openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "Incidence matrix (*.inm)|*.inm";
+
+            if (openFileDialog.ShowDialog() != true) return;
+
+            try
+            {
+                var filePath = openFileDialog.FileName;
+                var result = MainModel.LoadIncidenceMatrix(filePath);
+                UpdateMatrix(result.Key, result.Value);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message, "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void SaveIncidenceMatrix()
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "Incidence matrix (*.inm)|*.inm";
+            if (saveFileDialog.ShowDialog() == true)
+                try
+                {
+                    MainModel.SaveIncidenceMatrix(saveFileDialog.FileName, Model);
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.Message, "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+
+        }
+
+        #endregion
+
+        private void UpdateMatrix(IEnumerable<NodeModel> nodes, IEnumerable<LinkModel> links)
+        {
+            Model.NodesSource = new ObservableCollection<NodeModel>(nodes);
+            Model.LinksSource = new ObservableCollection<LinkModel>(links);
+        }
+
+
+        private string LoadFromFile()
         {
             var fileContent = string.Empty;
             var filePath = string.Empty;
