@@ -1,0 +1,12 @@
+Vertex{test(97,246)}
+Vertex{test(-172,50)}
+Vertex{test(124,175)}
+Vertex{test(-95,208)}
+Vertex{te(-215,126)}
+Vertex{xxxx(112,500)}
+1 0 0 transition 0 0 
+0 1 0 0 0 0 
+0 0 1 0 0 0 
+transition 0 0 1 0 0 
+0 0 0 0 1 0 
+0 0 0 0 0 0 
