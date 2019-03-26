@@ -7,10 +7,10 @@ using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using System.Xml.Linq;
 using DevExpress.Mvvm;
-using Graph.sources.mvvm.models;
-using Graphs.Helpers;
-using Graphs.Models;
-using Graphs.Tools;
+using Graphs.Sources.Helpers;
+using Graphs.Sources.Models;
+using Graphs.Sources.Tasks;
+using Graphs.Sources.Tools;
 using Northwoods.GoXam;
 using Northwoods.GoXam.Model;
 using MessageBox = System.Windows.MessageBox;
@@ -18,7 +18,7 @@ using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
 
 
-namespace Graphs.ViewModels
+namespace Graphs.Sources.ViewModels
 {
     class MainViewModel : ViewModelBase
     {

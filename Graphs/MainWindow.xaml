@@ -5,14 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:go="http://schemas.nwoods.com/GoXam"
         xmlns:local="clr-namespace:Graphs"
-        xmlns:viewModels="clr-namespace:Graphs.ViewModels"
-        xmlns:models="clr-namespace:Graphs.Models"
-        xmlns:converters="clr-namespace:Graphs.Converters"
+        xmlns:converters="clr-namespace:Graphs.Sources.Converters"
+        xmlns:viewModels="clr-namespace:Graphs.Sources.ViewModels"
+        xmlns:models="clr-namespace:Graphs.Sources.Models"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
 
     <Window.Resources>
-        <local:LinkDirectionConverter x:Key="LinkDirectionConverter" />
+        <converters:LinkDirectionConverter x:Key="LinkDirectionConverter" />
         <converters:PartSelectionConverter x:Key="PartSelectionConverter" />
         <viewModels:MainViewModel x:Key="Vm" />
         <RadialGradientBrush x:Key="theNodeBrush">

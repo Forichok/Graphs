@@ -71,15 +71,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Converters\PartSelectionConverter.cs" />
-    <Compile Include="Helpers\NodeFigureCreator.cs" />
-    <Compile Include="Helpers\NodeNameCreator.cs" />
-    <Compile Include="Converters\LinkDirectionConverter.cs" />
-    <Compile Include="Models\LinkModel.cs" />
-    <Compile Include="Models\NodeModel.cs" />
-    <Compile Include="Tasks\MainModel.cs" />
-    <Compile Include="Tools\CustomPartManager.cs" />
-    <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="Sources\Converters\PartSelectionConverter.cs" />
+    <Compile Include="Sources\Helpers\NodeFigureCreator.cs" />
+    <Compile Include="Sources\Helpers\NodeNameCreator.cs" />
+    <Compile Include="Sources\Converters\LinkDirectionConverter.cs" />
+    <Compile Include="Sources\Models\LinkModel.cs" />
+    <Compile Include="Sources\Models\NodeModel.cs" />
+    <Compile Include="Sources\Tasks\MainModel.cs" />
+    <Compile Include="Sources\Tools\CustomPartManager.cs" />
+    <Compile Include="Sources\ViewModels\MainViewModel.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

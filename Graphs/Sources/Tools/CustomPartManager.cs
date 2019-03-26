@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Windows;
-using Graphs.Models;
+using Graphs.Sources.Models;
 using Northwoods.GoXam;
 
-namespace Graphs.Tools
+namespace Graphs.Sources.Tools
 {
     public class CustomPartManager : PartManager
     {
