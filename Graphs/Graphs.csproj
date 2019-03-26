@@ -78,7 +78,6 @@
     <Compile Include="Models\LinkModel.cs" />
     <Compile Include="Models\NodeModel.cs" />
     <Compile Include="Tools\CustomPartManager.cs" />
-    <Compile Include="Tools\SimpleLabelDraggingTool.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

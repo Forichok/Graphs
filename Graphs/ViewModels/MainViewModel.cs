@@ -71,9 +71,6 @@ namespace Graphs.ViewModels
             }
         }
 
-        // This event handler is called from the Button that is in the Adornment
-        // shown for a node when it is selected
-
         public ICommand AddNewNodeCommand
         {
             get
@@ -173,8 +170,6 @@ namespace Graphs.ViewModels
             }
         }
 
-        // only use the saved route points after the layout has completed,
-        // because links will get the default routing
         public ICommand SaveCommand
         {
             get
@@ -194,7 +189,7 @@ namespace Graphs.ViewModels
                     XElement root = Model.Save<NodeModel, LinkModel>("StateChart", "NodeModel", "LinkModel");
                     SaveFileDialog saveFileDialog1 = new SaveFileDialog();
 
-                    saveFileDialog1.Filter = "All files (*.*)|*.*|xml files (*.xml)|*.xml";
+                    saveFileDialog1.Filter = "Xml files (*.xml)|*.xml";
                     saveFileDialog1.FilterIndex = 2;
                     saveFileDialog1.RestoreDirectory = true;
 
@@ -219,7 +214,7 @@ namespace Graphs.ViewModels
 
             var openFileDialog = new OpenFileDialog();
             openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-            openFileDialog.Filter = "All files (*.*)|*.*|xml files (*.xml)|*.xml";
+            openFileDialog.Filter = "Xml files (*.xml)|*.xml";
             openFileDialog.FilterIndex = 2;
             openFileDialog.RestoreDirectory = true;
             if (openFileDialog.ShowDialog() == true)

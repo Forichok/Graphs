@@ -103,7 +103,7 @@
                     <ContextMenu>
                         <MenuItem Header="Direction">
                             <MenuItem Header="Reverse" Command="{Binding Source={StaticResource Vm},Path=ReverseMenuCommand}" CommandParameter="{Binding}"/>
-                            <MenuItem Header="Change Link Type" Command="{Binding Source={StaticResource Vm},Path=ChangeLinkDirectionMenuCommand}" CommandParameter="{Binding}"/>
+                            <MenuItem Header="Switch orientated" IsCheckable="True" Command="{Binding Source={StaticResource Vm},Path=ChangeLinkDirectionMenuCommand}" CommandParameter="{Binding}"/>
                         </MenuItem>
                         <MenuItem Command="Delete" />
                     </ContextMenu>
@@ -123,16 +123,34 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            <TextBlock Grid.Row="0" Margin="5"
-                       Text="Double-click in background to create a new node;
-click on text of selected node or link to edit in-place" />
-            <StackPanel Grid.Row="0" Orientation="Horizontal"
-                        HorizontalAlignment="Right" VerticalAlignment="Top">
-                <Button Content="Save" Command="{Binding SaveCommand}" CommandParameter="{Binding ElementName=myDiagram}"/>
-                <Button Content="Load" Click="Load_Click"/>
-                <Button Content="Save as image" Command="{Binding Source={StaticResource Vm},Path=SaveAsImageCommand}"
-                        CommandParameter="{Binding ElementName=myDiagram}"></Button>
-            </StackPanel>
+
+
+            <Menu>
+                <MenuItem Header="File">
+                    <MenuItem Header="Adjacency matrix">
+                        <MenuItem Header="Load Adjency matrix" Command="{Binding LoadAdjencyMatrixCommand}"/>
+                        <MenuItem Header="Save Adjency matrix" Command="{Binding SaveAdjencyMatrixCommand}"/>
+                    </MenuItem>
+                    <MenuItem Header="Incidence matrix">
+                        <MenuItem Header="Load Incidence matrix" Command="{Binding LoadIncidenceMatrixCommand}"/>
+                        <MenuItem Header="Save Incidence matrix" Command="{Binding SaveIncidenceMatrixCommand}"/>
+                    </MenuItem>
+                    <MenuItem Header="Save as image" Command="{Binding Source={StaticResource Vm},Path=SaveAsImageCommand}"
+                              CommandParameter="{Binding ElementName=myDiagram}"/>
+                    <MenuItem Header="Save universal" Command="{Binding SaveCommand}" CommandParameter="{Binding ElementName=myDiagram}"/>
+                    <MenuItem Header="Load universal" Command="{Binding LoadCommand}" CommandParameter="{Binding ElementName=myDiagram}"/>
+                </MenuItem>
+
+                <MenuItem Header="Tasks">
+
+                </MenuItem>
+
+                <MenuItem Header="About">
+                    <MenuItem Header="Help"/>
+                    <MenuItem Header="About"/>
+                </MenuItem>
+            </Menu>
+
             <go:Diagram Grid.Row="1" x:Name="myDiagram"
                         Padding="10"
                         InitialPanelSpot="Center"
