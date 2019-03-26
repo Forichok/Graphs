@@ -134,6 +134,8 @@ namespace Graphs.Sources.Tasks
             return result;
         }
 
+
+
         public static KeyValuePair<IEnumerable<NodeModel>, IEnumerable<LinkModel>> LoadIncidenceMatrix(string filePath)
         {
             var resultWithoutComments = ReadWithoutComments(filePath);
@@ -192,32 +194,74 @@ namespace Graphs.Sources.Tasks
                     }
                 }
 
-                //normalize list of nodes
-                for (int i = vertexCount; i < matrix.First().Count; i++)
-                {
-                    var NodeModel = new NodeModel(i.ToString(), i.ToString());
-                    nodesList.Add(NodeModel);
-                }
+            }
 
-                for (int i = 0; i < matrix.Count; i++)
+            //normalize list of nodes
+            for (int i = vertexCount; i < matrix.First().Count; i++)
+            {
+                var NodeModel = new NodeModel(i.ToString(), i.ToString());
+                nodesList.Add(NodeModel);
+            }
+
+
+            for (int j = 0; j < matrix.Count; j++)
+            {
+                var resultList = new List<KeyValuePair<string, int>>();
+                for (int i = 0; i < matrix[j].Count; i++)
                 {
-                    for (int j = 0; j < matrix[0].Count; j++)
+                    if (matrix[j][i] != "0")
                     {
-
+                        resultList.Add(new KeyValuePair<string, int>(matrix[j][i], i));
                     }
                 }
+
+                if (resultList.Count == 0)
+                    continue;
+
+                if (resultList.Count != 2)
+                    throw new Exception("#Error in LoadIncidenceMatrix: links to more or less than 2 nodes");
+
+
+
+                var link = new LinkModel();
+
+                if(resultList[0].Key == "-1" && resultList[1].Key == "-1")
+                    throw new Exception("#Error in LoadIncidenceMatrix: more than two matches of -1 in column");
+
+
+                if (resultList[0].Key == "-1")
+                {
+                    link.To = nodesList[resultList[1].Value].Key;
+                    link.From = nodesList[resultList[0].Value].Key;
+                    link.Text = resultList[1].Key;
+                }
+                else if (resultList[1].Key == "-1")
+                {
+                    link.To = nodesList[resultList[0].Value].Key;
+                    link.From = nodesList[resultList[1].Value].Key;
+                    link.Text = resultList[0].Key;
+                }
+                else
+                {
+                    link.To = nodesList[resultList[1].Value].Key;
+                    link.From = nodesList[resultList[0].Value].Key;
+                    link.Text = resultList[1].Key;
+                    link.IsOriented = false;
+                }
+
+                linksList.Add(link);
 
             }
 
             return new KeyValuePair<IEnumerable<NodeModel>, IEnumerable<LinkModel>>(nodesList, linksList);
         }
 
-
         public static void SaveIncidenceMatrix(string fileName, GraphLinksModel<NodeModel, string, string, LinkModel> model)
         {
 
 
         }
+
 
         private static StringBuilder ReadWithoutComments(string filePath)
         {
