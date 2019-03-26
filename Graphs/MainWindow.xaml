@@ -60,12 +60,7 @@
                 <ContextMenuService.ContextMenu>
                     <ContextMenu>
                         <MenuItem Header="Change Figure" Command="{Binding Source={StaticResource Vm},Path=ChangeFigureMenuCommand}" CommandParameter="{Binding}"/>
-                        <MenuItem Command="Copy" />
-                        <MenuItem Command="Cut" />
-                        <MenuItem Command="Paste" />
                         <MenuItem Command="Delete" />
-                        <MenuItem Command="Undo" />
-                        <MenuItem Command="Redo" />
                     </ContextMenu>
                 </ContextMenuService.ContextMenu>
 
@@ -110,12 +105,7 @@
                             <MenuItem Header="Reverse" Command="{Binding Source={StaticResource Vm},Path=ReverseMenuCommand}" CommandParameter="{Binding}"/>
                             <MenuItem Header="Change Link Type" Command="{Binding Source={StaticResource Vm},Path=ChangeLinkDirectionMenuCommand}" CommandParameter="{Binding}"/>
                         </MenuItem>
-                        <MenuItem Command="Copy" />
-                        <MenuItem Command="Cut" />
-                        <MenuItem Command="Paste" />
                         <MenuItem Command="Delete" />
-                        <MenuItem Command="Undo" />
-                        <MenuItem Command="Redo" />
                     </ContextMenu>
                 </ContextMenuService.ContextMenu>
 
