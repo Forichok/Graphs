@@ -66,7 +66,7 @@ namespace Graphs.Sources.Tasks
                         throw new Exception("#Error in AdjencyMatrix: Lines have different sizes");
                     }
 
-                    for (int i = 0; i < splitedLine.Length; i++)
+                    for (var i = 0; i < splitedLine.Length; i++)
                     {
                         if (splitedLine[i] == "0")
                             continue;
@@ -96,9 +96,9 @@ namespace Graphs.Sources.Tasks
                 var links = (ObservableCollection<LinkModel>)model.LinksSource;
                 var matrix = CreateMatrix(links, nodes);
 
-                for (int i = 0; i < nodes.Count; i++)
+                for (var i = 0; i < nodes.Count; i++)
                 {
-                    for (int j = 0; j < nodes.Count; j++)
+                    for (var j = 0; j < nodes.Count; j++)
                     {
                         if (string.IsNullOrEmpty(matrix[i, j, 0]))
                             sw.Write($"0 ");
@@ -180,7 +180,7 @@ namespace Graphs.Sources.Tasks
                     if (checkSum == -1)
                     {
                         checkSum = splitedLine.Length;
-                        for (int i = 0; i < splitedLine.Length; i++)
+                        for (var i = 0; i < splitedLine.Length; i++)
                         {
                             matrix.Add(new List<string>());
                         }
@@ -188,7 +188,7 @@ namespace Graphs.Sources.Tasks
                     else if (checkSum != splitedLine.Length)
                         throw new Exception("#Error in AdjencyMatrix: Lines have different sizes");
 
-                    for (int i = 0; i < splitedLine.Length; i++)
+                    for (var i = 0; i < splitedLine.Length; i++)
                     {
                         matrix[i].Add(splitedLine[i]);
                     }
@@ -197,17 +197,17 @@ namespace Graphs.Sources.Tasks
             }
 
             //normalize list of nodes
-            for (int i = vertexCount; i < matrix.First().Count; i++)
+            for (var i = vertexCount; i < matrix.First().Count; i++)
             {
                 var NodeModel = new NodeModel(i.ToString(), i.ToString());
                 nodesList.Add(NodeModel);
             }
 
 
-            for (int j = 0; j < matrix.Count; j++)
+            for (var j = 0; j < matrix.Count; j++)
             {
                 var resultList = new List<KeyValuePair<string, int>>();
-                for (int i = 0; i < matrix[j].Count; i++)
+                for (var i = 0; i < matrix[j].Count; i++)
                 {
                     if (matrix[j][i] != "0")
                     {
@@ -258,8 +258,52 @@ namespace Graphs.Sources.Tasks
 
         public static void SaveIncidenceMatrix(string fileName, GraphLinksModel<NodeModel, string, string, LinkModel> model)
         {
+            using (var sw = new StreamWriter(fileName))
+            {
+                var nodes = (ObservableCollection<NodeModel>)model.NodesSource;
+                foreach (var node in nodes)
+                {
+                    sw.WriteLine($"Vertex{{{node.Text}({(int)node.Location.X},{(int)node.Location.Y})}}");
+                }
+
+                var links = (ObservableCollection<LinkModel>)model.LinksSource;
+                var matrix = CreateIncidenceMatrix(links, nodes);
+
+                for (var i = 0; i < nodes.Count; i++)
+                {
+                    for (var j = 0; j < links.Count; j++)
+                    {
+                        if (string.IsNullOrEmpty(matrix[i, j, 0]))
+                            sw.Write($"0 ");
+                        else
+                            sw.Write($"{matrix[i,j,0]} ");
+                    }
+                    sw.WriteLine();
+                }
 
 
+            }
+        }
+
+        private static string[ , , ] CreateIncidenceMatrix(IEnumerable<LinkModel> links, IEnumerable<NodeModel> nodes)
+        {
+            var result = new string [nodes.Count(), links.Count(), 1];
+
+            var nodesList = nodes.Select(i => i.Key).ToList();
+
+            var counter = 0;
+            foreach(var link in links)
+            {
+                var fromIndex = nodesList.IndexOf(link.From);
+                var toIndex = nodesList.IndexOf(link.To);
+
+                result[fromIndex, counter, 0] = link.IsOriented? "-1" : "1";
+                result[toIndex, counter, 0] = link.Text;
+
+                counter++;
+            }
+
+            return result;
         }
 
 

@@ -144,7 +144,7 @@ namespace Graphs.Sources.ViewModels
                                 diagram.Panel.Position = new Point(pos.X, pos.Y + 1);
                                 diagram.Panel.Position = pos;
 
-                                FileStream stream = new FileStream(l_dialog.FileName, FileMode.Create);
+                                FileStream stream = new FileStream(l_dialog.FileName + ".png", FileMode.Create);
                                 PngBitmapEncoder encoder = new PngBitmapEncoder();
                                 encoder.Frames.Add(BitmapFrame.Create(bmp));
                                 encoder.Save(stream);
