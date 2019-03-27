@@ -40,6 +40,10 @@ namespace Graphs.Sources.ViewModels
 
             LoadIncidenceMatrixCommand = new DelegateCommand(LoadIncidenceMatrix);
             SaveIncidenceMatrixCommand = new DelegateCommand(SaveIncidenceMatrix);
+
+            LoadByEdgesCommand = new DelegateCommand(LoadByEdges);
+            SaveByEdgesCommand = new DelegateCommand(SaveByEdges);
+
         }
 
         public ICommand ReverseMenuCommand
@@ -223,12 +227,13 @@ namespace Graphs.Sources.ViewModels
 
         #region Menu Commands 
         public DelegateCommand LoadAdjencyMatrixCommand { get; }
-
         public DelegateCommand SaveAdjencyMatrixCommand { get; }
 
         public DelegateCommand LoadIncidenceMatrixCommand { get; }
-
         public DelegateCommand SaveIncidenceMatrixCommand { get; }
+
+        public DelegateCommand LoadByEdgesCommand { get; }
+        public DelegateCommand SaveByEdgesCommand { get; }
 
         #endregion
 
@@ -305,6 +310,41 @@ namespace Graphs.Sources.ViewModels
 
         }
 
+    
+        private void LoadByEdges()
+        {
+            var openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "Edges input (*.edg)|*.edg";
+
+            if (openFileDialog.ShowDialog() != true) return;
+
+            try
+            {
+                var filePath = openFileDialog.FileName;
+                var result = MainModel.LoadIncidenceMatrix(filePath);
+                UpdateMatrix(result.Key, result.Value);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message, "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void SaveByEdges()
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "Edges input (*.edg)|*.edg";
+            if (saveFileDialog.ShowDialog() == true)
+                try
+                {
+                    MainModel.SaveByEdges(saveFileDialog.FileName, Model);
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.Message, "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+
+        }
         #endregion
 
         private void UpdateMatrix(IEnumerable<NodeModel> nodes, IEnumerable<LinkModel> links)

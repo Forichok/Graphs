@@ -73,7 +73,8 @@
                 <go:Link.Route>
                     <go:Route Curve="Bezier" Adjusting="Stretch"
                     RelinkableFrom="True" RelinkableTo="True"
-                    Curviness="{Binding Path=Data.Curviness}"  />
+                             Curviness="{Binding Curviness}"
+                              Corner="10"/>
                 </go:Link.Route>
                 <go:LinkShape x:Name="Path" StrokeThickness="3">
                     <go:LinkShape.Stroke>
@@ -90,7 +91,7 @@
                     <Rectangle>
                         <Shape.Fill>
                             <RadialGradientBrush>
-                                <GradientStop Offset="0.5" Color="White" />
+                                <GradientStop Offset="0.7" Color="White" />
                                 <GradientStop Offset="1" Color="Transparent" />
                             </RadialGradientBrush>
                         </Shape.Fill>
@@ -134,6 +135,10 @@
                     <MenuItem Header="Incidence matrix">
                         <MenuItem Header="Load Incidence matrix" Command="{Binding LoadIncidenceMatrixCommand}"/>
                         <MenuItem Header="Save Incidence matrix" Command="{Binding SaveIncidenceMatrixCommand}"/>
+                    </MenuItem>
+                    <MenuItem Header="By Edges">
+                        <MenuItem Header="Load by edges" Command="{Binding LoadByEdgesCommand}"/>
+                        <MenuItem Header="Save by edges" Command="{Binding SaveByEdgesCommand}"/>
                     </MenuItem>
                     <MenuItem Header="Save as image" Command="{Binding Source={StaticResource Vm},Path=SaveAsImageCommand}"
                               CommandParameter="{Binding ElementName=myDiagram}"/>

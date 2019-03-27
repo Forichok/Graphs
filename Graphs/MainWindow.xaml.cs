@@ -66,6 +66,7 @@ namespace Graphs
 
         private void Load_Click(object sender, RoutedEventArgs e)
         {
+            
             var model = myDiagram.Model as GraphLinksModel<NodeModel, string, string, LinkModel>;
             if (model == null) return;
             try

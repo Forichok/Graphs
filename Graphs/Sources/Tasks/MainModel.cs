@@ -21,7 +21,7 @@ namespace Graphs.Sources.Tasks
             var nodesList = new List<NodeModel>();
             var linksList = new List<LinkModel>();
 
-            var regex = new Regex(@"^Vertex{([\w]+)\(([-]*[\d]+),([-]*[\d]+)\)}$", RegexOptions.Compiled);
+            var regex = new Regex(@"^Vertex{([\w]+)\(([-]?[\d]+),([-]?[\d]+)\)}$", RegexOptions.Compiled);
 
             var lines = resultWithoutComments.ToString().Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
             var checkSum = -1;
@@ -143,7 +143,7 @@ namespace Graphs.Sources.Tasks
             var nodesList = new List<NodeModel>();
             var linksList = new List<LinkModel>();
 
-            var regex = new Regex(@"^Vertex{([\w]+)\(([-]*[\d]+),([-]*[\d]+)\)}$", RegexOptions.Compiled);
+            var regex = new Regex(@"^Vertex{([\w]+)\(([-]?[\d]+),([-]?[\d]+)\)}$", RegexOptions.Compiled);
 
             var lines = resultWithoutComments.ToString().Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -305,6 +305,51 @@ namespace Graphs.Sources.Tasks
 
             return result;
         }
+
+
+        public static void SaveByEdges(string fileName, GraphLinksModel<NodeModel, string, string, LinkModel> model)
+        {
+            using (var sw = new StreamWriter(fileName))
+            {
+                var nodes = (ObservableCollection<NodeModel>)model.NodesSource;
+                foreach (var node in nodes)
+                {
+                    sw.WriteLine($"Vertex{{{node.Text}({(int)node.Location.X},{(int)node.Location.Y})}}");
+                }
+
+                var links = (ObservableCollection<LinkModel>)model.LinksSource;
+
+                var sb = new StringBuilder();
+                var counter = 0; 
+                foreach (var link in links)
+                {
+                    if (counter % 5 == 0)
+                    {
+                        if(counter != 0)
+                        {
+                            sb.Append("}");
+                            sw.WriteLine(sb);
+                            sb.Clear();
+                        }
+                        sb.Append("Edges{");
+                    }
+
+                    var orientatedChar = link.IsOriented ? "1" : "0";
+                    sb.Append($"{counter}({link.Text},{link.From},{link.To},{orientatedChar})");
+                    if ((counter + 1) % 5 != 0 && counter + 1 != links.Count)
+                        sb.Append(',');
+
+                    counter++;
+                }
+
+                if (sb.Length != 0)
+                {
+                    sb.Append("}");
+                    sw.WriteLine(sb);
+                }
+            }
+        }
+
 
 
         private static StringBuilder ReadWithoutComments(string filePath)
