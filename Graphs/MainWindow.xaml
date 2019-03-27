@@ -10,6 +10,7 @@
         xmlns:viewModels="clr-namespace:Graphs.Sources.ViewModels"
         xmlns:models="clr-namespace:Graphs.Sources.Models"
         xmlns:system="clr-namespace:System;assembly=mscorlib"
+        
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
 
@@ -22,6 +23,7 @@
             <GradientStop Color="Lavender" Offset="1" />
         </RadialGradientBrush>
 
+   
         <!-- when a node is selected this Button appears -->
         <DataTemplate x:Key="StateSelectionTemplate">
             <go:SpotPanel>
@@ -183,8 +185,47 @@
                     </TabItem>
 
                     <TabItem Header="Matrix">
-<DataGrid ItemsSource="{Binding MyDataTable}" CanUserSortColumns="False" CellEditEnding="OnContentChanged"></DataGrid>
 
+                        <StackPanel>
+                            <ItemsControl ItemsSource="{Binding Data2D}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Horizontal" Margin="25,0,0,0"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Label Width="25" Content="{Binding Heading}" BorderThickness="1" BorderBrush="Black"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <ItemsControl ItemsSource="{Binding Data2D}" >
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel>
+                                            <StackPanel Orientation="Horizontal" >
+                                            <Label Width="25" Content="{Binding Heading}" BorderThickness="1" BorderBrush="Black"/>
+                                            <ItemsControl ItemsSource="{Binding Values}">
+                                                <ItemsControl.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <StackPanel Orientation="Horizontal"/>
+                                                    </ItemsPanelTemplate>
+                                                </ItemsControl.ItemsPanel>
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <TextBox Width="25"  Text="{Binding Path=Text,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" BorderThickness="1" BorderBrush="Black"/>
+
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </StackPanel>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
                     </TabItem>
                 </TabControl>
 

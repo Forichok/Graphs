@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -17,6 +19,8 @@ namespace Graphs
     /// </summary>
     public partial class MainWindow : Window
     {
+        public int[,] matrix { get; set; } = new int[5, 5];
+
         public MainWindow()
         {
             InitializeComponent();
@@ -34,6 +38,7 @@ namespace Graphs
             //myDiagram.LinkReshaped += MyDiagram_LinkDrawn;
 
             //myDiagram.LinkRelinked += MyDiagram_LinkDrawn;
+     
         }
 
         private void MyDiagram_LinkDrawn(object sender, DiagramEventArgs e)
