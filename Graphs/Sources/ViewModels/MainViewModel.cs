@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows;
-using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using System.Xml.Linq;
 using DevExpress.Mvvm;
@@ -33,7 +32,7 @@ namespace Graphs.Sources.ViewModels
                 HasUndoManager = true
             };
             PartManager = new CustomPartManager();
-             
+
 
             LoadAdjencyMatrixCommand = new DelegateCommand(LoadAdjencyMatrix);
             SaveAdjencyMatrixCommand = new DelegateCommand(SaveAdjencyMatrix);
@@ -44,185 +43,100 @@ namespace Graphs.Sources.ViewModels
             LoadByEdgesCommand = new DelegateCommand(LoadByEdges);
             SaveByEdgesCommand = new DelegateCommand(SaveByEdges);
 
+            ExitCommand = new DelegateCommand(Exit);
+
+
+            ReverseMenuCommand = new DelegateCommand<object>(ReverseMenu);
+            ChangeLinkDirectionMenuCommand = new DelegateCommand<object>(ChangeLinkDirectionMenu);
+
+            ChangeFigureMenuCommand = new DelegateCommand<object>(ChangeFigureMenu);
+            AddNewNodeCommand = new DelegateCommand<PartManager.PartBinding>(AddNewNode);
+
+            SaveAsImageCommand = new DelegateCommand<Diagram>(SaveAsImage);
+            LoadCommand = new DelegateCommand(LoadUniversal);
+            SaveCommand = new DelegateCommand<Diagram>(SaveUniversal);
         }
 
-        public ICommand ReverseMenuCommand
+
+        #region link context menu commands
+
+        public DelegateCommand<object> ReverseMenuCommand { get; }
+
+        public DelegateCommand<object> ChangeLinkDirectionMenuCommand { get; }
+
+        #endregion
+
+
+        #region Links context menu actions
+
+        private void ReverseMenu(object sender)
         {
-            get
-            {
-                return new DelegateCommand<object>((sender) =>
-                {
-                    var link = (sender as PartManager.PartBinding).Data as LinkModel;
-                    var tmpStr = link.From;
-                    link.From = link.To;
-                    link.To = tmpStr;
-                });
-            }
+            var link = (sender as PartManager.PartBinding).Data as LinkModel;
+            var tmpStr = link.From;
+            link.From = link.To;
+            link.To = tmpStr;
         }
 
-        public ICommand ChangeFigureMenuCommand
+        private void ChangeLinkDirectionMenu(object sender)
         {
-            get
-            {
-                return new DelegateCommand<object>((sender) =>
-                {
-                    var b = (sender as PartManager.PartBinding).Data as NodeModel;
-                    b.ChangeFigure();
-                });
-            }
+            var link = (sender as PartManager.PartBinding).Data as LinkModel;
+            link.IsOriented = !link.IsOriented;
+            Model.RemoveLink(link);
+            Model.AddLink(link); //?? better way to update??
         }
+        #endregion
 
-        public ICommand ChangeLinkDirectionMenuCommand
+
+        #region node context menu commands
+
+        public DelegateCommand<object> ChangeFigureMenuCommand { get; }
+
+        public DelegateCommand<PartManager.PartBinding> AddNewNodeCommand { get; }
+
+        #endregion
+
+
+        #region node context menu commands
+        private void ChangeFigureMenu(object sender)
         {
-            get
-            {
-                return new DelegateCommand<object>((sender) =>
-                {
-                    var link = (sender as PartManager.PartBinding).Data as LinkModel;
-                    link.IsOriented = !link.IsOriented;
-                    Model.RemoveLink(link);
-                    Model.AddLink(link); //?? better way to update??
-                });
-            }
+            var b = (sender as PartManager.PartBinding).Data as NodeModel;
+            b.ChangeFigure();
         }
 
-        public ICommand AddNewNodeCommand
+        private void AddNewNode(PartManager.PartBinding sender)
         {
-            get
+            var myDiagram = sender.Part.Diagram;
+            var ad = Part.FindAncestor<Adornment>(sender.Part.SelectionElement); //e.OriginalSource as UIElement
+            if (ad == null) return;
+            // its AdornedPart should be a Node that is bound to a NodeModel object
+            var from = ad.AdornedPart.Data as NodeModel;
+            if (from == null) return;
+            // make all changes to the model within a transaction
+            myDiagram.StartTransaction("Add NodeModel");
+            // create a new NodeModel, add it to the model, and create a link from
+            // the selected node data to the new node data
+
+            var key = NodeKeyCreator.GetNodeName();
+            var to = new NodeModel(key, key);
+            //  to.Text = "new";
+            var p = from.Location;
+            //?? this isn't a very smart way to decide where to place the node
+            to.Location = new Point(p.X + 200, p.Y);
+            myDiagram.Model.AddNode(to);
+            var newnode = myDiagram.PartManager.FindNodeForData(to, myDiagram.Model);
+            myDiagram.Select(newnode);
+            EventHandler<DiagramEventArgs> show = null;
+            show = (snd, evt) =>
             {
-                return new DelegateCommand<PartManager.PartBinding>((sender) =>
-                {
-                    Diagram myDiagram = sender.Part.Diagram;
-                    Adornment ad = Part.FindAncestor<Adornment>(sender.Part.SelectionElement); //e.OriginalSource as UIElement
-                    if (ad == null) return;
-                    // its AdornedPart should be a Node that is bound to a NodeModel object
-                    NodeModel from = ad.AdornedPart.Data as NodeModel;
-                    if (from == null) return;
-                    // make all changes to the model within a transaction
-                    myDiagram.StartTransaction("Add NodeModel");
-                    // create a new NodeModel, add it to the model, and create a link from
-                    // the selected node data to the new node data
+                myDiagram.Panel.MakeVisible(newnode, Rect.Empty);
+                myDiagram.LayoutCompleted -= show;
+            };
+            myDiagram.LayoutCompleted += show;
+            myDiagram.Model.AddLink(from, null, to, null);
 
-                    var key = NodeKeyCreator.GetNodeName();
-                    NodeModel to = new NodeModel(key, key);
-                    //  to.Text = "new";
-                    Point p = from.Location;
-                    //?? this isn't a very smart way to decide where to place the node
-                    to.Location = new Point(p.X + 200, p.Y);
-                    myDiagram.Model.AddNode(to);
-                    Node newnode = myDiagram.PartManager.FindNodeForData(to, myDiagram.Model);
-                    myDiagram.Select(newnode);
-                    EventHandler<DiagramEventArgs> show = null;
-                    show = (snd, evt) =>
-                    {
-                        myDiagram.Panel.MakeVisible(newnode, Rect.Empty);
-                        myDiagram.LayoutCompleted -= show;
-                    };
-                    myDiagram.LayoutCompleted += show;
-                    myDiagram.Model.AddLink(from, null, to, null);
-
-                    myDiagram.CommitTransaction("Add NodeModel");
-                });
-            }
+            myDiagram.CommitTransaction("Add NodeModel");
         }
-
-        public ICommand SaveAsImageCommand
-        {
-            get
-            {
-                return new DelegateCommand<Diagram>((diagram) =>
-                {
-                    Rect b = diagram.Panel.DiagramBounds;
-
-                    SaveFileDialog l_dialog = new SaveFileDialog();
-
-
-                    bool? dialogResult = l_dialog.ShowDialog();
-
-                    if (dialogResult == true)
-                    {
-                        var image = diagram.Panel.MakeBitmap(new Size(b.Width, b.Height), 96, new Point(b.X, b.Y), 1,
-                            bmp =>
-                            {
-                                var pos = diagram.Panel.Position;
-                                diagram.Panel.Position = new Point(pos.X, pos.Y + 1);
-                                diagram.Panel.Position = pos;
-
-                                FileStream stream = new FileStream(l_dialog.FileName + ".png", FileMode.Create);
-                                PngBitmapEncoder encoder = new PngBitmapEncoder();
-                                encoder.Frames.Add(BitmapFrame.Create(bmp));
-                                encoder.Save(stream);
-                                stream.Close();
-                            });
-                    }
-
-                });
-            }
-        }
-
-        public ICommand LoadCommand
-        {
-            get
-            {
-                return new DelegateCommand<object>((sender) =>
-                {
-                    if (Model == null) return;
-                    try
-                    {
-                        XElement root = XElement.Parse(LoadFromFile());
-                        // set the Route.Points after nodes have been built and the layout has finished
-                        //myDiagram.LayoutCompleted += UpdateRoutes;
-                        // tell the CustomPartManager that we're loading
-                        //PartManager.UpdatesRouteDataPoints = false;
-                        Model.Load<NodeModel, LinkModel>(root, "NodeModel", "LinkModel");
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show(ex.ToString());
-                    }
-
-                    Model.IsModified = false;
-
-                });
-            }
-        }
-
-        public ICommand SaveCommand
-        {
-            get
-            {
-                return new DelegateCommand<Diagram>((myDiagram) =>
-                {
-                    if (Model == null) return;
-                    // copy the Route.Points into each LinkModel data
-                    foreach (Link link in myDiagram.Links)
-                    {
-                        LinkModel linkModel = link.Data as LinkModel;
-                        if (linkModel != null)
-                        {
-                            linkModel.Points = new List<Point>(link.Route.Points);
-                        }
-                    }
-                    XElement root = Model.Save<NodeModel, LinkModel>("StateChart", "NodeModel", "LinkModel");
-                    SaveFileDialog saveFileDialog1 = new SaveFileDialog();
-
-                    saveFileDialog1.Filter = "Xml files (*.xml)|*.xml";
-                    saveFileDialog1.FilterIndex = 2;
-                    saveFileDialog1.RestoreDirectory = true;
-
-                    if (saveFileDialog1.ShowDialog() == true)
-                    {
-                        using (var sw = new StreamWriter(saveFileDialog1.FileName))
-                        {
-                            sw.Write(root.ToString());
-                        }
-                    }
-                    
-                    Model.IsModified = false;
-
-                });
-            }
-        }
+        #endregion
 
 
         #region Menu Commands 
@@ -234,6 +148,17 @@ namespace Graphs.Sources.ViewModels
 
         public DelegateCommand LoadByEdgesCommand { get; }
         public DelegateCommand SaveByEdgesCommand { get; }
+
+        public DelegateCommand<Diagram> SaveAsImageCommand { get; }
+
+
+        public DelegateCommand LoadCommand { get; }
+
+        public DelegateCommand<Diagram> SaveCommand { get; }
+
+
+
+        public DelegateCommand ExitCommand { get; }
 
         #endregion
 
@@ -261,12 +186,14 @@ namespace Graphs.Sources.ViewModels
 
         private void SaveAdjencyMatrix()
         {
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            var saveFileDialog = new SaveFileDialog();
             saveFileDialog.Filter = "Adjency matrix (*.adm)|*.adm";
             if (saveFileDialog.ShowDialog() == true)
                 try
                 {
                     MainModel.SaveAdjencyMatrix(saveFileDialog.FileName, Model);
+                    Model.IsModified = false;
+
                 }
                 catch (Exception e)
                 {
@@ -296,12 +223,14 @@ namespace Graphs.Sources.ViewModels
 
         private void SaveIncidenceMatrix()
         {
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            var saveFileDialog = new SaveFileDialog();
             saveFileDialog.Filter = "Incidence matrix (*.inm)|*.inm";
             if (saveFileDialog.ShowDialog() == true)
                 try
                 {
                     MainModel.SaveIncidenceMatrix(saveFileDialog.FileName, Model);
+                    Model.IsModified = false;
+
                 }
                 catch (Exception e)
                 {
@@ -310,7 +239,6 @@ namespace Graphs.Sources.ViewModels
 
         }
 
-    
         private void LoadByEdges()
         {
             var openFileDialog = new OpenFileDialog();
@@ -332,12 +260,13 @@ namespace Graphs.Sources.ViewModels
 
         private void SaveByEdges()
         {
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            var saveFileDialog = new SaveFileDialog();
             saveFileDialog.Filter = "Edges input (*.edg)|*.edg";
             if (saveFileDialog.ShowDialog() == true)
                 try
                 {
                     MainModel.SaveByEdges(saveFileDialog.FileName, Model);
+                    Model.IsModified = false;
                 }
                 catch (Exception e)
                 {
@@ -345,14 +274,109 @@ namespace Graphs.Sources.ViewModels
                 }
 
         }
+
+
+        private void SaveAsImage(Diagram diagram)
+        {
+            var b = diagram.Panel.DiagramBounds;
+
+            var l_dialog = new SaveFileDialog();
+
+
+            var dialogResult = l_dialog.ShowDialog();
+
+            if (dialogResult == true)
+            {
+                var image = diagram.Panel.MakeBitmap(new Size(b.Width, b.Height), 96, new Point(b.X, b.Y), 1,
+                    bmp =>
+                    {
+                        var pos = diagram.Panel.Position;
+                        diagram.Panel.Position = new Point(pos.X, pos.Y + 1);
+                        diagram.Panel.Position = pos;
+
+                        var stream = new FileStream(l_dialog.FileName + ".png", FileMode.Create);
+                        var encoder = new PngBitmapEncoder();
+                        encoder.Frames.Add(BitmapFrame.Create(bmp));
+                        encoder.Save(stream);
+                        stream.Close();
+                    });
+            }
+        }
+
+        private void LoadUniversal()
+        {
+            if (Model == null) return;
+            try
+            {
+                var root = XElement.Parse(LoadFromFile());
+                // set the Route.Points after nodes have been built and the layout has finished
+                //myDiagram.LayoutCompleted += UpdateRoutes;
+                // tell the CustomPartManager that we're loading
+                //PartManager.UpdatesRouteDataPoints = false;
+                Model.Load<NodeModel, LinkModel>(root, "NodeModel", "LinkModel");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+
+            Model.IsModified = false;
+        }
+
+        private void SaveUniversal(Diagram myDiagram)
+        {
+            if (Model == null) return;
+            // copy the Route.Points into each LinkModel data
+            foreach (var link in myDiagram.Links)
+            {
+                var linkModel = link.Data as LinkModel;
+                if (linkModel != null)
+                {
+                    linkModel.Points = new List<Point>(link.Route.Points);
+                }
+            }
+            var root = Model.Save<NodeModel, LinkModel>("StateChart", "NodeModel", "LinkModel");
+            var saveFileDialog1 = new SaveFileDialog();
+
+            saveFileDialog1.Filter = "Xml files (*.xml)|*.xml";
+            saveFileDialog1.FilterIndex = 2;
+            saveFileDialog1.RestoreDirectory = true;
+
+            if (saveFileDialog1.ShowDialog() == true)
+            {
+                using (var sw = new StreamWriter(saveFileDialog1.FileName))
+                {
+                    sw.Write(root.ToString());
+                }
+            }
+
+            Model.IsModified = false;
+        }
+
+        private void Exit()
+        {
+            if (Model.IsModified)
+            {
+                var result = MessageBox.Show("You have unsaved changes, do you want to save it in xml?", "Are you sure?", MessageBoxButton.YesNo);
+                switch (result)
+                {
+                    case MessageBoxResult.Yes:
+
+                        break;
+                }
+
+            }
+            if (Application.Current.MainWindow != null) Application.Current.MainWindow.Close();
+        }
         #endregion
+
+        
 
         private void UpdateMatrix(IEnumerable<NodeModel> nodes, IEnumerable<LinkModel> links)
         {
             Model.NodesSource = new ObservableCollection<NodeModel>(nodes);
             Model.LinksSource = new ObservableCollection<LinkModel>(links);
         }
-
 
         private string LoadFromFile()
         {
@@ -372,7 +396,7 @@ namespace Graphs.Sources.ViewModels
                 //Read the contents of the file into a stream
                 var fileStream = openFileDialog.OpenFile();
 
-                using (StreamReader reader = new StreamReader(fileStream))
+                using (var reader = new StreamReader(fileStream))
                 {
                     fileContent = reader.ReadToEnd();
                 }

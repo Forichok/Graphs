@@ -7,8 +7,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
 using DevExpress.Mvvm;
-using DevExpress.Mvvm.Native;
-using Graphs.Sources.Helpers;
 using Graphs.Sources.Models;
 using Northwoods.GoXam.Model;
 

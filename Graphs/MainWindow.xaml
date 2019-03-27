@@ -144,6 +144,7 @@
                               CommandParameter="{Binding ElementName=myDiagram}"/>
                     <MenuItem Header="Save universal" Command="{Binding SaveCommand}" CommandParameter="{Binding ElementName=myDiagram}"/>
                     <MenuItem Header="Load universal" Command="{Binding LoadCommand}" CommandParameter="{Binding ElementName=myDiagram}"/>
+                    <MenuItem Header="Exit" Command="{Binding ExitCommand}"/>
                 </MenuItem>
 
                 <MenuItem Header="Tasks">

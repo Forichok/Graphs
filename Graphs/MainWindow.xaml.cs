@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
-using System.Xml.Linq;
 using Graphs.Sources.Helpers;
 using Graphs.Sources.Models;
-using Microsoft.Win32;
 using Northwoods.GoXam;
 using Northwoods.GoXam.Model;
 
@@ -61,58 +57,6 @@ namespace Graphs
             nodeModel.Text = key;
             nodeModel.Key = key;
         }
-
-        // save and load the model data as XML, visible in the "Saved" tab of the Demo       
-
-        private void Load_Click(object sender, RoutedEventArgs e)
-        {
-            
-            var model = myDiagram.Model as GraphLinksModel<NodeModel, string, string, LinkModel>;
-            if (model == null) return;
-            try
-            {
-                var root = XElement.Parse(LoadFromFile());
-                // set the Route.Points after nodes have been built and the layout has finished
-                myDiagram.LayoutCompleted += UpdateRoutes;
-                // tell the CustomPartManager that we're loading
-                myDiagram.PartManager.UpdatesRouteDataPoints = false;
-                model.Load<NodeModel, LinkModel>(root, "NodeModel", "LinkModel");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-
-            model.IsModified = false;
-        }
-
-        private string LoadFromFile()
-        {
-            var fileContent = string.Empty;
-            var filePath = string.Empty;
-
-            var openFileDialog = new OpenFileDialog();
-            openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-            openFileDialog.Filter = "All files (*.*)|*.*|xml files (*.xml)|*.xml";
-            openFileDialog.FilterIndex = 2;
-            openFileDialog.RestoreDirectory = true;
-            if (openFileDialog.ShowDialog() == true)
-            {
-                //Get the path of specified file
-                filePath = openFileDialog.FileName;
-
-                //Read the contents of the file into a stream
-                var fileStream = openFileDialog.OpenFile();
-
-                using (var reader = new StreamReader(fileStream))
-                {
-                    fileContent = reader.ReadToEnd();
-                }
-            }
-
-            return fileContent;
-        }
-
 
         // only use the saved route points after the layout has completed,
         // because links will get the default routing
