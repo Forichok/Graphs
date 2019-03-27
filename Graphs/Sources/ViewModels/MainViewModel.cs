@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using System.Xml.Linq;
@@ -116,7 +117,8 @@ namespace Graphs.Sources.ViewModels
             // create a new NodeModel, add it to the model, and create a link from
             // the selected node data to the new node data
 
-            var key = NodeKeyCreator.GetNodeName();
+            var list = MainModel.NodesModelToArr(myDiagram.Model.NodesSource.Cast<NodeModel>());
+            var key = NodeKeyCreator.GetNodeName(list);
             var to = new NodeModel(key, key);
             //  to.Text = "new";
             var p = from.Location;

@@ -140,10 +140,12 @@
                         <MenuItem Header="Load by edges" Command="{Binding LoadByEdgesCommand}"/>
                         <MenuItem Header="Save by edges" Command="{Binding SaveByEdgesCommand}"/>
                     </MenuItem>
+                    <MenuItem Header="Universal">
+                        <MenuItem Header="Load universal" Command="{Binding LoadCommand}" CommandParameter="{Binding ElementName=myDiagram}"/>
+                        <MenuItem Header="Save universal" Command="{Binding SaveCommand}" CommandParameter="{Binding ElementName=myDiagram}"/>
+                    </MenuItem>
                     <MenuItem Header="Save as image" Command="{Binding Source={StaticResource Vm},Path=SaveAsImageCommand}"
                               CommandParameter="{Binding ElementName=myDiagram}"/>
-                    <MenuItem Header="Save universal" Command="{Binding SaveCommand}" CommandParameter="{Binding ElementName=myDiagram}"/>
-                    <MenuItem Header="Load universal" Command="{Binding LoadCommand}" CommandParameter="{Binding ElementName=myDiagram}"/>
                     <MenuItem Header="Exit" Command="{Binding ExitCommand}"/>
                 </MenuItem>
 

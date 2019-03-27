@@ -3,6 +3,7 @@ using System.Linq;
 using System.Windows;
 using Graphs.Sources.Helpers;
 using Graphs.Sources.Models;
+using Graphs.Sources.Tasks;
 using Northwoods.GoXam;
 using Northwoods.GoXam.Model;
 
@@ -51,9 +52,9 @@ namespace Graphs
         private void MyDiagram_NodeCreated(object sender, DiagramEventArgs e)
         {
             var nodeModel = e.Part.Data as NodeModel;
-            var key = NodeKeyCreator.GetNodeName();
-            var d = myDiagram.Nodes;
-
+            var list = MainModel.NodesModelToArr(myDiagram.Model.NodesSource.Cast<NodeModel>());
+            var key = NodeKeyCreator.GetNodeName(list);
+        
             nodeModel.Text = key;
             nodeModel.Key = key;
         }

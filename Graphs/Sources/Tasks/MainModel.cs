@@ -446,6 +446,12 @@ namespace Graphs.Sources.Tasks
         }
 
 
+        public static IEnumerable<string> NodesModelToArr(IEnumerable<NodeModel> arr)
+        {
+            return arr.Select((t) => t.Text).ToList();
+        }
+
+
         private static StringBuilder ReadWithoutComments(string filePath)
         {
             var streamReader = new StreamReader(filePath);
