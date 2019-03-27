@@ -321,7 +321,7 @@ namespace Graphs.Sources.ViewModels
             try
             {
                 var filePath = openFileDialog.FileName;
-                var result = MainModel.LoadIncidenceMatrix(filePath);
+                var result = MainModel.LoadByEdges(filePath);
                 UpdateMatrix(result.Key, result.Value);
             }
             catch (Exception e)

@@ -7,6 +7,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
 using DevExpress.Mvvm;
+using DevExpress.Mvvm.Native;
+using Graphs.Sources.Helpers;
 using Graphs.Sources.Models;
 using Northwoods.GoXam.Model;
 
@@ -318,6 +320,8 @@ namespace Graphs.Sources.Tasks
                 }
 
                 var links = (ObservableCollection<LinkModel>)model.LinksSource;
+                var nodesNameList = ((ObservableCollection<NodeModel>) model.NodesSource).Select((t) => t.Text).ToList();
+                var nodesKeyList = ((ObservableCollection<NodeModel>) model.NodesSource).Select((t) => t.Key).ToList();
 
                 var sb = new StringBuilder();
                 var counter = 0; 
@@ -335,7 +339,10 @@ namespace Graphs.Sources.Tasks
                     }
 
                     var orientatedChar = link.IsOriented ? "1" : "0";
-                    sb.Append($"{counter}({link.Text},{link.From},{link.To},{orientatedChar})");
+                    var nameFrom = nodesNameList[nodesKeyList.IndexOf(link.From)];
+                    var nameTo = nodesNameList[nodesKeyList.IndexOf(link.To)];
+
+                    sb.Append($"{counter}({link.Text},{nameFrom},{nameTo},{orientatedChar})");
                     if ((counter + 1) % 5 != 0 && counter + 1 != links.Count)
                         sb.Append(',');
 
@@ -350,6 +357,95 @@ namespace Graphs.Sources.Tasks
             }
         }
 
+        public static KeyValuePair<IEnumerable<NodeModel>, IEnumerable<LinkModel>> LoadByEdges(string filePath)
+        {
+            var resultWithoutComments = ReadWithoutComments(filePath);
+
+            var nodesList = new List<NodeModel>();
+            var nodesNameList = new List<string>();
+            var linksList = new List<LinkModel>();
+
+            var vertexRegex = new Regex(@"^Vertex{([\w]+)\(([-]?[\d]+),([-]?[\d]+)\)}$", RegexOptions.Compiled);
+
+            var mainEdgesRegex = new Regex(@"^Edges{(.*)}$");
+            var edgesParamRegex = new Regex(@"([\d]+)\(([\d]+),([\w]+),([\w]+),(1|-1)\)");
+
+            var lines = resultWithoutComments.ToString().Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+
+            var vertexCount = 0;
+            foreach (var line in lines)
+            {
+                if (vertexRegex.IsMatch(line))
+                {
+                    var groups = vertexRegex.Match(line).Groups;
+                    var name = groups[1].Value;
+                    var x = int.Parse(groups[2].Value);
+                    var y = int.Parse(groups[3].Value);
+
+                    if (nodesList.Count - 1 < vertexCount)
+                    {
+                        var NodeModel = new NodeModel(vertexCount.ToString(), name) { Location = new Point(x, y) };
+                        nodesList.Add(NodeModel);
+                        nodesNameList.Add(name);
+                    }
+                    else
+                    {
+                        nodesList[vertexCount].Location = new Point(x, y);
+                        nodesList[vertexCount].Text = name;
+                        nodesNameList[vertexCount] = name;
+
+                    }
+                    vertexCount++;
+                }
+                else if (mainEdgesRegex.IsMatch(line))
+                {
+                    var commands = mainEdgesRegex.Match(line).Value;
+
+                    var matches = edgesParamRegex.Matches(commands);
+                    if (matches.Count == 0)
+                        throw new Exception("#Error in load by edges: bad command params in file");
+
+                    foreach (Match m in matches)
+                    {
+                        var groups = m.Groups;
+
+                        var text = groups[2].Value;
+                        var from = groups[3].Value;
+                        var to = groups[4].Value;
+
+                        var fromIndex = nodesNameList.IndexOf(from);
+                        var toIndex = nodesNameList.IndexOf(to);
+
+                        var isOrientated = groups[5].Value == "1";
+
+                        if (!nodesNameList.Contains(from))
+                        {
+                            var nodeModel = new NodeModel(from, from);
+                            nodesList.Add(nodeModel);
+                            nodesNameList.Add(from);
+                        }
+
+                        if (!nodesNameList.Contains(to))
+                        {
+                            var nodeModel = new NodeModel(to, to);
+                            nodesList.Add(nodeModel);
+                            nodesNameList.Add(to);
+                        }
+
+                        var link = new LinkModel(fromIndex.ToString(), toIndex.ToString(), text) {IsOriented = isOrientated};
+                        linksList.Add(link);
+
+                    }
+
+                }
+                else
+                {
+                    throw new Exception("#Error in load by edges: bad command in file");
+                }
+            }
+
+            return new KeyValuePair<IEnumerable<NodeModel>, IEnumerable<LinkModel>>(nodesList, linksList);
+        }
 
 
         private static StringBuilder ReadWithoutComments(string filePath)
@@ -368,7 +464,6 @@ namespace Graphs.Sources.Tasks
             }
             return sb;
         }
-
 
     }
 }
