@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Data;
 using System.IO;
 using System.Windows;
 using System.Windows.Input;
@@ -25,16 +26,34 @@ namespace Graphs.Sources.ViewModels
         public GraphLinksModel<NodeModel, string, string, LinkModel> Model { get; set; }
         public CustomPartManager PartManager { get; set; }
 
+        public DataTable MyDataTable {
+            get;
+            private set; }
+
+
         public MainViewModel()
         {
+            DataSet _ds = new DataSet("Test");
+            MyDataTable = _ds.Tables.Add("DT");
+            DataColumn column=new DataColumn();
+            column.ReadOnly = true;
+            
+            MyDataTable.Columns.Add(column);
+            
+            MyDataTable.Columns.Add("First");
+            MyDataTable.Columns.Add("Second");
+
+            MyDataTable.Rows.Add("11", "12");
+            MyDataTable.Rows.Add("21", "22");
+
             Model = new GraphLinksModel<NodeModel, string, string, LinkModel>()
             {
                 Modifiable = true,
                 HasUndoManager = true
             };
             PartManager = new CustomPartManager();
-             
 
+            
             LoadAdjencyMatrixCommand = new DelegateCommand(LoadAdjencyMatrix);
             SaveAdjencyMatrixCommand = new DelegateCommand(SaveAdjencyMatrix);
 

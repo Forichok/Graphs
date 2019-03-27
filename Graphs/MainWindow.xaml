@@ -9,6 +9,7 @@
         xmlns:converters="clr-namespace:Graphs.Sources.Converters"
         xmlns:viewModels="clr-namespace:Graphs.Sources.ViewModels"
         xmlns:models="clr-namespace:Graphs.Sources.Models"
+        xmlns:system="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
 
@@ -82,7 +83,7 @@
                             <Binding Path="Part.IsSelected"></Binding>
                             <Binding Path="Data.IsSelected"></Binding>
                         </MultiBinding>
-                            
+
                     </go:LinkShape.Stroke>
                 </go:LinkShape>
                 <Path Fill="Black" go:LinkPanel.ToArrow = "{Binding Converter={StaticResource LinkDirectionConverter },Mode=OneWay}"/>
@@ -99,14 +100,14 @@
                     <TextBlock 
                         TextWrapping="Wrap" TextAlignment="Center"
                     go:Part.TextEditable="True" Margin="10" >
-                    <TextBlock.Text>
-                        <Binding Path="Data.Text" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
-                            <Binding.ValidationRules>
-                                <helpers:NumberValidation/>
-                            </Binding.ValidationRules>
-                        </Binding>
+                        <TextBlock.Text>
+                            <Binding Path="Data.Text" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
+                                <Binding.ValidationRules>
+                                    <helpers:NumberValidation/>
+                                </Binding.ValidationRules>
+                            </Binding>
 
-                    </TextBlock.Text>
+                        </TextBlock.Text>
                     </TextBlock>
                 </go:NodePanel>
                 <ContextMenuService.ContextMenu>
@@ -134,8 +135,7 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-
-            <Menu>
+            <Menu Grid.Row="0">
                 <MenuItem Header="File">
                     <MenuItem Header="Adjacency matrix">
                         <MenuItem Header="Load Adjency matrix" Command="{Binding LoadAdjencyMatrixCommand}"/>
@@ -161,7 +161,36 @@
                 </MenuItem>
             </Menu>
 
-            <go:Diagram Grid.Row="1" x:Name="myDiagram"
+
+            <Grid Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+
+                <GridSplitter Width="10" Grid.Column="1"></GridSplitter>
+
+
+
+                <TabControl Grid.Column="0">
+                    <TabItem Header="Nodes">
+                        <DataGrid  ItemsSource="{Binding Model.NodesSource}"/>
+                    </TabItem>
+
+                    <TabItem Header="Links">
+                        <DataGrid  ItemsSource="{Binding Model.LinksSource}"/>
+                    </TabItem>
+
+                    <TabItem Header="Matrix">
+<DataGrid ItemsSource="{Binding MyDataTable}" CanUserSortColumns="False" CellEditEnding="OnContentChanged"></DataGrid>
+
+                    </TabItem>
+                </TabControl>
+
+
+
+                <go:Diagram Grid.Column="2" x:Name="myDiagram"
                         Padding="10"
                         InitialPanelSpot="Center"
                         InitialDiagramBoundsSpot="Center"
@@ -173,16 +202,17 @@
                         PartManager="{Binding PartManager}"
                         AllowDelete="True"
                         AllowCopy="True">
-                <go:Diagram.ClickCreatingTool>
-                    <!-- require a double-click to create a new node -->
-                    <go:ClickCreatingTool DoubleClick="True">
-                        <go:ClickCreatingTool.PrototypeData>
-                            <!-- the node data to be copied for each new node created by this tool -->
-                            <models:NodeModel/>
-                        </go:ClickCreatingTool.PrototypeData>
-                    </go:ClickCreatingTool>
-                </go:Diagram.ClickCreatingTool>
-            </go:Diagram>
+                    <go:Diagram.ClickCreatingTool>
+                        <!-- require a double-click to create a new node -->
+                        <go:ClickCreatingTool DoubleClick="True">
+                            <go:ClickCreatingTool.PrototypeData>
+                                <!-- the node data to be copied for each new node created by this tool -->
+                                <models:NodeModel/>
+                            </go:ClickCreatingTool.PrototypeData>
+                        </go:ClickCreatingTool>
+                    </go:Diagram.ClickCreatingTool>
+                </go:Diagram>
+            </Grid>
         </Grid>
     </Grid>
 
