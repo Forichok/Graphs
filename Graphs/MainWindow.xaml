@@ -74,7 +74,7 @@
                     <go:Route Curve="Bezier" Adjusting="Stretch"
                     RelinkableFrom="True" RelinkableTo="True"
                              Curviness="{Binding Curviness}"
-                              Corner="10"/>
+                              Corner="15"/>
                 </go:Link.Route>
                 <go:LinkShape x:Name="Path" StrokeThickness="3">
                     <go:LinkShape.Stroke>
@@ -91,7 +91,7 @@
                     <Rectangle>
                         <Shape.Fill>
                             <RadialGradientBrush>
-                                <GradientStop Offset="0.7" Color="White" />
+                                <GradientStop Offset="0" Color="White" />
                                 <GradientStop Offset="1" Color="Transparent" />
                             </RadialGradientBrush>
                         </Shape.Fill>
