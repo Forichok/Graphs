@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Windows;
 using System.Xml.Linq;
+using Northwoods.GoXam;
 using Northwoods.GoXam.Model;
 
 namespace Graphs.Sources.Models
@@ -14,7 +15,7 @@ namespace Graphs.Sources.Models
         // this property remembers the curviness;
         // Double.NaN means let it use a default calculated value
         // default value of NaN causes Route to calculate it
-
+        public Diagram DiagramModel;
         public GraphLinksModel<NodeModel, string, string, LinkModel> model;
 
         public bool IsOriented { get; set; }
@@ -30,6 +31,8 @@ namespace Graphs.Sources.Models
             get => _weight;
             set => _weight = value;
         }
+
+        public EventHandler LinkChangedHandler;
 
         public LinkModel()
         {
@@ -59,20 +62,26 @@ namespace Graphs.Sources.Models
                 bool isContains = model.LinksSource.Cast<LinkModel>().Contains(this);
                 if (Weight != "!" && Weight.Length != 0 && !isContains)
                 {
+                    DiagramModel.StartTransaction("Add NodeModel");
                     model.AddLink(this);
                     model.DoLinkAdded(this);
+                    DiagramModel.CommitTransaction("Add NodeModel");
+
                 }
                 else if (isContains && Weight=="!")
 
                 {
+                    DiagramModel.StartTransaction("Add NodeModel");
                     model.RemoveLink(this);
                     model.DoLinkRemoved(this);
+                    DiagramModel.CommitTransaction("Add NodeModel");
                 }
             }
             catch (Exception exception)
             {
                 Console.WriteLine(exception);
             }
+            
         }
 
         //TODO:: fix this creating and saving

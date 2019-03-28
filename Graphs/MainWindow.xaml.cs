@@ -5,14 +5,19 @@ using System.Collections.ObjectModel;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms;
+using System.Windows.Input;
 using System.Xml.Linq;
 using Graphs.Sources.Helpers;
 using Graphs.Sources.Models;
-using Microsoft.Win32;
 using Northwoods.GoXam;
 using Northwoods.GoXam.Model;
+using KeyEventArgs = System.Windows.Input.KeyEventArgs;
+using MessageBox = System.Windows.MessageBox;
+using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 
 namespace Graphs
 {
@@ -46,10 +51,12 @@ namespace Graphs
             MatrixControl.ItemsSource = matrixData;
         }
 
-        public void UpdateMatrix()
+        
+
+        public void UpdateMatrix(GraphLinksModel<NodeModel, string, string, LinkModel> model,Diagram diagram)
         {
-            var model = myDiagram.Model as GraphLinksModel<NodeModel, string, string, LinkModel>;
-            matrixData.Clear();
+            App.Current.Dispatcher.Invoke(()=> matrixData.Clear());
+            
 
             var dictionary = new Dictionary<string, Dictionary<string, LinkModel>>();
             foreach (NodeModel node in model.NodesSource)
@@ -59,10 +66,10 @@ namespace Graphs
                     var a = new Dictionary<String, LinkModel>();
                     dictionary.Add(node.Key, a);
 
-                }
+                } 
             }
 
-            foreach (LinkModel link in model.LinksSource)
+                   foreach (LinkModel link in model.LinksSource)
             {
                 dictionary[link.From][link.To] = link;
             }
@@ -85,14 +92,21 @@ namespace Graphs
                     }
                     else
                     {
-                        linkModel = new LinkModel(from, to, "!"){model = myDiagram.Model as GraphLinksModel<NodeModel, string, string, LinkModel>,Weight = "!"};
+                        linkModel = new LinkModel(from, to, "!"){model = model,DiagramModel = diagram};
+                        linkModel.LinkChangedHandler += LinkChanged;
                     }
                     routes.Add(linkModel);
 
 
                 }
-                matrixData.Add(new Line() { Heading = from, Values = routes });
+                App.Current.Dispatcher.Invoke(()=>matrixData.Add(new Line() { Heading = from, Values = routes }));
             }
+        }
+
+        private void LinkChanged(object sender, EventArgs e)
+        {
+            var model = myDiagram.Model as GraphLinksModel<NodeModel, string, string, LinkModel>;
+            Task.Factory.StartNew(() => UpdateMatrix(model, myDiagram));
         }
 
         private void MyDiagram_LinkDrawn(object sender, DiagramEventArgs e)
@@ -100,7 +114,10 @@ namespace Graphs
             var linkModel = e.Part.Data as LinkModel;
 
             linkModel.Text = ((int) (GetNode(linkModel.From).Location - GetNode(linkModel.To).Location).Length / 100).ToString();
-            UpdateMatrix();
+
+            linkModel.LinkChangedHandler += LinkChanged;
+            var model = myDiagram.Model as GraphLinksModel<NodeModel, string, string, LinkModel>;
+            Task.Factory.StartNew(()=>UpdateMatrix(model,myDiagram));
         }
 
         private GraphLinksModelNodeData<string> GetNode(string key)
@@ -120,7 +137,8 @@ namespace Graphs
 
             nodeModel.Text = key;
             nodeModel.Key = key;
-            UpdateMatrix();
+            var model = myDiagram.Model as GraphLinksModel<NodeModel, string, string, LinkModel>;
+            Task.Factory.StartNew(() => UpdateMatrix(model,myDiagram));
         }
 
         // save and load the model data as XML, visible in the "Saved" tab of the Demo       
@@ -191,9 +209,17 @@ namespace Graphs
                 true; // OK for CustomPartManager to update LinkModel.Points automatically
         }
 
+        private void MainWindow_OnKeyDown(object sender, KeyEventArgs e)
+        {
 
+            if (Keyboard.Modifiers == ModifierKeys.Control && (e.Key == Key.Z || e.Key == Key.Y))
+            {
+                var model = myDiagram.Model as GraphLinksModel<NodeModel, string, string, LinkModel>;
+                Task.Factory.StartNew(() => UpdateMatrix(model, myDiagram));
+            }
 
-        
+            
+        }
     }
 
 

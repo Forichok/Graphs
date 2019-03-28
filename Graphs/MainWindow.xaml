@@ -10,7 +10,6 @@
         xmlns:viewModels="clr-namespace:Graphs.Sources.ViewModels"
         xmlns:models="clr-namespace:Graphs.Sources.Models"
         xmlns:system="clr-namespace:System;assembly=mscorlib"
-        
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
 
@@ -242,7 +241,9 @@
                         Model="{Binding Model}"
                         PartManager="{Binding PartManager}"
                         AllowDelete="True"
-                        AllowCopy="True">
+                        AllowCopy="True" 
+                            PreviewKeyUp="MainWindow_OnKeyDown">
+
                     <go:Diagram.ClickCreatingTool>
                         <!-- require a double-click to create a new node -->
                         <go:ClickCreatingTool DoubleClick="True">
