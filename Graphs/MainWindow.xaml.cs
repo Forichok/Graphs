@@ -12,6 +12,7 @@ using System.Windows.Forms;
 using System.Windows.Input;
 using System.Xml.Linq;
 using DevExpress.Mvvm.Native;
+using DevExpress.Mvvm.POCO;
 using Graphs.Sources.Helpers;
 using Graphs.Sources.Models;
 using Northwoods.GoXam;
@@ -57,8 +58,8 @@ namespace Graphs
 
         public void UpdateMatrix(GraphLinksModel<NodeModel, string, string, LinkModel> model,Diagram diagram)
         {
-          //  App.Current.Dispatcher.Invoke(()=> matrixData.Clear());
-            App.Current.Dispatcher.Invoke(()=>CheckMatrixStructure(model));
+            ObservableCollection<Line> lines = new ObservableCollection<Line>();
+
 
             var dictionary = new Dictionary<string, Dictionary<string, LinkModel>>();
             foreach (NodeModel node in model.NodesSource)
@@ -68,30 +69,19 @@ namespace Graphs
                     var a = new Dictionary<String, LinkModel>();
                     dictionary.Add(node.Key, a);
 
-                } 
+                }
             }
 
-                   foreach (LinkModel link in model.LinksSource)
+            foreach (LinkModel link in model.LinksSource)
             {
                 dictionary[link.From][link.To] = link;
             }
 
             foreach (var from in dictionary.Keys)
             {
-                ObservableCollection<LinkModel> routes;
-                int fromId = getNodeIndex(from, model.NodesSource);
-                
-
-                if (matrixData.Count > fromId && fromId!=-1)
-                {
-                    routes = matrixData[fromId].Values;
-                }
-                else routes = new ObservableCollection<LinkModel>();
-
+                ObservableCollection<LinkModel> routes = new ObservableCollection<LinkModel>();
                 foreach (var to in dictionary.Keys)
                 {
-                    int toId = getNodeIndex(to, model.NodesSource);
-
                     LinkModel linkModel;
 
                     if (dictionary[to].ContainsKey(from) && !dictionary[to][from].IsOriented)
@@ -105,76 +95,31 @@ namespace Graphs
                     }
                     else
                     {
-                        linkModel = new LinkModel(from, to, "!"){model = model,DiagramModel = diagram};
-                        //linkModel.LinkChangedHandler += LinkChanged;
+                        linkModel = new LinkModel(from, to, "") { model = model, DiagramModel = diagram };
                     }
-                    if(toId!=-1 && toId<routes.Count)
-                    App.Current.Dispatcher.Invoke(()=>routes[toId]=linkModel);
+                    routes.Add(linkModel);
 
 
                 }
-                //App.Current.Dispatcher.Invoke(()=>matrixData.Add(new Line() { Heading = from, Values = routes }));
+                lines.Add(new Line() { Heading = from, Values = routes });
             }
-        }
 
-
-        private void CheckMatrixStructure(GraphLinksModel<NodeModel, string, string, LinkModel> model)
-        {
-            try
+            App.Current.Dispatcher.Invoke(() =>
             {
-                foreach (NodeModel node in model.NodesSource)
+                matrixData.Clear();
+                foreach (var line in lines)
                 {
-                    if (!isMatrixContains(node.Key))
-                    {
-                         AddNodeToMatrix(node.Key);
-                    }
+                    matrixData.Add(line);
                 }
-
-                foreach (var line in matrixData)
-                {
-                    if (getNodeIndex(line.Heading, model.NodesSource) == -1)
-                    {
-                        matrixData.Remove(line);
-                        foreach (var line1 in matrixData)
-                        {
-                            line1.Values.RemoveAt(line.Position);
-                        }
-                        CheckMatrixStructure(model);
-                        return;
-
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-
-            }
+            });
         }
 
-        private bool isMatrixContains(String key)
-        {
-            foreach (var line in matrixData)
-            {
-                if (line.Heading == key)
-                    return true;
-            }
-
-            return false;
-
-        }
-
-        private void LinkChanged(object sender, EventArgs e)
-        {
-            var model = myDiagram.Model as GraphLinksModel<NodeModel, string, string, LinkModel>;
-            Task.Factory.StartNew(() => UpdateMatrix(model, myDiagram));
-        }
 
         private void MyDiagram_LinkDrawn(object sender, DiagramEventArgs e)
         {
             var linkModel = e.Part.Data as LinkModel;
 
-            linkModel.Text = ((int) (GetNode(linkModel.From).Location - GetNode(linkModel.To).Location).Length / 100).ToString();
+            linkModel.Weight = ((int) (GetNode(linkModel.From).Location - GetNode(linkModel.To).Location).Length / 100).ToString();
 
             int from = getNodeIndex(linkModel.From, myDiagram.Model.NodesSource);
             int to = getNodeIndex(linkModel.To, myDiagram.Model.NodesSource);
@@ -224,10 +169,10 @@ namespace Graphs
             var values = new ObservableCollection<LinkModel>();
             foreach (NodeModel node in myDiagram.Model.NodesSource)
             {
-                var linkModel = new LinkModel(key, node.Key, "!")
+                var linkModel = new LinkModel(key, node.Key, "")
                 {
                     model = myDiagram.Model as GraphLinksModel<NodeModel, string, string, LinkModel>,
-                    DiagramModel = myDiagram, Text = "GG"
+                    DiagramModel = myDiagram
                 };
                 //linkModel.LinkChangedHandler += LinkChanged;
                 values.Add(linkModel);
@@ -235,10 +180,10 @@ namespace Graphs
 
             foreach (var line in matrixData)
             {
-                line.Values.Add(new LinkModel(key, line.Heading, "!")
+                line.Values.Add(new LinkModel(key, line.Heading, "")
                 {
                     model = myDiagram.Model as GraphLinksModel<NodeModel, string, string, LinkModel>,
-                    DiagramModel = myDiagram, Text = "GG"
+                    DiagramModel = myDiagram
                 });
             }
 
@@ -318,7 +263,7 @@ namespace Graphs
         private void MainWindow_OnKeyDown(object sender, KeyEventArgs e)
         {
 
-            if (Keyboard.Modifiers == ModifierKeys.Control && (e.Key == Key.Z || e.Key == Key.Y))
+            if ((Keyboard.Modifiers == ModifierKeys.Control && (e.Key == Key.Z || e.Key == Key.Y))||e.Key==Key.Delete)
             {
                 var model = myDiagram.Model as GraphLinksModel<NodeModel, string, string, LinkModel>;
                 Task.Factory.StartNew(() => UpdateMatrix(model, myDiagram));
@@ -340,7 +285,7 @@ namespace Graphs
             }
             else
             {
-                matrixData[to].Values[from] = new LinkModel(linkModel.From, linkModel.To, "!") { model = myDiagram.Model as GraphLinksModel<NodeModel, string, string, LinkModel>, DiagramModel = myDiagram, Text = "GG" };
+                matrixData[to].Values[from] = new LinkModel(linkModel.From, linkModel.To, "") { model = myDiagram.Model as GraphLinksModel<NodeModel, string, string, LinkModel>, DiagramModel = myDiagram };
             }
 
         }
@@ -352,9 +297,15 @@ namespace Graphs
             {
                 int from = getNodeIndex(linkModel.From, myDiagram.Model.NodesSource);
                 int to = getNodeIndex(linkModel.To, myDiagram.Model.NodesSource);
-                matrixData[from].Values[to] = new LinkModel(linkModel.From, linkModel.To, "!") { model = myDiagram.Model as GraphLinksModel<NodeModel, string, string, LinkModel>, DiagramModel = myDiagram, Text = "GG" };
+                matrixData[from].Values[to] = new LinkModel(linkModel.From, linkModel.To, "") { model = myDiagram.Model as GraphLinksModel<NodeModel, string, string, LinkModel>, DiagramModel = myDiagram };
                 matrixData[to].Values[from] = linkModel;
             }
+        }
+
+        private void Delete_Click(object sender, RoutedEventArgs e)
+        {
+            var model = myDiagram.Model as GraphLinksModel<NodeModel, string, string, LinkModel>;
+            Task.Factory.StartNew(() => UpdateMatrix(model, myDiagram));
         }
     }
 

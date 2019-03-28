@@ -63,7 +63,7 @@
                 <ContextMenuService.ContextMenu>
                     <ContextMenu>
                         <MenuItem Header="Change Figure" Command="{Binding Source={StaticResource Vm},Path=ChangeFigureMenuCommand}" CommandParameter="{Binding}"/>
-                        <MenuItem Command="Delete" />
+                        <MenuItem Command="Delete" Click="Delete_Click" />
                     </ContextMenu>
                 </ContextMenuService.ContextMenu>
 
@@ -117,7 +117,7 @@
                             <MenuItem Header="Reverse" Click="ReverseClick" Command="{Binding Source={StaticResource Vm},Path=ReverseMenuCommand}" CommandParameter="{Binding}"/>
                             <MenuItem Header="Switch orientated" Click="ChangeOrientationClick" IsCheckable="True" Command="{Binding Source={StaticResource Vm},Path=ChangeLinkDirectionMenuCommand}" CommandParameter="{Binding}"/>
                         </MenuItem>
-                        <MenuItem Command="Delete" />
+                        <MenuItem Click="Delete_Click"  Command="Delete" />
                     </ContextMenu>
                 </ContextMenuService.ContextMenu>
 
@@ -198,7 +198,7 @@
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
-                            <ItemsControl  Name="Matrix" ItemsSource="{Binding ElementName=MatrixControl,Path=ItemsSource}">
+                            <ItemsControl   Name="Matrix" ItemsSource="{Binding ElementName=MatrixControl,Path=ItemsSource}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <StackPanel>

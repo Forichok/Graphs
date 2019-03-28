@@ -13,9 +13,9 @@ namespace Graphs.Sources.Helpers
         public override ValidationResult Validate(object value, CultureInfo cultureInfo)
         {
             int i;
-            if (!Int32.TryParse(value.ToString(), out i))
+            if (!Int32.TryParse(value.ToString(), out i)&&i<0)
             {
-                return new ValidationResult(false, "Not Num");
+                return new ValidationResult(false, "Incorrect");
             }
 
             return new ValidationResult(true, null);

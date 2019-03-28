@@ -60,21 +60,22 @@ namespace Graphs.Sources.Models
             try
             {
                 bool isContains = model.LinksSource.Cast<LinkModel>().Contains(this);
-                if (Weight != "!" && Weight.Length != 0 && !isContains)
+                var n = 0;
+                if (Weight.Length != 0 && !isContains && int.TryParse(Weight, out n)&&n>0)
                 {
-                    DiagramModel.StartTransaction("Add NodeModel");
-                    model.AddLink(this);
+                    DiagramModel.StartTransaction("Add LinkModel");
+                  //  model.AddLink(this);
                     model.DoLinkAdded(this);
-                    DiagramModel.CommitTransaction("Add NodeModel");
+                    DiagramModel.CommitTransaction("Add LinkModel");
 
                 }
-                else if (isContains && Weight=="!")
+                else //if (isContains && Weight=="-")
 
                 {
-                    DiagramModel.StartTransaction("Add NodeModel");
-                    model.RemoveLink(this);
+                    DiagramModel.StartTransaction("Remove LinkModel");
+                 //   model.RemoveLink(this);
                     model.DoLinkRemoved(this);
-                    DiagramModel.CommitTransaction("Add NodeModel");
+                    DiagramModel.CommitTransaction("Remove LinkModel");
                 }
             }
             catch (Exception exception)
