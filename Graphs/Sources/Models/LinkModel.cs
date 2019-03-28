@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Windows;
 using System.Xml.Linq;
 using Northwoods.GoXam.Model;
@@ -9,9 +10,12 @@ namespace Graphs.Sources.Models
     [Serializable]
     public class LinkModel : GraphLinksModelLinkData<string, string>
     {
+        private string _weight;
         // this property remembers the curviness;
         // Double.NaN means let it use a default calculated value
         // default value of NaN causes Route to calculate it
+
+        public GraphLinksModel<NodeModel, string, string, LinkModel> model;
 
         public bool IsOriented { get; set; }
 
@@ -19,7 +23,13 @@ namespace Graphs.Sources.Models
 
         public double Curviness { get; set; }
 
-        public Point Offset { get; set; } 
+        public Point Offset { get; set; }
+
+        public String Weight
+        {
+            get => _weight;
+            set => _weight = value;
+        }
 
         public LinkModel()
         {
@@ -28,6 +38,7 @@ namespace Graphs.Sources.Models
             Curviness = double.NaN;
             IsOriented = true;
             IsSelected = false;
+            Weight = Text;
         }
 
         public LinkModel(string from, string to, string text) : base(from, to)
@@ -37,6 +48,31 @@ namespace Graphs.Sources.Models
             Curviness = double.NaN;
             IsOriented = true;
             IsSelected = false;
+            this.PropertyChanged += LinkModel_PropertyChanged;
+            Weight = Text;
+        }
+
+        private void LinkModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            try
+            {
+                bool isContains = model.LinksSource.Cast<LinkModel>().Contains(this);
+                if (Weight != "!" && Weight.Length != 0 && !isContains)
+                {
+                    model.AddLink(this);
+                    model.DoLinkAdded(this);
+                }
+                else if (isContains && Weight=="!")
+
+                {
+                    model.RemoveLink(this);
+                    model.DoLinkRemoved(this);
+                }
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception);
+            }
         }
 
         //TODO:: fix this creating and saving
@@ -56,6 +92,8 @@ namespace Graphs.Sources.Models
             this.Curviness = XHelper.Read("Curviness", e, double.NaN);
             this.Offset = XHelper.Read("Offset", e, new Point(0, 0));
         }
+
+        
     }
 
 }

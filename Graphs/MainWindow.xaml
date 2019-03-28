@@ -103,7 +103,7 @@
                         TextWrapping="Wrap" TextAlignment="Center"
                     go:Part.TextEditable="True" Margin="10" >
                         <TextBlock.Text>
-                            <Binding Path="Data.Text" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
+                            <Binding Path="Data.Weight" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
                                 <Binding.ValidationRules>
                                     <helpers:NumberValidation/>
                                 </Binding.ValidationRules>
@@ -187,7 +187,7 @@
                     <TabItem Header="Matrix">
 
                         <StackPanel>
-                            <ItemsControl ItemsSource="{Binding Data2D}">
+                            <ItemsControl Name="MatrixControl">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <StackPanel Orientation="Horizontal" Margin="25,0,0,0"/>
@@ -199,7 +199,7 @@
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
-                            <ItemsControl ItemsSource="{Binding Data2D}" >
+                            <ItemsControl  Name="Matrix" ItemsSource="{Binding ElementName=MatrixControl,Path=ItemsSource}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <StackPanel>
@@ -214,7 +214,7 @@
                                                 <ItemsControl.ItemTemplate>
                                                     <DataTemplate>
                                                         <StackPanel Orientation="Horizontal">
-                                                            <TextBox Width="25"  Text="{Binding Path=Text,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" BorderThickness="1" BorderBrush="Black"/>
+                                                            <TextBox Width="25"  Text="{Binding Path=Weight,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" BorderThickness="1" BorderBrush="Black"/>
 
                                                         </StackPanel>
                                                     </DataTemplate>

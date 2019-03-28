@@ -26,25 +26,10 @@ namespace Graphs.Sources.ViewModels
     {
         public GraphLinksModel<NodeModel, string, string, LinkModel> Model { get; set; }
         public CustomPartManager PartManager { get; set; }
-
-        public ObservableCollection<Line> Data2D { get; set; }
-
-        public ObservableCollection<String> Headers { get; set; }
+        
 
         public MainViewModel()
         {
-            Headers= new ObservableCollection<string>(){"1","2"};
-            Data2D = new ObservableCollection<Line>
-            {
-                new Line()
-                {
-                    Heading = "first", Values = new ObservableCollection<LinkModel>() { new LinkModel(){Text = "Test"}}
-                },
-                new Line(){Heading = "sec", Values = 
-                    new ObservableCollection<LinkModel>() {new LinkModel(){Text = "Test2"}}}
-                
-                
-            };
 
             Model = new GraphLinksModel<NodeModel, string, string, LinkModel>()
             {
@@ -60,57 +45,7 @@ namespace Graphs.Sources.ViewModels
             LoadIncidenceMatrixCommand = new DelegateCommand(LoadIncidenceMatrix);
             SaveIncidenceMatrixCommand = new DelegateCommand(SaveIncidenceMatrix);
         }
-
-        public ObservableCollection<Line> CreateMatrix(GraphLinksModel<NodeModel, string, string, LinkModel> model)
-        {
-            var lines = new ObservableCollection<Line>();
-
-            var dictionary = new Dictionary<string, Dictionary<string, LinkModel>>();
-            foreach (NodeModel node in Model.NodesSource)
-            {
-                if (!dictionary.ContainsKey(node.Key))
-                {
-                    var a = new Dictionary<String, LinkModel>();
-                    dictionary.Add(node.Key,a);
-
-                }
-            }
-
-            foreach (LinkModel link in Model.LinksSource)
-            {
-                dictionary[link.From][link.To]=link;
-            }
-
-            
-
-            foreach (var from in dictionary.Keys)
-            {
-                ObservableCollection<LinkModel> routes = new ObservableCollection<LinkModel>();
-                foreach (var to in dictionary.Keys)
-                {
-                    LinkModel linkModel;
-
-                    if (dictionary[to].ContainsKey(from) && !dictionary[to][from].IsOriented)
-                    {
-                        linkModel = dictionary[to][from];
-                    }
-
-                    else if(dictionary[from].ContainsKey(to))
-                    {
-                        linkModel = dictionary[from][to];
-                    }
-                    else
-                    {
-                    linkModel = new LinkModel(from, to, "!");
-                    }
-                    routes.Add(linkModel);
-                    
-                    
-                }
-                lines.Add(new Line() { Heading = from, Values = routes});
-            }
-            return lines;
-        }
+ 
 
         public ICommand ReverseMenuCommand
         {
@@ -132,7 +67,6 @@ namespace Graphs.Sources.ViewModels
             {
                 return new DelegateCommand<object>((sender) =>
                 {
-                    Data2D = CreateMatrix(Model);
                     var b = (sender as PartManager.PartBinding).Data as NodeModel;
                     b.ChangeFigure();
                 });
@@ -411,25 +345,6 @@ namespace Graphs.Sources.ViewModels
 
             return fileContent;
         }
-
-        public class Line
-        {
-            public string Heading
-            {
-                get;
-                set;
-            }
-
-            public ObservableCollection<LinkModel> Values
-            {
-                get;
-                set;
-            }
-        }
-
-        public class Edge
-        {
-            public int Weight { get; set; }
-        }
+        
     }
 }

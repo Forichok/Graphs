@@ -15,7 +15,7 @@ namespace Graphs.Sources.Models
         public bool IsSelected { get; set; }
         public string Figure { get; set; } 
        
-
+        
         public NodeModel()
         {
             _figureId = 0;

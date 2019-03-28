@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Xml.Linq;
 using Graphs.Sources.Helpers;
 using Graphs.Sources.Models;
@@ -19,11 +21,13 @@ namespace Graphs
     /// </summary>
     public partial class MainWindow : Window
     {
-        public int[,] matrix { get; set; } = new int[5, 5];
-
+        private ObservableCollection<Line> matrixData;
         public MainWindow()
         {
             InitializeComponent();
+
+            matrixData=new ObservableCollection<Line>();
+            
             myDiagram.LayoutCompleted += UpdateRoutes;
 
             //var tool = new SimpleLabelDraggingTool();
@@ -38,7 +42,57 @@ namespace Graphs
             //myDiagram.LinkReshaped += MyDiagram_LinkDrawn;
 
             //myDiagram.LinkRelinked += MyDiagram_LinkDrawn;
-     
+
+            MatrixControl.ItemsSource = matrixData;
+        }
+
+        public void UpdateMatrix()
+        {
+            var model = myDiagram.Model as GraphLinksModel<NodeModel, string, string, LinkModel>;
+            matrixData.Clear();
+
+            var dictionary = new Dictionary<string, Dictionary<string, LinkModel>>();
+            foreach (NodeModel node in model.NodesSource)
+            {
+                if (!dictionary.ContainsKey(node.Key))
+                {
+                    var a = new Dictionary<String, LinkModel>();
+                    dictionary.Add(node.Key, a);
+
+                }
+            }
+
+            foreach (LinkModel link in model.LinksSource)
+            {
+                dictionary[link.From][link.To] = link;
+            }
+
+            foreach (var from in dictionary.Keys)
+            {
+                ObservableCollection<LinkModel> routes = new ObservableCollection<LinkModel>();
+                foreach (var to in dictionary.Keys)
+                {
+                    LinkModel linkModel;
+
+                    if (dictionary[to].ContainsKey(from) && !dictionary[to][from].IsOriented)
+                    {
+                        linkModel = dictionary[to][from];
+                    }
+
+                    else if (dictionary[from].ContainsKey(to))
+                    {
+                        linkModel = dictionary[from][to];
+                    }
+                    else
+                    {
+                        linkModel = new LinkModel(from, to, "!"){model = myDiagram.Model as GraphLinksModel<NodeModel, string, string, LinkModel>,Weight = "!"};
+                    }
+                    routes.Add(linkModel);
+
+
+                }
+                matrixData.Add(new Line() { Heading = from, Values = routes });
+            }
         }
 
         private void MyDiagram_LinkDrawn(object sender, DiagramEventArgs e)
@@ -46,6 +100,7 @@ namespace Graphs
             var linkModel = e.Part.Data as LinkModel;
 
             linkModel.Text = ((int) (GetNode(linkModel.From).Location - GetNode(linkModel.To).Location).Length / 100).ToString();
+            UpdateMatrix();
         }
 
         private GraphLinksModelNodeData<string> GetNode(string key)
@@ -65,6 +120,7 @@ namespace Graphs
 
             nodeModel.Text = key;
             nodeModel.Key = key;
+            UpdateMatrix();
         }
 
         // save and load the model data as XML, visible in the "Saved" tab of the Demo       
@@ -133,6 +189,26 @@ namespace Graphs
 
             myDiagram.PartManager.UpdatesRouteDataPoints =
                 true; // OK for CustomPartManager to update LinkModel.Points automatically
+        }
+
+
+
+        
+    }
+
+
+    public class Line
+    {
+        public string Heading
+        {
+            get;
+            set;
+        }
+
+        public ObservableCollection<LinkModel> Values
+        {
+            get;
+            set;
         }
     }
 }
