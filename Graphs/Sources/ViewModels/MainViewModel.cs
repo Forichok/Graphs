@@ -24,6 +24,10 @@ namespace Graphs.Sources.ViewModels
     class MainViewModel : ViewModelBase
     {
         public GraphLinksModel<NodeModel, string, string, LinkModel> Model { get; set; }
+
+        public NodeModel StartNode { get; set; }
+
+        public NodeModel FinishNode { get; set; }
         public CustomPartManager PartManager { get; set; }
 
         public MainViewModel()
@@ -53,6 +57,9 @@ namespace Graphs.Sources.ViewModels
 
             ChangeFigureMenuCommand = new DelegateCommand<object>(ChangeFigureMenu);
             AddNewNodeCommand = new DelegateCommand<PartManager.PartBinding>(AddNewNode);
+
+            SetFinishNodeCommand = new DelegateCommand<object>(SetFinishNodeMenu);
+            SetStartNodeCommand = new DelegateCommand<object>(SetStartNodeMenu);
 
             SaveAsImageCommand = new DelegateCommand<Diagram>(SaveAsImage);
             LoadCommand = new DelegateCommand(LoadUniversal);
@@ -96,6 +103,10 @@ namespace Graphs.Sources.ViewModels
 
         public DelegateCommand<object> ChangeFigureMenuCommand { get; }
 
+        public DelegateCommand<object> SetStartNodeCommand { get; }
+
+        public DelegateCommand<object> SetFinishNodeCommand { get; }
+
         public DelegateCommand<PartManager.PartBinding> AddNewNodeCommand { get; }
 
         #endregion
@@ -106,6 +117,30 @@ namespace Graphs.Sources.ViewModels
         {
             var b = (sender as PartManager.PartBinding).Data as NodeModel;
             b.ChangeFigure();
+        }
+
+        private void SetStartNodeMenu(object sender)
+        {
+            var startNode = (sender as PartManager.PartBinding).Data as NodeModel;
+            foreach (NodeModel node in Model.NodesSource)
+            {
+                node.IsStartNode = false;
+            }
+            startNode.IsStartNode = true;
+            startNode.IsFinishNode = false;
+            StartNode = startNode;
+        }
+
+        private void SetFinishNodeMenu(object sender)
+        {
+            var finishNode = (sender as PartManager.PartBinding).Data as NodeModel;
+            foreach (NodeModel node in Model.NodesSource)
+            {
+                node.IsFinishNode = false;
+            }
+            finishNode.IsFinishNode=true;
+            finishNode.IsStartNode = false;
+            FinishNode = finishNode;
         }
 
         private void AddNewNode(PartManager.PartBinding sender)

@@ -13,6 +13,11 @@ namespace Graphs.Sources.Models
         private int _figureId;
 
         public bool IsSelected { get; set; }
+
+        public bool IsStartNode { get; set; }
+
+        public bool IsFinishNode { get; set; }
+
         public string Figure { get; set; } 
        
         

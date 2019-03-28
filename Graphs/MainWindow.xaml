@@ -15,7 +15,7 @@
 
     <Window.Resources>
         <converters:LinkDirectionConverter x:Key="LinkDirectionConverter" />
-        <converters:PartSelectionConverter x:Key="PartSelectionConverter" />
+        <converters:SelectionConverter x:Key="SelectionConverter" />
         <viewModels:MainViewModel x:Key="Vm" />
         <RadialGradientBrush x:Key="theNodeBrush">
             <GradientStop Color="White" Offset="0" />
@@ -49,9 +49,9 @@
                 <go:NodeShape go:NodePanel.Figure ="{Binding Path=Data.Figure}"  Cursor="Hand"
                    Fill="{StaticResource theNodeBrush}" StrokeThickness="3">
                     <go:NodeShape.Stroke>
-                        <MultiBinding Converter="{StaticResource PartSelectionConverter}">
+                        <MultiBinding Converter="{StaticResource SelectionConverter}" ConverterParameter="Node">
                             <Binding Path="Part.IsSelected"></Binding>
-                            <Binding Path="Data.IsSelected"></Binding>
+                            <Binding Path="Data"></Binding>
                         </MultiBinding>
 
                     </go:NodeShape.Stroke>
@@ -62,8 +62,11 @@
                    go:Part.TextEditable="True" />
                 <ContextMenuService.ContextMenu>
                     <ContextMenu>
+                        <MenuItem Header="Start Node" Command="{Binding Source={StaticResource Vm},Path=SetStartNodeCommand}" CommandParameter="{Binding}"></MenuItem>
+                        <MenuItem Header="Finish Node" Command="{Binding Source={StaticResource Vm},Path=SetFinishNodeCommand}" CommandParameter="{Binding}"></MenuItem>
                         <MenuItem Header="Change Figure" Command="{Binding Source={StaticResource Vm},Path=ChangeFigureMenuCommand}" CommandParameter="{Binding}"/>
                         <MenuItem Command="Delete" Click="Delete_Click" />
+                        
                     </ContextMenu>
                 </ContextMenuService.ContextMenu>
 
@@ -81,9 +84,9 @@
                 </go:Link.Route>
                 <go:LinkShape x:Name="Path" StrokeThickness="3">
                     <go:LinkShape.Stroke>
-                        <MultiBinding Converter="{StaticResource PartSelectionConverter}">
+                        <MultiBinding Converter="{StaticResource SelectionConverter}" ConverterParameter="Link">
                             <Binding Path="Part.IsSelected"></Binding>
-                            <Binding Path="Data.IsSelected"></Binding>
+                            <Binding Path="Data"></Binding>
                         </MultiBinding>
 
                     </go:LinkShape.Stroke>

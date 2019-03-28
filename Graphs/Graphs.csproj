@@ -183,7 +183,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Sources\Converters\PartSelectionConverter.cs" />
+    <Compile Include="Sources\Converters\SelectionConverter.cs" />
     <Compile Include="Sources\Helpers\NodeFigureCreator.cs" />
     <Compile Include="Sources\Helpers\NodeKeyCreator.cs" />
     <Compile Include="Sources\Converters\LinkDirectionConverter.cs" />
