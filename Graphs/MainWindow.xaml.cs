@@ -1,20 +1,10 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Data;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Forms;
-using System.Windows.Input;
-using System.Xml.Linq;
-using DevExpress.Mvvm.Native;
-using DevExpress.Mvvm.POCO;
 using Graphs.Sources.Helpers;
 using Graphs.Sources.Models;
+using Graphs.Sources.Tasks;
 using Northwoods.GoXam;
 using Northwoods.GoXam.Model;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
@@ -155,95 +145,16 @@ namespace Graphs
         private void MyDiagram_NodeCreated(object sender, DiagramEventArgs e)
         {
             var nodeModel = e.Part.Data as NodeModel;
-            var key = NodeKeyCreator.GetNodeName();
-            var d = myDiagram.Nodes;
-
+            var list = MainModel.NodesModelToArr(myDiagram.Model.NodesSource.Cast<NodeModel>());
+            var key = NodeKeyCreator.GetNodeName(list);
+        
             nodeModel.Text = key;
             nodeModel.Key = key;
-
-            AddNodeToMatrix(key);
-        }
-
-        private void AddNodeToMatrix(string key)
-        {
-            var values = new ObservableCollection<LinkModel>();
-            foreach (NodeModel node in myDiagram.Model.NodesSource)
-            {
-                var linkModel = new LinkModel(key, node.Key, "")
-                {
-                    model = myDiagram.Model as GraphLinksModel<NodeModel, string, string, LinkModel>,
-                    DiagramModel = myDiagram
-                };
-                //linkModel.LinkChangedHandler += LinkChanged;
-                values.Add(linkModel);
-            }
-
-            foreach (var line in matrixData)
-            {
-                line.Values.Add(new LinkModel(key, line.Heading, "")
-                {
-                    model = myDiagram.Model as GraphLinksModel<NodeModel, string, string, LinkModel>,
-                    DiagramModel = myDiagram
-                });
-            }
-
-            matrixData.Add(new Line()
-            {
-                Heading = key, Values = values, Position = getNodeIndex(key, myDiagram.Model.NodesSource)
-            });
         }
 
         // save and load the model data as XML, visible in the "Saved" tab of the Demo       
 
-        private void Load_Click(object sender, RoutedEventArgs e)
-        {
-            var model = myDiagram.Model as GraphLinksModel<NodeModel, string, string, LinkModel>;
-            if (model == null) return;
-            try
-            {
-                var root = XElement.Parse(LoadFromFile());
-                // set the Route.Points after nodes have been built and the layout has finished
-                myDiagram.LayoutCompleted += UpdateRoutes;
-                // tell the CustomPartManager that we're loading
-                myDiagram.PartManager.UpdatesRouteDataPoints = false;
-                model.Load<NodeModel, LinkModel>(root, "NodeModel", "LinkModel");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-
-            model.IsModified = false;
-        }
-
-        private string LoadFromFile()
-        {
-            var fileContent = string.Empty;
-            var filePath = string.Empty;
-
-            var openFileDialog = new OpenFileDialog();
-            openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-            openFileDialog.Filter = "All files (*.*)|*.*|xml files (*.xml)|*.xml";
-            openFileDialog.FilterIndex = 2;
-            openFileDialog.RestoreDirectory = true;
-            if (openFileDialog.ShowDialog() == true)
-            {
-                //Get the path of specified file
-                filePath = openFileDialog.FileName;
-
-                //Read the contents of the file into a stream
-                var fileStream = openFileDialog.OpenFile();
-
-                using (var reader = new StreamReader(fileStream))
-                {
-                    fileContent = reader.ReadToEnd();
-                }
-            }
-
-            return fileContent;
-        }
-
-
+        
         // only use the saved route points after the layout has completed,
         // because links will get the default routing
         private void UpdateRoutes(object sender, DiagramEventArgs e)
