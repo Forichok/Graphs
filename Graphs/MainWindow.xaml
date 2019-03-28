@@ -114,8 +114,8 @@
                 <ContextMenuService.ContextMenu>
                     <ContextMenu>
                         <MenuItem Header="Direction">
-                            <MenuItem Header="Reverse" Command="{Binding Source={StaticResource Vm},Path=ReverseMenuCommand}" CommandParameter="{Binding}"/>
-                            <MenuItem Header="Switch orientated" IsCheckable="True" Command="{Binding Source={StaticResource Vm},Path=ChangeLinkDirectionMenuCommand}" CommandParameter="{Binding}"/>
+                            <MenuItem Header="Reverse" Click="ReverseClick" Command="{Binding Source={StaticResource Vm},Path=ReverseMenuCommand}" CommandParameter="{Binding}"/>
+                            <MenuItem Header="Switch orientated" Click="ChangeOrientationClick" IsCheckable="True" Command="{Binding Source={StaticResource Vm},Path=ChangeLinkDirectionMenuCommand}" CommandParameter="{Binding}"/>
                         </MenuItem>
                         <MenuItem Command="Delete" />
                     </ContextMenu>
