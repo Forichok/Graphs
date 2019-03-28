@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Media.Imaging;
 using System.Xml.Linq;
 using DevExpress.Mvvm;
+using DevExpress.Mvvm.Native;
 using Graphs.Sources.Helpers;
 using Graphs.Sources.Models;
 using Graphs.Sources.Tasks;
@@ -56,6 +57,8 @@ namespace Graphs.Sources.ViewModels
             SaveAsImageCommand = new DelegateCommand<Diagram>(SaveAsImage);
             LoadCommand = new DelegateCommand(LoadUniversal);
             SaveCommand = new DelegateCommand<Diagram>(SaveUniversal);
+
+            BfsCommand = new DelegateCommand(StartBfs);
         }
 
 
@@ -372,8 +375,30 @@ namespace Graphs.Sources.ViewModels
         }
         #endregion
 
-        
 
+        #region task 2
+        
+        public DelegateCommand BfsCommand { get; } 
+
+        public void StartBfs()
+        {
+            ClearGraph();
+            var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(), Model.LinksSource.Cast<LinkModel>());
+
+            var resBFS = BFSTask2.BreadthFirstSearch(mappedList, "A", "B");
+            resBFS.ForEach(t=>t.IsSelected = true);
+        }
+
+        #endregion
+
+
+        private void ClearGraph()
+        {
+            foreach (var o in Model.LinksSource)
+            {
+                ((LinkModel)o).IsSelected = false;
+            }
+        }
         private void UpdateMatrix(IEnumerable<NodeModel> nodes, IEnumerable<LinkModel> links)
         {
             Model.NodesSource = new ObservableCollection<NodeModel>(nodes);
@@ -406,5 +431,6 @@ namespace Graphs.Sources.ViewModels
 
             return fileContent;
         }
+
     }
 }

@@ -23,7 +23,8 @@ namespace Graphs.Sources.Tasks
 
             var regex = new Regex(@"^Vertex{([\w]+)\(([-]?[\d]+),([-]?[\d]+)\)}$", RegexOptions.Compiled);
 
-            var lines = resultWithoutComments.ToString().Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+            var lines = resultWithoutComments.ToString()
+                .Split(new[] {'\n', '\r'}, StringSplitOptions.RemoveEmptyEntries);
             var checkSum = -1;
             var linesCount = 0;
             var vertexCount = 0;
@@ -38,7 +39,7 @@ namespace Graphs.Sources.Tasks
 
                     if (nodesList.Count - 1 < vertexCount)
                     {
-                        var NodeModel = new NodeModel(vertexCount.ToString(), name) { Location = new Point(x, y) };
+                        var NodeModel = new NodeModel(vertexCount.ToString(), name) {Location = new Point(x, y)};
                         nodesList.Add(NodeModel);
                     }
                     else
@@ -50,7 +51,7 @@ namespace Graphs.Sources.Tasks
                 }
                 else
                 {
-                    var splitedLine = line.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                    var splitedLine = line.Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
                     linesCount++;
                     if (checkSum == -1)
                     {
@@ -83,17 +84,18 @@ namespace Graphs.Sources.Tasks
             return new KeyValuePair<IEnumerable<NodeModel>, IEnumerable<LinkModel>>(nodesList, linksList);
         }
 
-        public static void SaveAdjencyMatrix(string filePath, GraphLinksModel<NodeModel, string, string, LinkModel> model)
+        public static void SaveAdjencyMatrix(string filePath,
+            GraphLinksModel<NodeModel, string, string, LinkModel> model)
         {
             using (var sw = new StreamWriter(filePath))
             {
-                var nodes = (ObservableCollection<NodeModel>)model.NodesSource;
+                var nodes = (ObservableCollection<NodeModel>) model.NodesSource;
                 foreach (var node in nodes)
                 {
-                    sw.WriteLine($"Vertex{{{node.Text}({(int)node.Location.X},{(int)node.Location.Y})}}");
+                    sw.WriteLine($"Vertex{{{node.Text}({(int) node.Location.X},{(int) node.Location.Y})}}");
                 }
 
-                var links = (ObservableCollection<LinkModel>)model.LinksSource;
+                var links = (ObservableCollection<LinkModel>) model.LinksSource;
                 var matrix = CreateMatrix(links, nodes);
 
                 for (var i = 0; i < nodes.Count; i++)
@@ -145,7 +147,8 @@ namespace Graphs.Sources.Tasks
 
             var regex = new Regex(@"^Vertex{([\w]+)\(([-]?[\d]+),([-]?[\d]+)\)}$", RegexOptions.Compiled);
 
-            var lines = resultWithoutComments.ToString().Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+            var lines = resultWithoutComments.ToString()
+                .Split(new[] {'\n', '\r'}, StringSplitOptions.RemoveEmptyEntries);
 
             var vertexCount = 0;
             var checkSum = -1;
@@ -163,7 +166,7 @@ namespace Graphs.Sources.Tasks
 
                     if (nodesList.Count - 1 < vertexCount)
                     {
-                        var NodeModel = new NodeModel(vertexCount.ToString(), name) { Location = new Point(x, y) };
+                        var NodeModel = new NodeModel(vertexCount.ToString(), name) {Location = new Point(x, y)};
                         nodesList.Add(NodeModel);
                     }
                     else
@@ -175,7 +178,7 @@ namespace Graphs.Sources.Tasks
                 }
                 else
                 {
-                    var splitedLine = line.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                    var splitedLine = line.Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
 
                     if (checkSum == -1)
                     {
@@ -225,7 +228,7 @@ namespace Graphs.Sources.Tasks
 
                 var link = new LinkModel();
 
-                if(resultList[0].Key == "-1" && resultList[1].Key == "-1")
+                if (resultList[0].Key == "-1" && resultList[1].Key == "-1")
                     throw new Exception("#Error in LoadIncidenceMatrix: more than two matches of -1 in column");
 
 
@@ -256,17 +259,18 @@ namespace Graphs.Sources.Tasks
             return new KeyValuePair<IEnumerable<NodeModel>, IEnumerable<LinkModel>>(nodesList, linksList);
         }
 
-        public static void SaveIncidenceMatrix(string fileName, GraphLinksModel<NodeModel, string, string, LinkModel> model)
+        public static void SaveIncidenceMatrix(string fileName,
+            GraphLinksModel<NodeModel, string, string, LinkModel> model)
         {
             using (var sw = new StreamWriter(fileName))
             {
-                var nodes = (ObservableCollection<NodeModel>)model.NodesSource;
+                var nodes = (ObservableCollection<NodeModel>) model.NodesSource;
                 foreach (var node in nodes)
                 {
-                    sw.WriteLine($"Vertex{{{node.Text}({(int)node.Location.X},{(int)node.Location.Y})}}");
+                    sw.WriteLine($"Vertex{{{node.Text}({(int) node.Location.X},{(int) node.Location.Y})}}");
                 }
 
-                var links = (ObservableCollection<LinkModel>)model.LinksSource;
+                var links = (ObservableCollection<LinkModel>) model.LinksSource;
                 var matrix = CreateIncidenceMatrix(links, nodes);
 
                 for (var i = 0; i < nodes.Count; i++)
@@ -276,7 +280,7 @@ namespace Graphs.Sources.Tasks
                         if (string.IsNullOrEmpty(matrix[i, j, 0]))
                             sw.Write($"0 ");
                         else
-                            sw.Write($"{matrix[i,j,0]} ");
+                            sw.Write($"{matrix[i, j, 0]} ");
                     }
                     sw.WriteLine();
                 }
@@ -285,19 +289,19 @@ namespace Graphs.Sources.Tasks
             }
         }
 
-        private static string[ , , ] CreateIncidenceMatrix(IEnumerable<LinkModel> links, IEnumerable<NodeModel> nodes)
+        private static string[,,] CreateIncidenceMatrix(IEnumerable<LinkModel> links, IEnumerable<NodeModel> nodes)
         {
             var result = new string [nodes.Count(), links.Count(), 1];
 
             var nodesList = nodes.Select(i => i.Key).ToList();
 
             var counter = 0;
-            foreach(var link in links)
+            foreach (var link in links)
             {
                 var fromIndex = nodesList.IndexOf(link.From);
                 var toIndex = nodesList.IndexOf(link.To);
 
-                result[fromIndex, counter, 0] = link.IsOriented? "-1" : "1";
+                result[fromIndex, counter, 0] = link.IsOriented ? "-1" : "1";
                 result[toIndex, counter, 0] = link.Text;
 
                 counter++;
@@ -311,23 +315,24 @@ namespace Graphs.Sources.Tasks
         {
             using (var sw = new StreamWriter(fileName))
             {
-                var nodes = (ObservableCollection<NodeModel>)model.NodesSource;
+                var nodes = (ObservableCollection<NodeModel>) model.NodesSource;
                 foreach (var node in nodes)
                 {
-                    sw.WriteLine($"Vertex{{{node.Text}({(int)node.Location.X},{(int)node.Location.Y})}}");
+                    sw.WriteLine($"Vertex{{{node.Text}({(int) node.Location.X},{(int) node.Location.Y})}}");
                 }
 
-                var links = (ObservableCollection<LinkModel>)model.LinksSource;
-                var nodesNameList = ((ObservableCollection<NodeModel>) model.NodesSource).Select((t) => t.Text).ToList();
+                var links = (ObservableCollection<LinkModel>) model.LinksSource;
+                var nodesNameList = ((ObservableCollection<NodeModel>) model.NodesSource).Select((t) => t.Text)
+                    .ToList();
                 var nodesKeyList = ((ObservableCollection<NodeModel>) model.NodesSource).Select((t) => t.Key).ToList();
 
                 var sb = new StringBuilder();
-                var counter = 0; 
+                var counter = 0;
                 foreach (var link in links)
                 {
                     if (counter % 5 == 0)
                     {
-                        if(counter != 0)
+                        if (counter != 0)
                         {
                             sb.Append("}");
                             sw.WriteLine(sb);
@@ -368,7 +373,8 @@ namespace Graphs.Sources.Tasks
             var mainEdgesRegex = new Regex(@"^Edges{(.*)}$");
             var edgesParamRegex = new Regex(@"([\d]+)\(([\d]+),([\w]+),([\w]+),(1|-1)\)");
 
-            var lines = resultWithoutComments.ToString().Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+            var lines = resultWithoutComments.ToString()
+                .Split(new[] {'\n', '\r'}, StringSplitOptions.RemoveEmptyEntries);
 
             var vertexCount = 0;
             foreach (var line in lines)
@@ -382,7 +388,7 @@ namespace Graphs.Sources.Tasks
 
                     if (nodesList.Count - 1 < vertexCount)
                     {
-                        var NodeModel = new NodeModel(vertexCount.ToString(), name) { Location = new Point(x, y) };
+                        var NodeModel = new NodeModel(vertexCount.ToString(), name) {Location = new Point(x, y)};
                         nodesList.Add(NodeModel);
                         nodesNameList.Add(name);
                     }
@@ -430,7 +436,10 @@ namespace Graphs.Sources.Tasks
                             nodesNameList.Add(to);
                         }
 
-                        var link = new LinkModel(fromIndex.ToString(), toIndex.ToString(), text) {IsOriented = isOrientated};
+                        var link = new LinkModel(fromIndex.ToString(), toIndex.ToString(), text)
+                        {
+                            IsOriented = isOrientated
+                        };
                         linksList.Add(link);
 
                     }
@@ -469,5 +478,29 @@ namespace Graphs.Sources.Tasks
             return sb;
         }
 
+        public static IEnumerable<MappedNode> CreateMapedList(IEnumerable<NodeModel> nodes, IEnumerable<LinkModel> links)
+        {
+            var nodesList = nodes.ToList();
+            var linksList = links.ToList();
+
+            var result = nodesList.Select((n)=> new MappedNode{Node = n}).ToList();
+
+            foreach (var link in linksList)
+            {
+                var findedNode = nodesList.Find((t) => t.Key == link.From);
+                var findedMapedNode = result.Find((t)=> t.Node.Key == findedNode.Key);
+                findedMapedNode.Links.Add(link);
+
+                if (!link.IsOriented)
+                {
+                    var findedDestNode = nodesList.Find((t) => t.Key == link.To);
+                    var findedDestMapedNode = result.Find((t) => t.Node.Key == findedDestNode.Key);
+                    findedDestMapedNode.Links.Add(link);
+                }
+            }
+
+
+            return result;
+        }
     }
 }

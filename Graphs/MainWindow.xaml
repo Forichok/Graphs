@@ -150,7 +150,7 @@
                 </MenuItem>
 
                 <MenuItem Header="Tasks">
-
+                    <MenuItem Header="2.BFS" Command="{Binding BfsCommand}"/>
                 </MenuItem>
 
                 <MenuItem Header="About">

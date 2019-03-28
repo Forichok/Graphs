@@ -76,7 +76,10 @@
     <Compile Include="Sources\Helpers\NodeKeyCreator.cs" />
     <Compile Include="Sources\Converters\LinkDirectionConverter.cs" />
     <Compile Include="Sources\Models\LinkModel.cs" />
+    <Compile Include="Sources\Models\MappedNode.cs" />
+    <Compile Include="Sources\Models\BfsData.cs" />
     <Compile Include="Sources\Models\NodeModel.cs" />
+    <Compile Include="Sources\Tasks\BFSTask2.cs" />
     <Compile Include="Sources\Tasks\MainModel.cs" />
     <Compile Include="Sources\Tools\CustomPartManager.cs" />
     <Compile Include="Sources\ViewModels\MainViewModel.cs" />
