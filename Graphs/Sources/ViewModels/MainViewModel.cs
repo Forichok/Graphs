@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Data;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -26,18 +25,16 @@ namespace Graphs.Sources.ViewModels
     {
         public GraphLinksModel<NodeModel, string, string, LinkModel> Model { get; set; }
         public CustomPartManager PartManager { get; set; }
-        
 
         public MainViewModel()
         {
-
             Model = new GraphLinksModel<NodeModel, string, string, LinkModel>()
             {
                 Modifiable = true,
                 HasUndoManager = true
             };
             PartManager = new CustomPartManager();
-             
+
 
             LoadAdjencyMatrixCommand = new DelegateCommand(LoadAdjencyMatrix);
             SaveAdjencyMatrixCommand = new DelegateCommand(SaveAdjencyMatrix);
@@ -65,7 +62,19 @@ namespace Graphs.Sources.ViewModels
             BestfsCommand = new DelegateCommand(StartBestfs);
         }
 
-        public ICommand ReverseMenuCommand
+
+        #region link context menu commands
+
+        public DelegateCommand<object> ReverseMenuCommand { get; }
+
+        public DelegateCommand<object> ChangeLinkDirectionMenuCommand { get; }
+
+        #endregion
+
+
+        #region Links context menu actions
+
+        private void ReverseMenu(object sender)
         {
             var link = (sender as PartManager.PartBinding).Data as LinkModel;
             var tmpStr = link.From;
@@ -369,8 +378,8 @@ namespace Graphs.Sources.ViewModels
 
 
         #region task 2
-        
-        public DelegateCommand BfsCommand { get; } 
+
+        public DelegateCommand BfsCommand { get; }
 
         public void StartBfs()
         {
@@ -378,7 +387,7 @@ namespace Graphs.Sources.ViewModels
             var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(), Model.LinksSource.Cast<LinkModel>());
 
             var resBFS = BFSTask2.BreadthFirstSearch(mappedList, "A", "B");
-            resBFS.ForEach(t=>t.IsSelected = true);
+            resBFS.ForEach(t => t.IsSelected = true);
         }
 
         #endregion
@@ -457,5 +466,6 @@ namespace Graphs.Sources.ViewModels
 
             return fileContent;
         }
+
     }
 }
