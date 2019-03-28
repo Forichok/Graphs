@@ -59,6 +59,7 @@ namespace Graphs.Sources.ViewModels
             SaveCommand = new DelegateCommand<Diagram>(SaveUniversal);
 
             BfsCommand = new DelegateCommand(StartBfs);
+            BestfsCommand = new DelegateCommand(StartBestfs);
         }
 
 
@@ -392,6 +393,25 @@ namespace Graphs.Sources.ViewModels
         #endregion
 
 
+        #region task 3
+
+        public DelegateCommand BestfsCommand { get; }
+
+        public void StartBestfs()
+        {
+            ClearGraph();
+            var checkRes = CheckGraphsLinksWithMsg();
+            if (checkRes == false)
+                return;
+            var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(), Model.LinksSource.Cast<LinkModel>());
+
+            var resBestFS = BestFSTask3.StartBestFs(mappedList, "A", "B");
+            resBestFS.ForEach(t => t.IsSelected = true);
+        }
+
+        #endregion
+
+
         private void ClearGraph()
         {
             foreach (var o in Model.LinksSource)
@@ -399,6 +419,21 @@ namespace Graphs.Sources.ViewModels
                 ((LinkModel)o).IsSelected = false;
             }
         }
+
+        private bool CheckGraphsLinksWithMsg()
+        {
+            foreach (var o in Model.LinksSource)
+            {
+                var parseResult = int.TryParse(((LinkModel)o).Text, out var ignored);
+                if (parseResult == false)
+                {
+                    MessageBox.Show($"Cannot start func because one of link has wrong cost [{(LinkModel)o}]", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return false;
+                }
+            }
+            return true;
+        }
+
         private void UpdateMatrix(IEnumerable<NodeModel> nodes, IEnumerable<LinkModel> links)
         {
             Model.NodesSource = new ObservableCollection<NodeModel>(nodes);
