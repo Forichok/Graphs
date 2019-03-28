@@ -1,13 +1,13 @@
-﻿using System.Threading.Tasks;
-
-namespace Graphs.Sources.Models
+﻿namespace Graphs.Sources.Models
 {
-    public class BfsData
+    public class UniversalGraphNodeData
     {
         public MappedNode Node = null;
         public bool IsVisited = false;
 
         public LinkModel ParentLink = null;
         public MappedNode ParentMappedNode = null;
+
+        public int Cost = -1;
     }
 }

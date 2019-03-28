@@ -60,6 +60,8 @@ namespace Graphs.Sources.ViewModels
 
             BfsCommand = new DelegateCommand(StartBfs);
             BestfsCommand = new DelegateCommand(StartBestfs);
+
+            DijkstraMatrixCommand = new DelegateCommand(StartDijkstraMatrix);
         }
 
 
@@ -412,6 +414,25 @@ namespace Graphs.Sources.ViewModels
         #endregion
 
 
+        #region task 4
+
+        public DelegateCommand DijkstraMatrixCommand { get; }
+
+        public void StartDijkstraMatrix()
+        {
+            ClearGraph();
+            var checkRes = CheckGraphsLinksWithMsg(true);
+            if (checkRes == false)
+                return;
+            var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(), Model.LinksSource.Cast<LinkModel>());
+
+            var resDijkstra = DijkstraTask4.StartDijkstra(mappedList, "A");
+        }
+
+        #endregion
+
+
+
         private void ClearGraph()
         {
             foreach (var o in Model.LinksSource)
@@ -420,7 +441,7 @@ namespace Graphs.Sources.ViewModels
             }
         }
 
-        private bool CheckGraphsLinksWithMsg()
+        private bool CheckGraphsLinksWithMsg(bool onlyPlus = false)
         {
             foreach (var o in Model.LinksSource)
             {
@@ -430,6 +451,10 @@ namespace Graphs.Sources.ViewModels
                     MessageBox.Show($"Cannot start func because one of link has wrong cost [{(LinkModel)o}]", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
                     return false;
                 }
+
+                if (onlyPlus && ignored < 0)
+                    MessageBox.Show($"Cannot start func because one of link has wrong cost [{(LinkModel)o}] required > 0", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
+
             }
             return true;
         }

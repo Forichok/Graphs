@@ -13,12 +13,12 @@ namespace Graphs.Sources.Tasks
             var queue = new Queue<string>();
             queue.Enqueue(keyFrom);
 
-            var dataDict = new Dictionary<string, BfsData>();
+            var dataDict = new Dictionary<string, UniversalGraphNodeData>();
             var mapedList = mapedEnumerable.ToList();
 
             foreach (var mappedNode in mapedList)
             {
-                dataDict.Add(mappedNode.Node.Key, new BfsData{Node = mappedNode});
+                dataDict.Add(mappedNode.Node.Key, new UniversalGraphNodeData{Node = mappedNode});
             }
 
             dataDict[keyFrom].IsVisited = true;
@@ -40,20 +40,13 @@ namespace Graphs.Sources.Tasks
 
                 foreach (var link in nextMaped.Links)
                 {    // все преемники текущего узла, ...
-                    if (dataDict[link.To].IsVisited == false)
+                    var to = link.GetTo(node);
+                    if (dataDict[to].IsVisited == false)
                     {      // ... которые ещё не были посещены ...
-                        queue.Enqueue(link.To);                // ... добавить в конец очереди...
-                        dataDict[link.To].IsVisited = true;            // ... и пометить как посещённые
-                        dataDict[link.To].ParentMappedNode = nextMaped;
-                        dataDict[link.To].ParentLink = link;
-                    }
-
-                    if (!link.IsOriented && dataDict[link.From].IsVisited == false)
-                    {
-                        queue.Enqueue(link.From);                // ... добавить в конец очереди...
-                        dataDict[link.From].IsVisited = true;
-                        dataDict[link.From].ParentMappedNode = nextMaped;
-                        dataDict[link.From].ParentLink = link;
+                        queue.Enqueue(to);                // ... добавить в конец очереди...
+                        dataDict[to].IsVisited = true;            // ... и пометить как посещённые
+                        dataDict[to].ParentMappedNode = nextMaped;
+                        dataDict[to].ParentLink = link;
                     }
                 }
             }
