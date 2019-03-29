@@ -130,8 +130,8 @@ namespace Graphs.Sources.ViewModels
             }
             StartNode = (sender as PartManager.PartBinding).Data as NodeModel;
 
-            StartNode.IsFinishNode = true;
-            StartNode.IsStartNode = false;
+            StartNode.IsStartNode = true;
+            StartNode.IsFinishNode = false;
         }
 
         private void SetFinishNodeMenu(object sender)
@@ -445,11 +445,22 @@ namespace Graphs.Sources.ViewModels
 
         public void StartBfs()
         {
-            ClearGraph();
-            var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(), Model.LinksSource.Cast<LinkModel>());
+            if (StartNode != null && FinishNode != null)
+            {
+                ClearGraph();
+                var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(),
+                    Model.LinksSource.Cast<LinkModel>());
 
-            var resBFS = BFSTask2.BreadthFirstSearch(mappedList, "A", "B");
-            resBFS.ForEach(t => t.IsSelected = true);
+
+                var resBFS = BFSTask2.BreadthFirstSearch(mappedList, StartNode.Key, FinishNode.Key);
+                resBFS.ForEach(t =>
+                {
+                    var fromNode = Model.GetFromNodeForLink(t);
+                    if (!fromNode.IsFinishNode && !fromNode.IsStartNode)
+                        fromNode.IsSelected = true;
+                    t.IsSelected = true;
+                });
+            }
         }
 
         #endregion
@@ -461,14 +472,24 @@ namespace Graphs.Sources.ViewModels
 
         public void StartBestfs()
         {
-            ClearGraph();
-            var checkRes = CheckGraphsLinksWithMsg();
-            if (checkRes == false)
-                return;
-            var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(), Model.LinksSource.Cast<LinkModel>());
+            if (StartNode != null && FinishNode != null)
+            {
+                ClearGraph();
+                var checkRes = CheckGraphsLinksWithMsg();
+                if (checkRes == false)
+                    return;
+                var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(),
+                    Model.LinksSource.Cast<LinkModel>());
 
-            var resBestFS = BestFSTask3.StartBestFs(mappedList, "A", "B");
-            resBestFS.ForEach(t => t.IsSelected = true);
+                var resBestFS = BestFSTask3.StartBestFs(mappedList, StartNode.Key, FinishNode.Key);
+                resBestFS.ForEach(t =>
+                {
+                    var fromNode = Model.GetFromNodeForLink(t);
+                    if (!fromNode.IsFinishNode && !fromNode.IsStartNode)
+                        fromNode.IsSelected = true;
+                    t.IsSelected = true;
+                });
+            }
         }
 
         #endregion
@@ -476,10 +497,17 @@ namespace Graphs.Sources.ViewModels
 
         private void ClearGraph()
         {
-            foreach (var o in Model.LinksSource)
+            foreach (LinkModel link in Model.LinksSource)
             {
-                ((LinkModel)o).IsSelected = false;
+                link.IsSelected = false;
             }
+
+            foreach (NodeModel node in Model.NodesSource)
+            {
+                node.IsSelected = false;
+            }
+
+
         }
 
         private bool CheckGraphsLinksWithMsg()

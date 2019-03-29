@@ -185,10 +185,8 @@
                 </Grid.ColumnDefinitions>
 
                 <GridSplitter Width="10" Grid.Column="1"></GridSplitter>
-
-
-
-                <TabControl Grid.Column="0">
+                
+                    <TabControl Grid.Column="0">
                     <TabItem Header="Nodes">
                         <DataGrid  ItemsSource="{Binding Model.NodesSource}"/>
                     </TabItem>
@@ -208,7 +206,13 @@
                                 </ItemsControl.ItemsPanel>
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <Label Width="25" Content="{Binding Heading}" BorderThickness="1" BorderBrush="Black"/>
+                                        <Label Width="25" Content="{Binding Heading}" BorderThickness="1" BorderBrush="Black">
+                                            <ContextMenuService.ContextMenu>
+                                                <ContextMenu>
+                                                    <MenuItem Header="Delete" Click="DeleteNodeInMatrix_Click" />
+                                                </ContextMenu>
+                                            </ContextMenuService.ContextMenu>
+                                        </Label>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
@@ -217,8 +221,14 @@
                                     <DataTemplate>
                                         <StackPanel>
                                             <StackPanel Orientation="Horizontal" >
-                                            <Label Width="25" Content="{Binding Heading}" BorderThickness="1" BorderBrush="Black"/>
-                                            <ItemsControl ItemsSource="{Binding Values}">
+                                                <Label Width="25" Content="{Binding Heading}" BorderThickness="1" BorderBrush="Black">
+                                                    <ContextMenuService.ContextMenu>
+                                                        <ContextMenu>
+                                                            <MenuItem Header="Delete" Click="DeleteNodeInMatrix_Click" />
+                                                        </ContextMenu>
+                                                    </ContextMenuService.ContextMenu>
+                                                </Label>
+                                                <ItemsControl ItemsSource="{Binding Values}">
                                                 <ItemsControl.ItemsPanel>
                                                     <ItemsPanelTemplate>
                                                         <StackPanel Orientation="Horizontal"/>

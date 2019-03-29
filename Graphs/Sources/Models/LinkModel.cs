@@ -29,7 +29,7 @@ namespace Graphs.Sources.Models
         public String Weight
         {
             get => _weight;
-            set => _weight = value;
+            set => Text=_weight = value;
         }
 
         public EventHandler LinkChangedHandler;

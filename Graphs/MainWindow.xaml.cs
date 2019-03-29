@@ -117,14 +117,20 @@ namespace Graphs
 
         private void MyDiagram_LinkDrawn(object sender, DiagramEventArgs e)
         {
-            var linkModel = e.Part.Data as LinkModel;
+            try
+            {
+                var linkModel = e.Part.Data as LinkModel;
+                linkModel.Weight = ((int)(GetNode(linkModel.From).Location - GetNode(linkModel.To).Location).Length / 100).ToString();
 
-            linkModel.Weight = ((int)(GetNode(linkModel.From).Location - GetNode(linkModel.To).Location).Length / 100).ToString();
+                int from = getNodeIndex(linkModel.From, myDiagram.Model.NodesSource);
+                int to = getNodeIndex(linkModel.To, myDiagram.Model.NodesSource);
 
-            int from = getNodeIndex(linkModel.From, myDiagram.Model.NodesSource);
-            int to = getNodeIndex(linkModel.To, myDiagram.Model.NodesSource);
-
-            matrixData[from].Values[to] = linkModel;
+                matrixData[from].Values[to] = linkModel;
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception);
+            }
         }
 
         private int getNodeIndex(String key, IEnumerable nodes)
@@ -140,7 +146,7 @@ namespace Graphs
             return -1;
         }
 
-        private GraphLinksModelNodeData<string> GetNode(string key)
+        private NodeModel GetNode(string key)
         {
             foreach (NodeModel node in myDiagram.Model.NodesSource)
                 if (node.Key == key)
@@ -303,6 +309,19 @@ namespace Graphs
 
         private void Delete_Click(object sender, RoutedEventArgs e)
         {
+            var model = myDiagram.Model as GraphLinksModel<NodeModel, string, string, LinkModel>;
+            Task.Factory.StartNew(() => UpdateMatrix(model, myDiagram));
+        }
+
+        private void DeleteNodeInMatrix_Click(object sender, RoutedEventArgs e)
+        {
+            var line = ((sender as MenuItem).DataContext) as Line;
+
+            myDiagram.StartTransaction("Remove Node");
+
+            myDiagram.Model.RemoveNode(GetNode(line.Heading));
+
+            myDiagram.CommitTransaction("Remove Node");
             var model = myDiagram.Model as GraphLinksModel<NodeModel, string, string, LinkModel>;
             Task.Factory.StartNew(() => UpdateMatrix(model, myDiagram));
         }
