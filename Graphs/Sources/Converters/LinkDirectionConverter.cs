@@ -10,8 +10,7 @@ namespace Graphs.Sources.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var b = (value as PartManager.PartBinding).Data as LinkModel;
-            if(b.IsOriented)
+            if((bool)value)
             {
                 return "Standard";
             }

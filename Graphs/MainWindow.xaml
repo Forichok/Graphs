@@ -51,7 +51,9 @@
                     <go:NodeShape.Stroke>
                         <MultiBinding Converter="{StaticResource SelectionConverter}" Mode="OneWay" UpdateSourceTrigger="PropertyChanged" ConverterParameter="Node">
                             <Binding Path="Part.IsSelected" UpdateSourceTrigger="PropertyChanged"></Binding>
-                            <Binding Path="Data" UpdateSourceTrigger="PropertyChanged"></Binding>
+                            <Binding Path="Data.IsStartNode" UpdateSourceTrigger="PropertyChanged"></Binding>
+                            <Binding Path="Data.IsFinishNode" UpdateSourceTrigger="PropertyChanged"></Binding>
+                            <Binding Path="Data.IsSelected" UpdateSourceTrigger="PropertyChanged"></Binding>
                         </MultiBinding>
 
                     </go:NodeShape.Stroke>
@@ -86,12 +88,12 @@
                     <go:LinkShape.Stroke>
                         <MultiBinding Converter="{StaticResource SelectionConverter}" ConverterParameter="Link">
                             <Binding Path="Part.IsSelected"></Binding>
-                            <Binding Path="Data"></Binding>
+                            <Binding Path="Data.IsSelected"></Binding>
                         </MultiBinding>
 
                     </go:LinkShape.Stroke>
                 </go:LinkShape>
-                <Path Fill="Black" go:LinkPanel.ToArrow = "{Binding Converter={StaticResource LinkDirectionConverter },Mode=OneWay}"/>
+                <Path Fill="Black" go:LinkPanel.ToArrow = "{Binding Path=Data.IsOriented, Converter={StaticResource LinkDirectionConverter },Mode=OneWay,UpdateSourceTrigger=PropertyChanged}"/>
                 <go:NodePanel Sizing="Auto"
                       go:LinkPanel.Offset="{Binding Path=Data.Offset, Mode=TwoWay}">
                     <Rectangle>

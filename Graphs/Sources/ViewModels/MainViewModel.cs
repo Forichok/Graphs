@@ -122,26 +122,30 @@ namespace Graphs.Sources.ViewModels
 
         private void SetStartNodeMenu(object sender)
         {
-            var startNode = (sender as PartManager.PartBinding).Data as NodeModel;
-            foreach (NodeModel node in Model.NodesSource)
+            if (StartNode != null)
             {
-                node.IsStartNode = false;
+                StartNode.IsFinishNode = false;
+                StartNode.IsStartNode = false;
+                StartNode.IsSelected = false;
             }
-            startNode.IsStartNode = true;
-            startNode.IsFinishNode = false;
-            StartNode = startNode;
+            StartNode = (sender as PartManager.PartBinding).Data as NodeModel;
+
+            StartNode.IsFinishNode = true;
+            StartNode.IsStartNode = false;
         }
 
         private void SetFinishNodeMenu(object sender)
         {
-            var finishNode = (sender as PartManager.PartBinding).Data as NodeModel;
-            foreach (NodeModel node in Model.NodesSource)
+            if (FinishNode != null)
             {
-                node.IsFinishNode = false;
+                FinishNode.IsFinishNode = false;
+                FinishNode.IsStartNode = false;
+                FinishNode.IsSelected = false;
             }
-            finishNode.IsFinishNode=true;
-            finishNode.IsStartNode = false;
-            FinishNode = finishNode;
+            FinishNode = (sender as PartManager.PartBinding).Data as NodeModel;
+            
+            FinishNode.IsFinishNode=true;
+            FinishNode.IsStartNode = false;
         }
 
         private void AddNewNode(PartManager.PartBinding sender)
