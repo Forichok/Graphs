@@ -168,6 +168,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="DijkstraResultWindow.xaml.cs">
+      <DependentUpon>DijkstraResultWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Sources\Converters\PartSelectionConverter.cs" />
     <Compile Include="Sources\Helpers\NodeFigureCreator.cs" />
     <Compile Include="Sources\Helpers\NodeKeyCreator.cs" />
@@ -182,6 +185,10 @@
     <Compile Include="Sources\Tasks\MainModel.cs" />
     <Compile Include="Sources\Tools\CustomPartManager.cs" />
     <Compile Include="Sources\ViewModels\MainViewModel.cs" />
+    <Page Include="DijkstraResultWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

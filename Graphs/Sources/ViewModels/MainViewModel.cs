@@ -420,6 +420,7 @@ namespace Graphs.Sources.ViewModels
 
         public void StartDijkstraMatrix()
         {
+            
             ClearGraph();
             var checkRes = CheckGraphsLinksWithMsg(true);
             if (checkRes == false)
@@ -427,6 +428,10 @@ namespace Graphs.Sources.ViewModels
             var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(), Model.LinksSource.Cast<LinkModel>());
 
             var resDijkstra = DijkstraTask4.StartDijkstra(mappedList, "A");
+
+            var resWindow = new DijkstraResultWindow((Dictionary<string, UniversalGraphNodeData>) resDijkstra, "A");
+            resWindow.Show();
+            
         }
 
         #endregion
