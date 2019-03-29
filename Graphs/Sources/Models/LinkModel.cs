@@ -11,7 +11,6 @@ namespace Graphs.Sources.Models
     [Serializable]
     public class LinkModel : GraphLinksModelLinkData<string, string>
     {
-        private string _weight;
         // this property remembers the curviness;
         // Double.NaN means let it use a default calculated value
         // default value of NaN causes Route to calculate it
@@ -26,33 +25,36 @@ namespace Graphs.Sources.Models
 
         public Point Offset { get; set; }
 
-        public String Weight
+        public string Weight
         {
             get
             {
-                _weight = Text;
-                return _weight;
+                return Text;
             }
-            set => Text=_weight = value;
+            set
+            {
+              //  RaisePropertyChanged("Weight",Text,value);
+                Text = value;
+            }
         }
+
         public LinkModel()
         {
             Offset = new Point(0, 0);
             Curviness = double.NaN;
             IsOriented = true;
             IsSelected = false;
-            Weight = Text;
         }
 
         public LinkModel(string from, string to, string text) : base(from, to)
         {
-            this.Text = text;
+            
             Offset = new Point(0, 0);
             Curviness = double.NaN;
             IsOriented = true;
             IsSelected = false;
             this.PropertyChanged += LinkModel_PropertyChanged;
-            Weight = Text;
+            Weight = text;
         }
 
         private void LinkModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)

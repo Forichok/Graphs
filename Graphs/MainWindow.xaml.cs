@@ -1,27 +1,21 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Data;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Forms;
-using System.Windows.Input;
-using System.Xml.Linq;
-using DevExpress.Mvvm.Native;
-using DevExpress.Mvvm.POCO;
+﻿using DevExpress.Mvvm.Native;
 using Graphs.Sources.Helpers;
 using Graphs.Sources.Models;
 using Graphs.Sources.ViewModels;
 using Northwoods.GoXam;
 using Northwoods.GoXam.Model;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Data;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Input;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using MenuItem = System.Windows.Controls.MenuItem;
-using MessageBox = System.Windows.MessageBox;
-using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 
 namespace Graphs
 {
@@ -31,10 +25,26 @@ namespace Graphs
     public partial class MainWindow : Window
     {
         private ObservableCollection<Line> matrixData;
-
+        
+        private CancellationTokenSource source;
+        private CancellationToken token;
+        private Task updateTask;
         public MainWindow()
         {
+
             InitializeComponent();
+            
+            source = new CancellationTokenSource();
+
+            token = source.Token;
+            token.ThrowIfCancellationRequested();
+
+            var model = myDiagram.Model as GraphLinksModel<NodeModel, string, string, LinkModel>;
+            updateTask =new Task(() =>
+            {
+                UpdateMatrix(model,myDiagram);
+            },token);
+            
 
             matrixData = new ObservableCollection<Line>();
 
@@ -112,15 +122,7 @@ namespace Graphs
 
                 lines.Add(new Line() {Heading = from, Values = routes});
             }
-
-            App.Current.Dispatcher.Invoke(() =>
-            {
-                matrixData.Clear();
-                foreach (var line in lines)
-                {
-                    matrixData.Add(line);
-                }
-            });
+            App.Current.Dispatcher.Invoke(()=>MatrixControl.ItemsSource=matrixData = lines);
         }
 
 
@@ -129,8 +131,7 @@ namespace Graphs
             try
             {
                 var linkModel = e.Part.Data as LinkModel;
-                linkModel.Weight =
-                    ((int) (GetNode(linkModel.From).Location - GetNode(linkModel.To).Location).Length / 100).ToString();
+                linkModel.Weight=((int) (GetNode(linkModel.From).Location - GetNode(linkModel.To).Location).Length / 100).ToString();
 
                 int from = getNodeIndex(linkModel.From, myDiagram.Model.NodesSource);
                 int to = getNodeIndex(linkModel.To, myDiagram.Model.NodesSource);
@@ -230,8 +231,7 @@ namespace Graphs
             if ((Keyboard.Modifiers == ModifierKeys.Control && (e.Key == Key.Z || e.Key == Key.Y)) ||
                 e.Key == Key.Delete)
             {
-                var model = myDiagram.Model as GraphLinksModel<NodeModel, string, string, LinkModel>;
-                Task.Factory.StartNew(() => UpdateMatrix(model, myDiagram));
+                UpdateMatrix();
             }
 
 
@@ -277,8 +277,7 @@ namespace Graphs
 
         private void Delete_Click(object sender, RoutedEventArgs e)
         {
-            var model = myDiagram.Model as GraphLinksModel<NodeModel, string, string, LinkModel>;
-            Task.Factory.StartNew(() => UpdateMatrix(model, myDiagram));
+            UpdateMatrix();
         }
 
         private void DeleteNodeInMatrix_Click(object sender, RoutedEventArgs e)
@@ -295,8 +294,16 @@ namespace Graphs
 
         private void UpdateMatrix()
         {
+            if (updateTask.Status != TaskStatus.Running) { 
             var model = myDiagram.Model as GraphLinksModel<NodeModel, string, string, LinkModel>;
-            Task.Factory.StartNew(() => UpdateMatrix(model, myDiagram));
+
+          
+            updateTask = new Task(() =>
+            {
+                UpdateMatrix(model, myDiagram);
+            }, token);
+            updateTask.Start();
+                }
         }
     }
 
