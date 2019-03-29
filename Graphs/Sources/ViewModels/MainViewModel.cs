@@ -25,6 +25,7 @@ namespace Graphs.Sources.ViewModels
     {
         public GraphLinksModel<NodeModel, string, string, LinkModel> Model { get; set; }
 
+        private GraphLinksModel<NodeModel, string, string, LinkModel> model2;
         public NodeModel StartNode { get; set; }
 
         public NodeModel FinishNode { get; set; }
@@ -39,8 +40,14 @@ namespace Graphs.Sources.ViewModels
                 Modifiable = true,
                 HasUndoManager = true
             };
+            model2 = new GraphLinksModel<NodeModel, string, string, LinkModel>()
+            {
+                Modifiable = true,
+                HasUndoManager = true
+            };
             PartManager = new CustomPartManager();
 
+            SwitchGraphCommand = new DelegateCommand(SwitchGraph);
 
             LoadAdjencyMatrixCommand = new DelegateCommand(LoadAdjencyMatrix);
             SaveAdjencyMatrixCommand = new DelegateCommand(SaveAdjencyMatrix);
@@ -224,9 +231,9 @@ namespace Graphs.Sources.ViewModels
 
         public DelegateCommand LoadCommand { get; }
 
+        public DelegateCommand SwitchGraphCommand { get; }
+
         public DelegateCommand<Diagram> SaveCommand { get; }
-
-
 
         public DelegateCommand ExitCommand { get; }
 
@@ -234,6 +241,14 @@ namespace Graphs.Sources.ViewModels
 
 
         #region Menu Actions
+
+        private void SwitchGraph()
+        {
+            var tmp = Model;
+            Model = model2;
+            model2 = tmp;
+            OnFileLoaded();
+        }
 
         private void LoadAdjencyMatrix()
         {
