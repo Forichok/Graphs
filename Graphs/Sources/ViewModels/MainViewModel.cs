@@ -165,7 +165,7 @@ namespace Graphs.Sources.ViewModels
 
             var list = MainModel.NodesModelToArr(myDiagram.Model.NodesSource.Cast<NodeModel>());
             var key = NodeKeyCreator.GetNodeName(list);
-            var to = new NodeModel(key, key);
+            var to = new NodeModel(key);
             //  to.Text = "new";
             var p = from.Location;
             //?? this isn't a very smart way to decide where to place the node

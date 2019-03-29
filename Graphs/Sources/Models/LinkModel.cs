@@ -28,15 +28,15 @@ namespace Graphs.Sources.Models
 
         public String Weight
         {
-            get => _weight;
+            get
+            {
+                _weight = Text;
+                return _weight;
+            }
             set => Text=_weight = value;
         }
-
-        public EventHandler LinkChangedHandler;
-
         public LinkModel()
         {
-            Text = "0";
             Offset = new Point(0, 0);
             Curviness = double.NaN;
             IsOriented = true;

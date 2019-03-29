@@ -31,10 +31,10 @@ namespace Graphs.Sources.Models
             this.Text = "test";
         }
 
-        public NodeModel(string key, string text)
+        public NodeModel(string key)
         {
             this.Key = key;  
-            this.Text = text;
+            this.Text = key;
             _figureId = 0;
             Figure = NodeFigureCreator.GetFigure(ref _figureId);
             IsSelected = false;

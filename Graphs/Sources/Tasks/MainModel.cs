@@ -39,7 +39,7 @@ namespace Graphs.Sources.Tasks
 
                     if (nodesList.Count - 1 < vertexCount)
                     {
-                        var NodeModel = new NodeModel(vertexCount.ToString(), name) {Location = new Point(x, y)};
+                        var NodeModel = new NodeModel(name) {Location = new Point(x, y)};
                         nodesList.Add(NodeModel);
                     }
                     else
@@ -58,7 +58,7 @@ namespace Graphs.Sources.Tasks
                         checkSum = splitedLine.Length;
                         for (var i = vertexCount; i < splitedLine.Length && nodesList.Count < splitedLine.Length; i++)
                         {
-                            var NodeModel = new NodeModel(i.ToString(), i.ToString());
+                            var NodeModel = new NodeModel(i.ToString());
                             nodesList.Add(NodeModel);
                         }
                     }
@@ -166,7 +166,7 @@ namespace Graphs.Sources.Tasks
 
                     if (nodesList.Count - 1 < vertexCount)
                     {
-                        var NodeModel = new NodeModel(vertexCount.ToString(), name) {Location = new Point(x, y)};
+                        var NodeModel = new NodeModel(name) {Location = new Point(x, y)};
                         nodesList.Add(NodeModel);
                     }
                     else
@@ -202,7 +202,7 @@ namespace Graphs.Sources.Tasks
             //normalize list of nodes
             for (var i = vertexCount; i < matrix.First().Count; i++)
             {
-                var NodeModel = new NodeModel(i.ToString(), i.ToString());
+                var NodeModel = new NodeModel(i.ToString());
                 nodesList.Add(NodeModel);
             }
 
@@ -388,7 +388,7 @@ namespace Graphs.Sources.Tasks
 
                     if (nodesList.Count - 1 < vertexCount)
                     {
-                        var NodeModel = new NodeModel(vertexCount.ToString(), name) {Location = new Point(x, y)};
+                        var NodeModel = new NodeModel(name) {Location = new Point(x, y)};
                         nodesList.Add(NodeModel);
                         nodesNameList.Add(name);
                     }
@@ -396,6 +396,7 @@ namespace Graphs.Sources.Tasks
                     {
                         nodesList[vertexCount].Location = new Point(x, y);
                         nodesList[vertexCount].Text = name;
+                        nodesList[vertexCount].Key = name;
                         nodesNameList[vertexCount] = name;
 
                     }
@@ -417,26 +418,23 @@ namespace Graphs.Sources.Tasks
                         var from = groups[3].Value;
                         var to = groups[4].Value;
 
-                        var fromIndex = nodesNameList.IndexOf(from);
-                        var toIndex = nodesNameList.IndexOf(to);
-
                         var isOrientated = groups[5].Value == "1";
 
                         if (!nodesNameList.Contains(from))
                         {
-                            var nodeModel = new NodeModel(from, from);
+                            var nodeModel = new NodeModel(from);
                             nodesList.Add(nodeModel);
                             nodesNameList.Add(from);
                         }
 
                         if (!nodesNameList.Contains(to))
                         {
-                            var nodeModel = new NodeModel(to, to);
+                            var nodeModel = new NodeModel(to);
                             nodesList.Add(nodeModel);
                             nodesNameList.Add(to);
                         }
 
-                        var link = new LinkModel(fromIndex.ToString(), toIndex.ToString(), text)
+                        var link = new LinkModel(from, to, text)
                         {
                             IsOriented = isOrientated
                         };
