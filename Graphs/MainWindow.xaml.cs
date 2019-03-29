@@ -125,9 +125,6 @@ namespace Graphs
             int to = getNodeIndex(linkModel.To, myDiagram.Model.NodesSource);
 
             matrixData[from].Values[to] = linkModel;
-            //linkModel.LinkChangedHandler += LinkChanged;
-            //var model = myDiagram.Model as GraphLinksModel<NodeModel, string, string, LinkModel>;
-            //Task.Factory.StartNew(()=>UpdateMatrix(model,myDiagram));
         }
 
         private int getNodeIndex(String key, IEnumerable nodes)

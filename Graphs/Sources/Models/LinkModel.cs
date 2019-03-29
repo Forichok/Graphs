@@ -64,16 +64,15 @@ namespace Graphs.Sources.Models
                 if (Weight.Length != 0 && !isContains && int.TryParse(Weight, out n)&&n>0)
                 {
                     DiagramModel.StartTransaction("Add LinkModel");
-                  //  model.AddLink(this);
+                    model.AddLink(this);
                     model.DoLinkAdded(this);
                     DiagramModel.CommitTransaction("Add LinkModel");
 
                 }
-                else //if (isContains && Weight=="-")
-
+                else if (isContains && !int.TryParse(Weight, out n) && n > 0)
                 {
                     DiagramModel.StartTransaction("Remove LinkModel");
-                 //   model.RemoveLink(this);
+                    model.RemoveLink(this);
                     model.DoLinkRemoved(this);
                     DiagramModel.CommitTransaction("Remove LinkModel");
                 }
