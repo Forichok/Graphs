@@ -51,6 +51,7 @@ namespace Graphs.Sources.ViewModels
 
             ExitCommand = new DelegateCommand(Exit);
 
+            ResetGraphCommand=new DelegateCommand(ResetGraph);
 
             ReverseMenuCommand = new DelegateCommand<object>(ReverseMenu);
             ChangeLinkDirectionMenuCommand = new DelegateCommand<object>(ChangeLinkDirectionMenu);
@@ -177,6 +178,28 @@ namespace Graphs.Sources.ViewModels
 
             myDiagram.CommitTransaction("Add NodeModel");
         }
+        #endregion
+
+        #region background commands
+
+        public DelegateCommand ResetGraphCommand { get; }
+
+        private void ResetGraph()
+        {
+            foreach (LinkModel link in Model.LinksSource)
+            {
+                link.IsSelected = false;
+            }
+
+            foreach (NodeModel node in Model.NodesSource)
+            {
+                node.IsFinishNode = false;
+                node.IsStartNode = false;
+                node.IsSelected = false;
+            }
+            
+        }
+
         #endregion
 
 

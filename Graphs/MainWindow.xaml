@@ -49,9 +49,9 @@
                 <go:NodeShape go:NodePanel.Figure ="{Binding Path=Data.Figure}"  Cursor="Hand"
                    Fill="{StaticResource theNodeBrush}" StrokeThickness="3">
                     <go:NodeShape.Stroke>
-                        <MultiBinding Converter="{StaticResource SelectionConverter}" ConverterParameter="Node">
-                            <Binding Path="Part.IsSelected"></Binding>
-                            <Binding Path="Data"></Binding>
+                        <MultiBinding Converter="{StaticResource SelectionConverter}" Mode="OneWay" UpdateSourceTrigger="PropertyChanged" ConverterParameter="Node">
+                            <Binding Path="Part.IsSelected" UpdateSourceTrigger="PropertyChanged"></Binding>
+                            <Binding Path="Data" UpdateSourceTrigger="PropertyChanged"></Binding>
                         </MultiBinding>
 
                     </go:NodeShape.Stroke>
@@ -265,6 +265,14 @@
                             </go:ClickCreatingTool.PrototypeData>
                         </go:ClickCreatingTool>
                     </go:Diagram.ClickCreatingTool>
+                    <ContextMenuService.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Reset" Command="{Binding ResetGraphCommand}" />
+                            <MenuItem Command="Paste" />
+                            <MenuItem Command="Undo" />
+                            <MenuItem Command="Redo" />
+                        </ContextMenu>
+                    </ContextMenuService.ContextMenu>
                 </go:Diagram>
             </Grid>
         </Grid>
