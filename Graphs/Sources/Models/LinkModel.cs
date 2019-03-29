@@ -61,7 +61,7 @@ namespace Graphs.Sources.Models
             {
                 bool isContains = model.LinksSource.Cast<LinkModel>().Contains(this);
                 var n = 0;
-                if (Weight.Length != 0 && !isContains && int.TryParse(Weight, out n)&&n>0)
+                if (Weight.Length != 0 && !isContains && int.TryParse(Weight, out n)&&n>=0)
                 {
                     DiagramModel.StartTransaction("Add LinkModel");
                     model.AddLink(this);
@@ -69,7 +69,7 @@ namespace Graphs.Sources.Models
                     DiagramModel.CommitTransaction("Add LinkModel");
 
                 }
-                else if (isContains && !int.TryParse(Weight, out n) && n > 0)
+                else if (isContains && !int.TryParse(Weight, out n) && n <= 0)
                 {
                     DiagramModel.StartTransaction("Remove LinkModel");
                     model.RemoveLink(this);
