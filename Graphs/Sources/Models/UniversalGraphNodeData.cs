@@ -8,7 +8,6 @@ namespace Graphs.Sources.Models
     {
         public MappedNode Node = null;
         public bool IsVisited = false;
-
         public LinkModel ParentLink = null;
         public MappedNode ParentMappedNode = null;
 
@@ -21,11 +20,13 @@ namespace Graphs.Sources.Models
 
             while (dataDict[nextMaped.Node.Key].ParentLink != null)
             {
-                sb.Insert(0, dataDict[nextMaped.Node.Key].ParentLink + " ");//и дописываем к пути
+                sb.Insert(0, "->" + dataDict[nextMaped.Node.Key].Node.Node.Key);//и дописываем к пути
 
                 nextMaped = dataDict[nextMaped.Node.Key].ParentMappedNode; //переходим в неё
 
             }
+
+            sb.Insert(0, nextMaped.Node.Key);
 
             return sb.ToString();
         }
