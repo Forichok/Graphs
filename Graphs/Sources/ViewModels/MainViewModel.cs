@@ -30,6 +30,8 @@ namespace Graphs.Sources.ViewModels
         public NodeModel FinishNode { get; set; }
         public CustomPartManager PartManager { get; set; }
 
+        public event EventHandler FileLoaded;
+
         public MainViewModel()
         {
             Model = new GraphLinksModel<NodeModel, string, string, LinkModel>()
@@ -250,6 +252,7 @@ namespace Graphs.Sources.ViewModels
             {
                 MessageBox.Show(e.Message, "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+            OnFileLoaded();
         }
 
         private void SaveAdjencyMatrix()
@@ -287,6 +290,7 @@ namespace Graphs.Sources.ViewModels
             {
                 MessageBox.Show(e.Message, "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+            OnFileLoaded();
         }
 
         private void SaveIncidenceMatrix()
@@ -324,6 +328,7 @@ namespace Graphs.Sources.ViewModels
             {
                 MessageBox.Show(e.Message, "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+            OnFileLoaded();
         }
 
         private void SaveByEdges()
@@ -389,6 +394,7 @@ namespace Graphs.Sources.ViewModels
             }
 
             Model.IsModified = false;
+            OnFileLoaded();
         }
 
         private void SaveUniversal(Diagram myDiagram)
@@ -557,5 +563,10 @@ namespace Graphs.Sources.ViewModels
             return fileContent;
         }
 
+        protected virtual void OnFileLoaded()
+        {
+            RaisePropertyChanged("Model");
+            FileLoaded?.Invoke(this, EventArgs.Empty);
+        }
     }
 }

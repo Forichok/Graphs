@@ -188,11 +188,11 @@
                 
                     <TabControl Grid.Column="0">
                     <TabItem Header="Nodes">
-                        <DataGrid  ItemsSource="{Binding Model.NodesSource}"/>
+                        <DataGrid Name="NodesGrid" ItemsSource="{Binding Model.NodesSource, UpdateSourceTrigger=PropertyChanged}"/>
                     </TabItem>
 
                     <TabItem Header="Links">
-                        <DataGrid  ItemsSource="{Binding Model.LinksSource}"/>
+                        <DataGrid Name="LinksGrid" ItemsSource="{Binding Model.LinksSource, UpdateSourceTrigger=PropertyChanged}"/>
                     </TabItem>
 
                     <TabItem Header="Matrix">
