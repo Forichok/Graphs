@@ -6,7 +6,7 @@ namespace Graphs.Sources.Tasks
 {
     public static class BFSTask2
     {
-        public static List<LinkModel> BreadthFirstSearch(IEnumerable<MappedNode> mapedEnumerable, string keyFrom, string keyTo)
+        public static KeyValuePair<List<LinkModel>, string> BreadthFirstSearch(IEnumerable<MappedNode> mapedEnumerable, string keyFrom, string keyTo)
         {
             var result = new List<LinkModel>();
 
@@ -63,7 +63,7 @@ namespace Graphs.Sources.Tasks
                 }
             }
 
-            return result;
+            return new KeyValuePair<List<LinkModel>, string>(result, UniversalGraphNodeData.GetVector(dataDict, keyTo));
         }
 
     }

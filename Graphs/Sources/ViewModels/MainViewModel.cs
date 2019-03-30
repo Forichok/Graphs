@@ -389,7 +389,7 @@ namespace Graphs.Sources.ViewModels
 
         public DelegateCommand BfsCommand { get; }
 
-        public void StartBfs()
+        private void StartBfs()
         {
             ClearGraph();
             var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(),
@@ -397,7 +397,7 @@ namespace Graphs.Sources.ViewModels
 
             var resBFS = BFSTask2.BreadthFirstSearch(mappedList, "A", "B");
             var cost = 0;
-            resBFS.ForEach(t =>
+            resBFS.Key.ForEach(t =>
             {
                 t.IsSelected = true;
                 var parseResult = int.TryParse(t.Text, out var res);
@@ -405,7 +405,7 @@ namespace Graphs.Sources.ViewModels
                 if (parseResult)
                     cost += res;
             });
-            //ShowWaySearchResult(cost, );
+            ShowWaySearchResult(cost, resBFS.Value);
         }
 
         #endregion
