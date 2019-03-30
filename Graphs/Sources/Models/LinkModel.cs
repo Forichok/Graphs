@@ -64,6 +64,7 @@ namespace Graphs.Sources.Models
 
             return startNode == From ? To : From;
         }
+        
     }
 
 }

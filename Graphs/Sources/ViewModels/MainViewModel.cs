@@ -91,6 +91,7 @@ namespace Graphs.Sources.ViewModels
             Model.RemoveLink(link);
             Model.AddLink(link); //?? better way to update??
         }
+
         #endregion
 
 
@@ -104,6 +105,7 @@ namespace Graphs.Sources.ViewModels
 
 
         #region node context menu commands
+
         private void ChangeFigureMenu(object sender)
         {
             var b = (sender as PartManager.PartBinding).Data as NodeModel;
@@ -144,10 +146,12 @@ namespace Graphs.Sources.ViewModels
 
             myDiagram.CommitTransaction("Add NodeModel");
         }
+
         #endregion
 
 
         #region Menu Commands 
+
         public DelegateCommand LoadAdjencyMatrixCommand { get; }
         public DelegateCommand SaveAdjencyMatrixCommand { get; }
 
@@ -365,7 +369,8 @@ namespace Graphs.Sources.ViewModels
         {
             if (Model.IsModified)
             {
-                var result = MessageBox.Show("You have unsaved changes, do you want to save it in xml?", "Are you sure?", MessageBoxButton.YesNo);
+                var result = MessageBox.Show("You have unsaved changes, do you want to save it in xml?",
+                    "Are you sure?", MessageBoxButton.YesNo);
                 switch (result)
                 {
                     case MessageBoxResult.Yes:
@@ -376,20 +381,31 @@ namespace Graphs.Sources.ViewModels
             }
             if (Application.Current.MainWindow != null) Application.Current.MainWindow.Close();
         }
+
         #endregion
 
 
         #region task 2
-        
-        public DelegateCommand BfsCommand { get; } 
+
+        public DelegateCommand BfsCommand { get; }
 
         public void StartBfs()
         {
             ClearGraph();
-            var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(), Model.LinksSource.Cast<LinkModel>());
+            var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(),
+                Model.LinksSource.Cast<LinkModel>());
 
             var resBFS = BFSTask2.BreadthFirstSearch(mappedList, "A", "B");
-            resBFS.ForEach(t=>t.IsSelected = true);
+            var cost = 0;
+            resBFS.ForEach(t =>
+            {
+                t.IsSelected = true;
+                var parseResult = int.TryParse(t.Text, out var res);
+
+                if (parseResult)
+                    cost += res;
+            });
+            //ShowWaySearchResult(cost, );
         }
 
         #endregion
@@ -405,7 +421,8 @@ namespace Graphs.Sources.ViewModels
             var checkRes = CheckGraphsLinksWithMsg();
             if (checkRes == false)
                 return;
-            var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(), Model.LinksSource.Cast<LinkModel>());
+            var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(),
+                Model.LinksSource.Cast<LinkModel>());
 
             var resBestFS = BestFSTask3.StartBestFs(mappedList, "A", "B");
             resBestFS.ForEach(t => t.IsSelected = true);
@@ -420,18 +437,19 @@ namespace Graphs.Sources.ViewModels
 
         public void StartDijkstraMatrix()
         {
-            
+
             ClearGraph();
             var checkRes = CheckGraphsLinksWithMsg(true);
             if (checkRes == false)
                 return;
-            var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(), Model.LinksSource.Cast<LinkModel>());
+            var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(),
+                Model.LinksSource.Cast<LinkModel>());
 
             var resDijkstra = DijkstraTask4.StartDijkstra(mappedList, "A");
 
             var resWindow = new DijkstraResultWindow((Dictionary<string, UniversalGraphNodeData>) resDijkstra, "A");
             resWindow.Show();
-            
+
         }
 
         #endregion
@@ -442,7 +460,7 @@ namespace Graphs.Sources.ViewModels
         {
             foreach (var o in Model.LinksSource)
             {
-                ((LinkModel)o).IsSelected = false;
+                ((LinkModel) o).IsSelected = false;
             }
         }
 
@@ -450,15 +468,18 @@ namespace Graphs.Sources.ViewModels
         {
             foreach (var o in Model.LinksSource)
             {
-                var parseResult = int.TryParse(((LinkModel)o).Text, out var ignored);
+                var parseResult = int.TryParse(((LinkModel) o).Text, out var ignored);
                 if (parseResult == false)
                 {
-                    MessageBox.Show($"Cannot start func because one of link has wrong cost [{(LinkModel)o}]", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Cannot start func because one of link has wrong cost [{(LinkModel) o}]", "Alert",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
                     return false;
                 }
 
                 if (onlyPlus && ignored < 0)
-                    MessageBox.Show($"Cannot start func because one of link has wrong cost [{(LinkModel)o}] required > 0", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show(
+                        $"Cannot start func because one of link has wrong cost [{(LinkModel) o}] required > 0", "Alert",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
 
             }
             return true;
@@ -497,5 +518,37 @@ namespace Graphs.Sources.ViewModels
             return fileContent;
         }
 
+        private void ShowWaySearchResult(int cost, string vector)
+        {
+            var result = MessageBox.Show($"Path cost: {cost}, Do you want to save vector?",
+                "Search result", MessageBoxButton.YesNo);
+            switch (result)
+            {
+                case MessageBoxResult.Yes:
+                    SaveVector(vector);        
+                    break;
+            }
+        }
+
+        private void SaveVector(string vector)
+        {
+            var saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "Simple text (*.txt)|*.txt";
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                try
+                {
+                    using (var sw = new StreamWriter(saveFileDialog.FileName))
+                    {
+                        sw.WriteLine(vector);
+                    }
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.Message, "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
     }
+              
 }
