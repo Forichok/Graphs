@@ -415,7 +415,7 @@ namespace Graphs.Sources.ViewModels
 
         public DelegateCommand BestfsCommand { get; }
 
-        public void StartBestfs()
+        private void StartBestfs()
         {
             ClearGraph();
             var checkRes = CheckGraphsLinksWithMsg();
@@ -425,7 +425,16 @@ namespace Graphs.Sources.ViewModels
                 Model.LinksSource.Cast<LinkModel>());
 
             var resBestFS = BestFSTask3.StartBestFs(mappedList, "A", "B");
-            resBestFS.ForEach(t => t.IsSelected = true);
+            var cost = 0;
+            resBestFS.Key.ForEach(t =>
+            {
+                t.IsSelected = true;
+                var parseResult = int.TryParse(t.Text, out var res);
+
+                if (parseResult)
+                    cost += res;
+            });
+            ShowWaySearchResult(cost, resBestFS.Value);
         }
 
         #endregion

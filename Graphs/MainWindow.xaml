@@ -53,10 +53,17 @@
 
                     </go:NodeShape.Stroke>
                 </go:NodeShape>
+                <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
                 <TextBlock Text="{Binding Path=Data.Text, Mode=TwoWay}"
-                   TextWrapping="Wrap" Margin="10" Cursor="Arrow"
+                           MinWidth="10"
+                   TextWrapping="Wrap" Margin="10, 3" Cursor="Arrow"
                    go:Node.LinkableFrom="False" go:Node.LinkableTo="False"
                    go:Part.TextEditable="True" />
+                <TextBlock Text="{Binding Path=Data.Key}"
+                           TextAlignment="Center"
+                           Margin="10,0"
+                           go:Part.TextEditable="False" />
+                </StackPanel>
                 <ContextMenuService.ContextMenu>
                     <ContextMenu>
                         <MenuItem Header="Change Figure" Command="{Binding Source={StaticResource Vm},Path=ChangeFigureMenuCommand}" CommandParameter="{Binding}"/>

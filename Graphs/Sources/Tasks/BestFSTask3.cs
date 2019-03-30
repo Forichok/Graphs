@@ -7,7 +7,7 @@ namespace Graphs.Sources.Tasks
 {
     public static class BestFSTask3
     {
-        public static IEnumerable<LinkModel> StartBestFs(IEnumerable<MappedNode> mapedEnumerable, string keyFrom, string keyTo)
+        public static KeyValuePair<IEnumerable<LinkModel>, string> StartBestFs(IEnumerable<MappedNode> mapedEnumerable, string keyFrom, string keyTo)
         {
             var result = new List<LinkModel>();
 
@@ -67,7 +67,8 @@ namespace Graphs.Sources.Tasks
                 }
             }
 
-            return result;
+            return new KeyValuePair<IEnumerable<LinkModel>, string>(result, UniversalGraphNodeData.GetVector(dataDict, keyTo));
+
         }
     }
 }
