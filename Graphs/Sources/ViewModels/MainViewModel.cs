@@ -539,7 +539,7 @@ namespace Graphs.Sources.ViewModels
             }
         }
 
-        private void SaveVector(string vector)
+        public static void SaveVector(string vector)
         {
             var saveFileDialog = new SaveFileDialog();
             saveFileDialog.Filter = "Simple text (*.txt)|*.txt";
@@ -550,6 +550,29 @@ namespace Graphs.Sources.ViewModels
                     using (var sw = new StreamWriter(saveFileDialog.FileName))
                     {
                         sw.WriteLine(vector);
+                    }
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.Message, "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+
+        public static void SaveVectors(IEnumerable<string> vectors)
+        {
+            var saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "Simple text (*.txt)|*.txt";
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                try
+                {
+                    using (var sw = new StreamWriter(saveFileDialog.FileName))
+                    {
+                        foreach (var vector in vectors)
+                        {
+                            sw.WriteLine(vector);
+                        }
                     }
                 }
                 catch (Exception e)
