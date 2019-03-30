@@ -77,6 +77,7 @@ namespace Graphs.Sources.ViewModels
 
             BfsCommand = new DelegateCommand(StartBfs);
             BestfsCommand = new DelegateCommand(StartBestfs);
+            IsomorphismCommand = new DelegateCommand(StartIsomorphism);
         }
 
 
@@ -515,6 +516,26 @@ namespace Graphs.Sources.ViewModels
 
         #endregion
 
+
+        #region task 7 Isomorphism
+
+        public DelegateCommand IsomorphismCommand { get; }
+
+        public void StartIsomorphism()
+        {
+            var task7 = new IsomorphismTask7(Model, model2);
+            if (task7.IsIsomorphy())
+            {
+                MessageBox.Show("Graphs are isomorphic");
+            }
+            else
+            {
+                MessageBox.Show("Graphs aren't isomorphic");
+            }
+
+        }
+
+        #endregion
 
         private void ClearGraph()
         {

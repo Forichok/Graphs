@@ -44,6 +44,9 @@
     <Reference Include="DevExpress.Mvvm.UI, Version=18.2.0.0, Culture=neutral, PublicKeyToken=382ad28f6ae31f30, processorArchitecture=MSIL">
       <HintPath>..\packages\DevExpressMvvm.18.2.3\lib\net452\DevExpress.Mvvm.UI.dll</HintPath>
     </Reference>
+    <Reference Include="MathNet.Numerics, Version=4.7.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MathNet.Numerics.4.7.0\lib\net461\MathNet.Numerics.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CodeAnalysis, Version=1.3.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CodeAnalysis.Common.1.3.2\lib\net45\Microsoft.CodeAnalysis.dll</HintPath>
     </Reference>
@@ -184,6 +187,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Sources\Converters\SelectionConverter.cs" />
+    <Compile Include="Sources\Helpers\GraphHelper.cs" />
     <Compile Include="Sources\Helpers\NodeFigureCreator.cs" />
     <Compile Include="Sources\Helpers\NodeKeyCreator.cs" />
     <Compile Include="Sources\Converters\LinkDirectionConverter.cs" />
@@ -194,6 +198,7 @@
     <Compile Include="Sources\Models\NodeModel.cs" />
     <Compile Include="Sources\Tasks\BestFSTask3.cs" />
     <Compile Include="Sources\Tasks\BFSTask2.cs" />
+    <Compile Include="Sources\Tasks\IsomorphismTask7.cs" />
     <Compile Include="Sources\Tasks\MainModel.cs" />
     <Compile Include="Sources\Tools\CustomPartManager.cs" />
     <Compile Include="Sources\ViewModels\MainViewModel.cs" />

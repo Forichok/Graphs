@@ -168,6 +168,8 @@
                 <MenuItem Header="Tasks">
                     <MenuItem Header="2.BFS" Command="{Binding BfsCommand}"/>
                     <MenuItem Header="3.BestFS" Command="{Binding BestfsCommand}"/>
+
+                    <MenuItem Header="7.Isomorphism" Command="{Binding IsomorphismCommand}"/>
                 </MenuItem>
 
                 <MenuItem Header="About">
