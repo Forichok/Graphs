@@ -1,4 +1,4 @@
-п»їusing System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using Graphs.Sources.Models;
 using Utilities.DataTypes;
@@ -13,12 +13,12 @@ namespace Graphs.Sources.Tasks
 
             var queue = new PriorityQueue<string> {{0, keyFrom}};
 
-            var dataDict = new Dictionary<string, BfsData>();
+            var dataDict = new Dictionary<string, UniversalGraphNodeData>();
             var mapedList = mapedEnumerable.ToList();
 
             foreach (var mappedNode in mapedList)
             {
-                dataDict.Add(mappedNode.Node.Key, new BfsData { Node = mappedNode });
+                dataDict.Add(mappedNode.Node.Key, new UniversalGraphNodeData { Node = mappedNode });
             }
 
             dataDict[keyFrom].IsVisited = true;
@@ -26,39 +26,33 @@ namespace Graphs.Sources.Tasks
             MappedNode nextMaped = null;
             var isOk = false;
             while (queue.Count != 0)
-            {            // РїРѕРєР° РѕС‡РµСЂРµРґСЊ РЅРµ РїСѓСЃС‚Р°
+            {            // пока очередь не пуста
 
-                var node = queue.Pop();                 // РёР·РІР»РµС‡СЊ РїРµСЂРІС‹Р№ СЌР»РµРјРµРЅС‚ РІ РѕС‡РµСЂРµРґРё
+                var node = queue.Pop();                 // извлечь первый элемент в очереди
 
                 nextMaped = dataDict[node].Node;
 
                 if (node == keyTo)
                 {
                     isOk = true;
-                    break;                      // РїСЂРѕРІРµСЂРёС‚СЊ, РЅРµ СЏРІР»СЏРµС‚СЃСЏ Р»Рё С‚РµРєСѓС‰РёР№ СѓР·РµР» С†РµР»РµРІС‹Рј
+                    break;                      // проверить, не является ли текущий узел целевым
                 }
 
-                dataDict[node].IsVisited = true;
 
                 foreach (var link in nextMaped.Links)
-                {    // РІСЃРµ РїСЂРµРµРјРЅРёРєРё С‚РµРєСѓС‰РµРіРѕ СѓР·Р»Р°, ...
-                    if (dataDict[link.To].IsVisited == false)
-                    {      // ... РєРѕС‚РѕСЂС‹Рµ РµС‰С‘ РЅРµ Р±С‹Р»Рё РїРѕСЃРµС‰РµРЅС‹ ...
+                {    // все преемники текущего узла, ...
+                    var to = link.GetTo(node);
+                    if (dataDict[to].IsVisited == false)
+                    {      // ... которые ещё не были посещены ...
                         var cost = int.Parse(link.Text) * -1;
-                        queue.Add(cost,link.To);                // ... РґРѕР±Р°РІРёС‚СЊ РІ РєРѕРЅРµС† РѕС‡РµСЂРµРґРё...
-                        // ... Рё РїРѕРјРµС‚РёС‚СЊ РєР°Рє РїРѕСЃРµС‰С‘РЅРЅС‹Рµ
-                        dataDict[link.To].ParentMappedNode = nextMaped;
-                        dataDict[link.To].ParentLink = link;
-                    }
-
-                    if (!link.IsOriented && dataDict[link.From].IsVisited == false)
-                    {
-                        var cost = int.Parse(link.Text) * -1;
-                        queue.Add(cost, link.From);                // ... РґРѕР±Р°РІРёС‚СЊ РІ РєРѕРЅРµС† РѕС‡РµСЂРµРґРё...
-                        dataDict[link.From].ParentMappedNode = nextMaped;
-                        dataDict[link.From].ParentLink = link;
+                        queue.Add(cost,to);                // ... добавить в конец очереди...
+                                                                // ... и пометить как посещённые
+                        dataDict[to].ParentMappedNode = nextMaped;
+                        dataDict[to].ParentLink = link;
                     }
                 }
+                dataDict[node].IsVisited = true;
+
             }
 
             if (isOk && nextMaped != null)
@@ -66,15 +60,12 @@ namespace Graphs.Sources.Tasks
                 //result.Add(dataDict[nextMaped.Node.Key].ParentLink);
                 while (dataDict[nextMaped.Node.Key].ParentLink != null)
                 {
-                    result.Add(dataDict[nextMaped.Node.Key].ParentLink);//Рё РґРѕРїРёСЃС‹РІР°РµРј Рє РїСѓС‚Рё
-                    //РїРѕРєР° СЃСѓС‰РµСЃС‚РІСѓРµС‚ РїСЂРµРґС‹РґСѓС‰Р°СЏ РІРµСЂС€РёРЅР°
-                    nextMaped = dataDict[nextMaped.Node.Key].ParentMappedNode; //РїРµСЂРµС…РѕРґРёРј РІ РЅРµС‘
+                    result.Add(dataDict[nextMaped.Node.Key].ParentLink);//и дописываем к пути
+                    //пока существует предыдущая вершина
+                    nextMaped = dataDict[nextMaped.Node.Key].ParentMappedNode; //переходим в неё
 
                 }
             }
-
-            return result;
-
 
             return result;
         }

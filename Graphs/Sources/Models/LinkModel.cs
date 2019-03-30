@@ -104,6 +104,13 @@ namespace Graphs.Sources.Models
             this.Offset = XHelper.Read("Offset", e, new Point(0, 0));
         }
 
+        public string GetTo(string startNode)
+        {
+            if (IsOriented)
+                return To;
+
+            return startNode == From ? To : From;
+        }
         
     }
 

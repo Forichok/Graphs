@@ -1,0 +1,38 @@
+﻿<Window x:Class="Graphs.DijkstraResultWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Graphs"
+        mc:Ignorable="d"
+        Title="Dijkstra Result" Height="400" Width="500">
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Menu>
+            <MenuItem Header="Save Matrix" Click="MenuItemSaveMatrix_OnClick"/>
+            <MenuItem Header="Save vectors" Click="MenuItemSaveVectors_OnClick"/>
+        </Menu>
+        
+        <StackPanel Grid.Row="1" Orientation="Horizontal">
+            <TextBlock Text="Vectors:"/>
+            <ComboBox x:Name="Box" Text="{Binding SelectedItem}" MinWidth="100" Margin="20, 0"/>
+            <TextBlock x:Name="Block" Text="{Binding Vector}"/>
+        </StackPanel>
+        <DataGrid Grid.Row="2" AutoGenerateColumns="False" 
+                  HorizontalAlignment="Center" 
+                  Name="ResultGrid" 
+                  VerticalAlignment="Center" 
+                  IsReadOnly="True">
+            <DataGrid.Columns >
+                <DataGridTextColumn Binding="{Binding Path=Names}" MinWidth="50" />
+                <DataGridTextColumn Header="{Binding FromName}" Binding="{Binding Path=Values}" MinWidth="50" />
+            </DataGrid.Columns>
+        </DataGrid>
+
+    </Grid>
+</Window>

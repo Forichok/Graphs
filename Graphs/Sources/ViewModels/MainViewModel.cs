@@ -78,6 +78,8 @@ namespace Graphs.Sources.ViewModels
             BfsCommand = new DelegateCommand(StartBfs);
             BestfsCommand = new DelegateCommand(StartBestfs);
             IsomorphismCommand = new DelegateCommand(StartIsomorphism);
+
+            DijkstraMatrixCommand = new DelegateCommand(StartDijkstraMatrix);
         }
 
 
@@ -107,6 +109,7 @@ namespace Graphs.Sources.ViewModels
             Model.RemoveLink(link);
             Model.AddLink(link); //?? better way to update??
         }
+
         #endregion
 
 
@@ -124,6 +127,7 @@ namespace Graphs.Sources.ViewModels
 
 
         #region node context menu commands
+
         private void ChangeFigureMenu(object sender)
         {
             var b = (sender as PartManager.PartBinding).Data as NodeModel;
@@ -218,6 +222,7 @@ namespace Graphs.Sources.ViewModels
 
 
         #region Menu Commands 
+
         public DelegateCommand LoadAdjencyMatrixCommand { get; }
         public DelegateCommand SaveAdjencyMatrixCommand { get; }
 
@@ -447,7 +452,8 @@ namespace Graphs.Sources.ViewModels
         {
             if (Model.IsModified)
             {
-                var result = MessageBox.Show("You have unsaved changes, do you want to save it in xml?", "Are you sure?", MessageBoxButton.YesNo);
+                var result = MessageBox.Show("You have unsaved changes, do you want to save it in xml?",
+                    "Are you sure?", MessageBoxButton.YesNo);
                 switch (result)
                 {
                     case MessageBoxResult.Yes:
@@ -458,6 +464,7 @@ namespace Graphs.Sources.ViewModels
             }
             if (Application.Current.MainWindow != null) Application.Current.MainWindow.Close();
         }
+
         #endregion
 
 
@@ -537,6 +544,31 @@ namespace Graphs.Sources.ViewModels
 
         #endregion
 
+        #region task 4
+
+        public DelegateCommand DijkstraMatrixCommand { get; }
+
+        public void StartDijkstraMatrix()
+        {
+
+            ClearGraph();
+            var checkRes = CheckGraphsLinksWithMsg(true);
+            if (checkRes == false)
+                return;
+            var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(),
+                Model.LinksSource.Cast<LinkModel>());
+
+            var resDijkstra = DijkstraTask4.StartDijkstra(mappedList, "A");
+
+            var resWindow = new DijkstraResultWindow((Dictionary<string, UniversalGraphNodeData>) resDijkstra, "A");
+            resWindow.Show();
+
+        }
+
+        #endregion
+
+
+
         private void ClearGraph()
         {
             foreach (LinkModel link in Model.LinksSource)
@@ -552,16 +584,23 @@ namespace Graphs.Sources.ViewModels
 
         }
 
-        private bool CheckGraphsLinksWithMsg()
+        private bool CheckGraphsLinksWithMsg(bool onlyPlus = false)
         {
             foreach (var o in Model.LinksSource)
             {
-                var parseResult = int.TryParse(((LinkModel)o).Text, out var ignored);
+                var parseResult = int.TryParse(((LinkModel) o).Text, out var ignored);
                 if (parseResult == false)
                 {
-                    MessageBox.Show($"Cannot start func because one of link has wrong cost [{(LinkModel)o}]", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Cannot start func because one of link has wrong cost [{(LinkModel) o}]", "Alert",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
                     return false;
                 }
+
+                if (onlyPlus && ignored < 0)
+                    MessageBox.Show(
+                        $"Cannot start func because one of link has wrong cost [{(LinkModel) o}] required > 0", "Alert",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+
             }
             return true;
         }
@@ -598,6 +637,40 @@ namespace Graphs.Sources.ViewModels
 
             return fileContent;
         }
+
+        private void ShowWaySearchResult(int cost, string vector)
+        {
+            var result = MessageBox.Show($"Path cost: {cost}, Do you want to save vector?",
+                "Search result", MessageBoxButton.YesNo);
+            switch (result)
+            {
+                case MessageBoxResult.Yes:
+                    SaveVector(vector);        
+                    break;
+            }
+        }
+
+        private void SaveVector(string vector)
+        {
+            var saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "Simple text (*.txt)|*.txt";
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                try
+                {
+                    using (var sw = new StreamWriter(saveFileDialog.FileName))
+                    {
+                        sw.WriteLine(vector);
+                    }
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.Message, "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+    
+              
 
         protected virtual void OnFileLoaded()
         {

@@ -186,6 +186,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="DijkstraResultWindow.xaml.cs">
+      <DependentUpon>DijkstraResultWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Sources\Converters\SelectionConverter.cs" />
     <Compile Include="Sources\Helpers\GraphHelper.cs" />
     <Compile Include="Sources\Helpers\NodeFigureCreator.cs" />
@@ -194,14 +197,19 @@
     <Compile Include="Sources\Helpers\NumberValidation.cs" />
     <Compile Include="Sources\Models\LinkModel.cs" />
     <Compile Include="Sources\Models\MappedNode.cs" />
-    <Compile Include="Sources\Models\BfsData.cs" />
+    <Compile Include="Sources\Models\UniversalGraphNodeData.cs" />
     <Compile Include="Sources\Models\NodeModel.cs" />
     <Compile Include="Sources\Tasks\BestFSTask3.cs" />
     <Compile Include="Sources\Tasks\BFSTask2.cs" />
     <Compile Include="Sources\Tasks\IsomorphismTask7.cs" />
+    <Compile Include="Sources\Tasks\DijkstraTask4.cs" />
     <Compile Include="Sources\Tasks\MainModel.cs" />
     <Compile Include="Sources\Tools\CustomPartManager.cs" />
     <Compile Include="Sources\ViewModels\MainViewModel.cs" />
+    <Page Include="DijkstraResultWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
