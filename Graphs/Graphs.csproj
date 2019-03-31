@@ -162,6 +162,10 @@
     <Reference Include="Utilities, Version=4.0.0.0, Culture=neutral, PublicKeyToken=0f7489d08ad0bf67, processorArchitecture=MSIL">
       <HintPath>..\packages\CraigsUtilityLibrary.4.0.304\lib\net40\Utilities.dll</HintPath>
     </Reference>
+    <Reference Include="VfLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libs\VfLib.dll</HintPath>
+    </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -195,6 +199,7 @@
     <Compile Include="Sources\Helpers\NodeKeyCreator.cs" />
     <Compile Include="Sources\Converters\LinkDirectionConverter.cs" />
     <Compile Include="Sources\Helpers\NumberValidation.cs" />
+    <Compile Include="Sources\Helpers\PermutationExtension.cs" />
     <Compile Include="Sources\Models\LinkModel.cs" />
     <Compile Include="Sources\Models\MappedNode.cs" />
     <Compile Include="Sources\Models\UniversalGraphNodeData.cs" />
@@ -260,6 +265,9 @@
   <ItemGroup>
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Libs\VfLib.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Fody.3.3.2\build\Fody.targets" Condition="Exists('..\packages\Fody.3.3.2\build\Fody.targets')" />
