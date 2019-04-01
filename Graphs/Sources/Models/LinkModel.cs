@@ -111,7 +111,15 @@ namespace Graphs.Sources.Models
 
             return startNode == From ? To : From;
         }
-        
+
+        public string GetFrom(string startNode)
+        {
+            if (IsOriented)
+                return From;
+
+            return startNode == To ? From : To;
+        }
+
     }
 
 }
