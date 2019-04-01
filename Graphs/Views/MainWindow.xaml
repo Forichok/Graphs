@@ -179,14 +179,11 @@
                     <MenuItem Header="6.Radius, Diameter" Command="{Binding Task6Command}"/>
                     <MenuItem Header="7.Isomorphism" Command="{Binding IsomorphismCommand}"/>
                     <MenuItem Header="8.Connectivity" Command="{Binding ConnectivityCommand}"/>
-                    <MenuItem Header="15.Colorer" Command="{Binding ColorerCommand}"/>
-
-                    
                     <MenuItem Header="9. Full graph">
                         <MenuItem Header="9 (1).Check to full" Command="{Binding CheckToFullCommand}"/>
                         <MenuItem Header="9 (2).Create full" Command="{Binding CreateFullCommand}"/>
                     </MenuItem>
-
+                    <MenuItem Header="15.Colorer" Command="{Binding ColorerCommand}"/>
                 </MenuItem>
 
                 <MenuItem Header="About">
