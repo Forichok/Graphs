@@ -9,7 +9,6 @@
         xmlns:converters="clr-namespace:Graphs.Sources.Converters"
         xmlns:viewModels="clr-namespace:Graphs.Sources.ViewModels"
         xmlns:models="clr-namespace:Graphs.Sources.Models"
-        xmlns:system="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
 
@@ -171,6 +170,7 @@
                     <MenuItem Header="4.Dijkstra Matrix" Command="{Binding DijkstraMatrixCommand}"/>
 
                     <MenuItem Header="7.Isomorphism" Command="{Binding IsomorphismCommand}"/>
+                    <MenuItem Header="8.Connectivity" Command="{Binding ConnectivityCommand}"/>
                 </MenuItem>
 
                 <MenuItem Header="About">

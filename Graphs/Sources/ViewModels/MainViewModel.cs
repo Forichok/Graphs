@@ -78,6 +78,7 @@ namespace Graphs.Sources.ViewModels
             BfsCommand = new DelegateCommand(StartBfs);
             BestfsCommand = new DelegateCommand(StartBestfs);
             IsomorphismCommand = new DelegateCommand(StartIsomorphism);
+            ConnectivityCommand= new DelegateCommand(StartConnectivity);
 
             DijkstraMatrixCommand = new DelegateCommand(StartDijkstraMatrix);
         }
@@ -529,6 +530,26 @@ namespace Graphs.Sources.ViewModels
         public DelegateCommand IsomorphismCommand { get; }
 
         public void StartIsomorphism()
+        {
+            var task7 = new IsomorphismTask7(Model, model2);
+            if (task7.IsIsomorphy())
+            {
+                MessageBox.Show("Graphs are isomorphic");
+            }
+            else
+            {
+                MessageBox.Show("Graphs aren't isomorphic");
+            }
+
+        }
+
+        #endregion
+
+        #region Task 8 Connectivity 
+
+        public DelegateCommand ConnectivityCommand { get; }
+
+        public void StartConnectivity()
         {
             var task7 = new IsomorphismTask7(Model, model2);
             if (task7.IsIsomorphy())
