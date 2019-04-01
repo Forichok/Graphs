@@ -11,6 +11,7 @@ using DevExpress.Mvvm.Native;
 using Graphs.Sources.Helpers;
 using Graphs.Sources.Models;
 using Graphs.Sources.Tasks;
+using Graphs.Sources.Tasks.Task6;
 using Graphs.Sources.Tools;
 using Northwoods.GoXam;
 using Northwoods.GoXam.Model;
@@ -62,6 +63,8 @@ namespace Graphs.Sources.ViewModels
             BestfsCommand = new DelegateCommand(StartBestfs);
 
             DijkstraMatrixCommand = new DelegateCommand(StartDijkstraMatrix);
+
+            Task6Command = new DelegateCommand(StartTask6);
         }
 
 
@@ -463,6 +466,28 @@ namespace Graphs.Sources.ViewModels
 
         #endregion
 
+
+        #region task 6
+
+        public DelegateCommand Task6Command { get; }
+
+        public void StartTask6()
+        {
+
+            ClearGraph();
+
+            var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(),
+                Model.LinksSource.Cast<LinkModel>());
+
+            var t6 = new Task6Logick();
+            var resTask6 = t6.BeginTask6(mappedList);
+
+            var resWindow = new Task6Window(resTask6);
+            resWindow.Show();
+
+        }
+
+        #endregion
 
 
         private void ClearGraph()

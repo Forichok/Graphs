@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
@@ -29,6 +30,17 @@ namespace Graphs.Sources.Models
             sb.Insert(0, nextMaped.Node.Text + $" [{nextMaped.Node.Key}]");
 
             return sb.ToString();
+        }
+
+        public static string GetVector(IEnumerable<UniversalGraphNodeData> dataList, string to)
+        {
+            var dataDict = new Dictionary<string, UniversalGraphNodeData>();
+
+            foreach (var data in dataList)
+            {
+                dataDict.Add(data.Node.Node.Key, data);
+            }
+            return GetVector(dataDict, to);
         }
     }
 }
