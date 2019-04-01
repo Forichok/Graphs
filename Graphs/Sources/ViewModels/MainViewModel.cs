@@ -115,7 +115,7 @@ namespace Graphs.Sources.ViewModels
         }
 
         #endregion
-
+        
 
         #region node context menu commands
 
@@ -231,16 +231,18 @@ namespace Graphs.Sources.ViewModels
         #region Menu Commands 
 
         public DelegateCommand LoadAdjencyMatrixCommand { get; }
+
         public DelegateCommand SaveAdjencyMatrixCommand { get; }
 
         public DelegateCommand LoadIncidenceMatrixCommand { get; }
+
         public DelegateCommand SaveIncidenceMatrixCommand { get; }
 
         public DelegateCommand LoadByEdgesCommand { get; }
+
         public DelegateCommand SaveByEdgesCommand { get; }
 
         public DelegateCommand<Diagram> SaveAsImageCommand { get; }
-
 
         public DelegateCommand LoadCommand { get; }
 
@@ -640,7 +642,8 @@ namespace Graphs.Sources.ViewModels
         public void StartConnectivity()
         {
             var task8 = new ConnectivityTask8(Model);
-            
+            var result = task8.CheckConnectivity();
+            MessageBox.Show(result, "Done", MessageBoxButton.OK, MessageBoxImage.Information);
 
         }
 

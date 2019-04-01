@@ -104,7 +104,7 @@ namespace Graphs.Sources.Helpers
 
             if (Vertices[source].OutEdges.Contains(Vertices[dest]) || Vertices[dest].InEdges.Contains(Vertices[source]))
             {
-                throw new Exception("Edge already exists.");
+                //throw new Exception("Edge already exists.");
             }
 
             Vertices[source].OutEdges.Add(Vertices[dest]);
