@@ -7,8 +7,10 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Xml.Linq;
+using Advanced.Algorithms.Graph;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.Native;
+using Graphs.Sources.Advanced.Algorithms.DataStructures.Graph.AdjacencyList;
 using Graphs.Sources.Helpers;
 using Graphs.Sources.Models;
 using Graphs.Sources.Tasks;
@@ -213,6 +215,7 @@ namespace Graphs.Sources.ViewModels
         }
 
         #endregion
+
 
         #region background commands
 
@@ -693,7 +696,7 @@ namespace Graphs.Sources.ViewModels
 
         public DelegateCommand ConnectivityCommand { get; }
 
-        public void StartConnectivity()
+        private void StartConnectivity()
         {
             var task8 = new ConnectivityTask8(Model);
             var result = task8.CheckConnectivity();
@@ -702,6 +705,7 @@ namespace Graphs.Sources.ViewModels
         }
 
         #endregion
+
 
         #region Task 15 Colorer
 
@@ -790,10 +794,14 @@ namespace Graphs.Sources.ViewModels
 
         private void StartKruskal()
         {
-            var isOrientated = CheckOnOrientated();
+            var wightCheckRes = CheckGraphsLinksWithMsg();
+            if(!wightCheckRes)
+                return;
+
+            var isOrientated = !CheckOnOrientated();
             if (isOrientated)
             {
-                var result = MessageBox.Show("You have orienated graph, prgram can work with errors? do you want to continue?",
+                var result = MessageBox.Show("You have orienated graph, prgram can work with error. Do you want to continue?",
                     "Are you sure?", MessageBoxButton.YesNo);
                 switch (result)
                 {
@@ -803,8 +811,42 @@ namespace Graphs.Sources.ViewModels
                     case MessageBoxResult.No:
                         return;
                 }
+            }
 
-                
+            
+            try
+            {
+                var graph = WeightedGraph<string, int>.GetGraph(Model.LinksSource.Cast<LinkModel>(), Model.NodesSource.Cast<NodeModel>());
+                var algorithm = new KruskalTask13<string, int>();
+                var resultKruskal = algorithm.StartKruskal(graph);
+
+                model2 = new GraphLinksModel<NodeModel, string, string, LinkModel>()
+                {
+                    Modifiable = true,
+                    HasUndoManager = true
+                };
+
+                foreach (var edge in resultKruskal)
+                {
+                    var fromNode = Model.FindNodeByKey(edge.Source);
+                    var toNode = Model.FindNodeByKey(edge.Destination);
+
+                    if (model2.FindNodeByKey(edge.Source) == null)
+                        model2.AddNode((NodeModel) fromNode.Clone());
+
+                    if (model2.FindNodeByKey(edge.Destination) == null)
+                        model2.AddNode((NodeModel)toNode.Clone());
+
+                    model2.AddLink(
+                        new LinkModel(edge.Source, edge.Destination, edge.Weight.ToString()) {IsOriented = false});
+                }
+
+                SwitchGraph();
+
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

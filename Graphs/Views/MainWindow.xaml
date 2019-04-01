@@ -183,6 +183,7 @@
                         <MenuItem Header="9 (1).Check to full" Command="{Binding CheckToFullCommand}"/>
                         <MenuItem Header="9 (2).Create full" Command="{Binding CreateFullCommand}"/>
                     </MenuItem>
+                    <MenuItem Header="13.Kruskal" Command="{Binding KruskalCommand}"/>
                     <MenuItem Header="15.Colorer" Command="{Binding ColorerCommand}"/>
                 </MenuItem>
 
