@@ -197,7 +197,7 @@ namespace Graphs
 
             foreach (var line in matrixData)
             {
-                line.Values.Add(new LinkModel(key, line.Heading, "")
+                line.Values.Add(new LinkModel(line.Heading, key, "")
                 {
                     model = myDiagram.Model as GraphLinksModel<NodeModel, string, string, LinkModel>,
                     DiagramModel = myDiagram
