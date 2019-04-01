@@ -707,6 +707,120 @@ namespace Graphs.Sources.ViewModels
         #endregion
 
 
+        #region Task 9
+        public DelegateCommand CheckToFullCommand { get; }
+        public DelegateCommand CreateFullCommand { get; }
+
+        public void StartCheckToFull()
+        {
+            var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(),
+                Model.LinksSource.Cast<LinkModel>());
+
+            var res = FullGraphTask9.Check(mappedList);
+            if (res)
+            {
+                MessageBox.Show("Graphs is full", "9(1) Result", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else
+            {
+                MessageBox.Show("Graphs isn't full", "9(1) Result", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+
+        }
+
+        public void StartCreateFull()
+        {
+            var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(),
+                Model.LinksSource.Cast<LinkModel>());
+
+
+
+            var additionalLinks = FullGraphTask9.GetFull(mappedList);
+
+            if (additionalLinks.Count == 0)
+            {
+                MessageBox.Show("Graphs is already full", "9(1) Result", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            Model.StartTransaction("full");
+
+            foreach (var link in additionalLinks)
+            {
+                Model.AddLink(link);
+            }
+            Model.CommitTransaction("full");
+
+            OnFileLoaded();
+        }
+        #endregion
+
+
+        #region Task 13
+
+        public DelegateCommand KruskalCommand { get; }
+
+        private void StartKruskal()
+        {
+            var wightCheckRes = CheckGraphsLinksWithMsg();
+            if (!wightCheckRes)
+                return;
+
+            var isOrientated = !CheckOnOrientated();
+            if (isOrientated)
+            {
+                var result = MessageBox.Show("You have orienated graph, prgram can work with error. Do you want to continue?",
+                    "Are you sure?", MessageBoxButton.YesNo);
+                switch (result)
+                {
+                    case MessageBoxResult.Yes:
+                        break;
+
+                    case MessageBoxResult.No:
+                        return;
+                }
+            }
+
+
+            try
+            {
+                var graph = WeightedGraph<string, int>.GetGraph(Model.LinksSource.Cast<LinkModel>(), Model.NodesSource.Cast<NodeModel>());
+                var algorithm = new KruskalTask13<string, int>();
+                var resultKruskal = algorithm.StartKruskal(graph);
+
+                model2 = new GraphLinksModel<NodeModel, string, string, LinkModel>()
+                {
+                    Modifiable = true,
+                    HasUndoManager = true
+                };
+
+                foreach (var edge in resultKruskal)
+                {
+                    var fromNode = Model.FindNodeByKey(edge.Source);
+                    var toNode = Model.FindNodeByKey(edge.Destination);
+
+                    if (model2.FindNodeByKey(edge.Source) == null)
+                        model2.AddNode((NodeModel)fromNode.Clone());
+
+                    if (model2.FindNodeByKey(edge.Destination) == null)
+                        model2.AddNode((NodeModel)toNode.Clone());
+
+                    model2.AddLink(
+                        new LinkModel(edge.Source, edge.Destination, edge.Weight.ToString()) { IsOriented = false });
+                }
+
+                SwitchGraph();
+
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        #endregion
+
+
         #region Task 15 Colorer
 
         public DelegateCommand ColorerCommand { get; }
@@ -738,119 +852,6 @@ namespace Graphs.Sources.ViewModels
 
         #endregion
 
-
-        #region Task 9
-        public DelegateCommand CheckToFullCommand { get; }
-        public DelegateCommand CreateFullCommand { get; }
-
-        public void StartCheckToFull()
-        {
-            var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(),
-                Model.LinksSource.Cast<LinkModel>());
-
-            var res = FullGraphTask9.Check(mappedList);
-            if (res)
-            {
-                MessageBox.Show("Graphs is full", "9(1) Result", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-            else
-            {
-                MessageBox.Show("Graphs isn't full", "9(1) Result", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-
-        }
-
-        public void StartCreateFull()
-        {
-            var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(),
-                Model.LinksSource.Cast<LinkModel>());
-
-            
-
-            var additionalLinks = FullGraphTask9.GetFull(mappedList);
-
-            if (additionalLinks.Count == 0)
-            {
-                MessageBox.Show("Graphs is already full", "9(1) Result", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            Model.StartTransaction("full");
-
-            foreach (var link in additionalLinks)
-            {
-                Model.AddLink(link);
-            }
-            Model.CommitTransaction("full");
-
-            OnFileLoaded();
-        }
-        #endregion
-
-
-        #region Task 13
-
-        public DelegateCommand KruskalCommand { get; }
-
-        private void StartKruskal()
-        {
-            var wightCheckRes = CheckGraphsLinksWithMsg();
-            if(!wightCheckRes)
-                return;
-
-            var isOrientated = !CheckOnOrientated();
-            if (isOrientated)
-            {
-                var result = MessageBox.Show("You have orienated graph, prgram can work with error. Do you want to continue?",
-                    "Are you sure?", MessageBoxButton.YesNo);
-                switch (result)
-                {
-                    case MessageBoxResult.Yes:
-                        break;
-
-                    case MessageBoxResult.No:
-                        return;
-                }
-            }
-
-            
-            try
-            {
-                var graph = WeightedGraph<string, int>.GetGraph(Model.LinksSource.Cast<LinkModel>(), Model.NodesSource.Cast<NodeModel>());
-                var algorithm = new KruskalTask13<string, int>();
-                var resultKruskal = algorithm.StartKruskal(graph);
-
-                model2 = new GraphLinksModel<NodeModel, string, string, LinkModel>()
-                {
-                    Modifiable = true,
-                    HasUndoManager = true
-                };
-
-                foreach (var edge in resultKruskal)
-                {
-                    var fromNode = Model.FindNodeByKey(edge.Source);
-                    var toNode = Model.FindNodeByKey(edge.Destination);
-
-                    if (model2.FindNodeByKey(edge.Source) == null)
-                        model2.AddNode((NodeModel) fromNode.Clone());
-
-                    if (model2.FindNodeByKey(edge.Destination) == null)
-                        model2.AddNode((NodeModel)toNode.Clone());
-
-                    model2.AddLink(
-                        new LinkModel(edge.Source, edge.Destination, edge.Weight.ToString()) {IsOriented = false});
-                }
-
-                SwitchGraph();
-
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(e.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        #endregion
 
         private void ClearGraph()
         {
