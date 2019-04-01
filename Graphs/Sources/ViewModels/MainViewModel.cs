@@ -729,14 +729,15 @@ namespace Graphs.Sources.ViewModels
             var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(),
                 Model.LinksSource.Cast<LinkModel>());
 
-            var res = FullGraphTask9.Check(mappedList);
-            if (res)
-            {
-                MessageBox.Show("Graphs is full", "9(1) Result", MessageBoxButton.OK, MessageBoxImage.Information);
-                return;
-            }
+            
 
             var additionalLinks = FullGraphTask9.GetFull(mappedList);
+
+            if (additionalLinks.Count == 0)
+            {
+                MessageBox.Show("Graphs is already full", "9(1) Result", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
 
             Model.StartTransaction("full");
 
