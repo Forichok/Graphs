@@ -21,7 +21,6 @@
             <GradientStop Color="Lavender" Offset="1" />
         </RadialGradientBrush>
 
-
         <!-- when a node is selected this Button appears -->
         <DataTemplate x:Key="StateSelectionTemplate">
             <go:SpotPanel>
