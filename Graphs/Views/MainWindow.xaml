@@ -87,9 +87,10 @@
                 <go:Link.Route>
                     <go:Route Curve="Bezier" Adjusting="Stretch"
                     RelinkableFrom="True" RelinkableTo="True"
-                             Curviness="{Binding Curviness}"
+                             Curviness="{Binding Curviness, Mode=TwoWay}"
                               Corner="15"/>
                 </go:Link.Route>
+                
                 <go:LinkShape x:Name="Path" StrokeThickness="3">
                     <go:LinkShape.Stroke>
                         <MultiBinding Converter="{StaticResource SelectionConverter}" ConverterParameter="Link">
@@ -101,7 +102,7 @@
                 </go:LinkShape>
                 <Path Fill="Black" go:LinkPanel.ToArrow = "{Binding Path=Data.IsOriented, Converter={StaticResource LinkDirectionConverter },Mode=OneWay,UpdateSourceTrigger=PropertyChanged}"/>
                 <go:NodePanel Sizing="Auto"
-                      go:LinkPanel.Offset="{Binding Path=Data.Offset, Mode=TwoWay}">
+                      go:LinkPanel.Offset="{Binding Offset, Mode=TwoWay}">
                     <Rectangle>
                         <Shape.Fill>
                             <RadialGradientBrush>

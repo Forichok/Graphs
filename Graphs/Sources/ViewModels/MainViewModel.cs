@@ -77,7 +77,7 @@ namespace Graphs.Sources.ViewModels
             SetStartNodeCommand = new DelegateCommand<object>(SetStartNodeMenu);
 
             SaveAsImageCommand = new DelegateCommand<Diagram>(SaveAsImage);
-            LoadCommand = new DelegateCommand(LoadUniversal);
+            LoadCommand = new DelegateCommand<Diagram>(LoadUniversal);
             SaveCommand = new DelegateCommand<Diagram>(SaveUniversal);
 
             BfsCommand = new DelegateCommand(StartBfs);
@@ -256,7 +256,7 @@ namespace Graphs.Sources.ViewModels
 
         public DelegateCommand<Diagram> SaveAsImageCommand { get; }
 
-        public DelegateCommand LoadCommand { get; }
+        public DelegateCommand<Diagram> LoadCommand { get; }
 
         public DelegateCommand SwitchGraphCommand { get; }
 
@@ -421,16 +421,20 @@ namespace Graphs.Sources.ViewModels
             }
         }
 
-        private void LoadUniversal()
+        private void LoadUniversal(Diagram diagram)
         {
             if (Model == null) return;
             try
             {
+
+                // set the Route.Points after nodes have been built and the layout has finished
+                // tell the CustomPartManager that we're loading
+
                 var root = XElement.Parse(LoadFromFile());
                 // set the Route.Points after nodes have been built and the layout has finished
-                //myDiagram.LayoutCompleted += UpdateRoutes;
+                diagram.LayoutCompleted += UpdateRoutes;
                 // tell the CustomPartManager that we're loading
-                //PartManager.UpdatesRouteDataPoints = false;
+                PartManager.UpdatesRouteDataPoints = false;
                 Model.Load<NodeModel, LinkModel>(root, "NodeModel", "LinkModel");
             }
             catch (Exception ex)
@@ -997,6 +1001,22 @@ namespace Graphs.Sources.ViewModels
         {
             RaisePropertyChanged("Model");
             FileLoaded?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void UpdateRoutes(object sender, DiagramEventArgs e)
+        {
+            var myDiagram = sender as Diagram;
+            // just set the Route points once per Load
+            myDiagram.LayoutCompleted -= UpdateRoutes;
+            foreach (Link link in myDiagram.Links)
+            {
+                LinkModel transition = link.Data as LinkModel;
+                if (transition != null && transition.Points != null && transition.Points.Count() > 1)
+                {
+                    link.Route.Points = (IList<Point>)transition.Points;
+                }
+            }
+            PartManager.UpdatesRouteDataPoints = true;  // OK for CustomPartManager to update Transition.Points automatically
         }
     }
 }
