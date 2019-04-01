@@ -14,6 +14,12 @@ namespace Graphs.Sources.Converters
                 return new SolidColorBrush(Colors.Blue);
             try
             {
+                SolidColorBrush color = values[4] as SolidColorBrush;
+                if (color != null)
+                {
+                    return color;
+
+                }
                 if (parameter.ToString() == "Node")
                 {
                     if((bool)values[1])

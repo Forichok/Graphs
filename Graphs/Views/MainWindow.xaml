@@ -52,6 +52,7 @@
                             <Binding Path="Data.IsStartNode" UpdateSourceTrigger="PropertyChanged"></Binding>
                             <Binding Path="Data.IsFinishNode" UpdateSourceTrigger="PropertyChanged"></Binding>
                             <Binding Path="Data.IsSelected" UpdateSourceTrigger="PropertyChanged"></Binding>
+                            <Binding Path="Data.Color" UpdateSourceTrigger="PropertyChanged"></Binding>
                         </MultiBinding>
 
                     </go:NodeShape.Stroke>
@@ -177,6 +178,7 @@
                     <MenuItem Header="6.Radius, Diameter" Command="{Binding Task6Command}"/>
                     <MenuItem Header="7.Isomorphism" Command="{Binding IsomorphismCommand}"/>
                     <MenuItem Header="8.Connectivity" Command="{Binding ConnectivityCommand}"/>
+                    <MenuItem Header="15.Colorer" Command="{Binding ColorerCommand}"/>
 
                     
                 </MenuItem>

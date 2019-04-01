@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows.Media;
 using Graphs.Sources.Helpers;
 using Northwoods.GoXam.Model;
 
@@ -20,7 +21,7 @@ namespace Graphs.Sources.Models
 
         public string Figure { get; set; } 
        
-        
+        public SolidColorBrush Color {get; set; }
         public NodeModel()
         {
             _figureId = 0;

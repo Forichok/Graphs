@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Xml.Linq;
 using DevExpress.Mvvm;
@@ -11,6 +12,7 @@ using DevExpress.Mvvm.Native;
 using Graphs.Sources.Helpers;
 using Graphs.Sources.Models;
 using Graphs.Sources.Tasks;
+using Graphs.Sources.Tasks.Task15;
 using Graphs.Sources.Tasks.Task6;
 using Graphs.Sources.Tools;
 using Northwoods.GoXam;
@@ -80,6 +82,7 @@ namespace Graphs.Sources.ViewModels
             BestfsCommand = new DelegateCommand(StartBestfs);
             IsomorphismCommand = new DelegateCommand(StartIsomorphism);
             ConnectivityCommand = new DelegateCommand(StartConnectivity);
+            ColorerCommand = new DelegateCommand(StartColorer);
 
             DijkstraMatrixCommand = new DelegateCommand(StartDijkstraMatrix);
 
@@ -649,6 +652,37 @@ namespace Graphs.Sources.ViewModels
 
         #endregion
 
+        #region Task 15 Colorer
+
+        public DelegateCommand ColorerCommand { get; }
+
+        public void StartColorer()
+        {
+            var task15 = new ColorerTask15(Model);
+            var result = task15.Paint();
+            var parts = result.Partitions;
+            MessageBox.Show($"Chromatic number: {parts.Keys.Count}", "Done", MessageBoxButton.OK, MessageBoxImage.Information);
+            foreach (var color in parts.Keys)
+            {
+                foreach (var nodeKey in parts[color])
+                {
+                    var node = GetNode(nodeKey);
+                    node.Color= (SolidColorBrush)(new BrushConverter().ConvertFrom($"#{color}"));
+                }
+            }
+        }
+
+        private NodeModel GetNode(string key)
+        {
+            foreach (NodeModel node in Model.NodesSource)
+                if (node.Key == key)
+                    return node;
+
+            return null;
+        }
+
+        #endregion
+
         private void ClearGraph()
         {
             foreach (LinkModel link in Model.LinksSource)
@@ -659,6 +693,7 @@ namespace Graphs.Sources.ViewModels
             foreach (NodeModel node in Model.NodesSource)
             {
                 node.IsSelected = false;
+                node.Color = null;
             }
 
 
