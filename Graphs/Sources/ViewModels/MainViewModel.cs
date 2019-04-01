@@ -230,6 +230,7 @@ namespace Graphs.Sources.ViewModels
                 node.IsFinishNode = false;
                 node.IsStartNode = false;
                 node.IsSelected = false;
+                node.Color = null;
             }
 
         }
