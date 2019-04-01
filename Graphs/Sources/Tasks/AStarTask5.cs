@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Graphs.Sources.Models;
 using Utilities.DataTypes;
 
@@ -22,17 +24,17 @@ namespace Graphs.Sources.Tasks
             {
                 dataDict.Add(mappedNode.Node.Key, new UniversalGraphNodeData { Node = mappedNode });
             }
-
+            var toMapped = dataDict[keyTo].Node;
             dataDict[keyFrom].IsVisited = true;
 
             MappedNode nextMaped = null;
             var isOk = false;
             while (queue.Count != 0)
             {            // пока очередь не пуста
-                var node = queue.Pop();                 // извлечь первый элемент в очереди
-                nextMaped = dataDict[node].Node;
+                var nodeName = queue.Pop();                 // извлечь первый элемент в очереди
+                nextMaped = dataDict[nodeName].Node;
 
-                if (node == keyTo)
+                if (nodeName == keyTo)
                 {
                     isOk = true;
                     break;                      // проверить, не является ли текущий узел целевым
@@ -40,17 +42,35 @@ namespace Graphs.Sources.Tasks
 
                 foreach (var link in nextMaped.Links)
                 {    // все преемники текущего узла, ...
-                    var to = link.GetTo(node);
+                    var to = link.GetTo(nodeName);
+
                     if (dataDict[to].IsVisited == false)
-                    {      // ... которые ещё не были посещены ...
-                        var cost = int.Parse(link.Text) * -1;
-                        queue.Add(cost, to);                // ... добавить в конец очереди...
-                                                            // ... и пометить как посещённые
+                    {
+                        var toNodeCost = int.Parse(link.Text);
+                        var selfCost = dataDict[nodeName].Cost;
+                        var newTotalCost = toNodeCost + selfCost + GetEurastick(dataDict[nodeName].Node, toMapped);
+
+                        if (dataDict[to].Cost == -1)
+                        {
+                            queue.Add(newTotalCost * -1, to);
+                            dataDict[to].Cost = newTotalCost;
+                        }
+                        else if (dataDict[to].Cost > newTotalCost)
+                        {
+                            queue.Remove(dataDict[to].Cost * -1);
+                            dataDict[to].Cost = newTotalCost;
+                            queue.Add(newTotalCost * -1, to);
+                        }
+                        else
+                        {
+                            continue;
+                        }
+
                         dataDict[to].ParentMappedNode = nextMaped;
                         dataDict[to].ParentLink = link;
                     }
                 }
-                dataDict[node].IsVisited = true;
+                dataDict[nodeName].IsVisited = true;
 
             }
 
@@ -69,5 +89,12 @@ namespace Graphs.Sources.Tasks
             return new KeyValuePair<IEnumerable<LinkModel>, string>(result, UniversalGraphNodeData.GetVector(dataDict, keyTo));
 
         }
+
+        private static int GetEurastick(MappedNode from, MappedNode to)
+        {
+            return (int) Math.Sqrt(Math.Pow(from.Node.Location.X - to.Node.Location.X, 2) +
+                                   Math.Pow(from.Node.Location.Y - to.Node.Location.Y, 2));
+        }
+
     }
 }

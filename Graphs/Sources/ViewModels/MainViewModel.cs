@@ -83,6 +83,7 @@ namespace Graphs.Sources.ViewModels
 
             DijkstraMatrixCommand = new DelegateCommand(StartDijkstraMatrix);
 
+            AStarCommand = new DelegateCommand(StartAStar);
             Task6Command = new DelegateCommand(StartTask6);
         }
 
@@ -589,6 +590,46 @@ namespace Graphs.Sources.ViewModels
 
         #endregion
 
+
+        #region task 5
+
+        public DelegateCommand AStarCommand { get; }
+
+        public void StartAStar()
+        {
+            if (StartNode == null)
+            {
+                MessageBox.Show("Please select start node.", "Error", MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+                return;
+            }
+
+            ClearGraph();
+            var checkRes = CheckGraphsLinksWithMsg(true);
+            if (checkRes == false)
+                return;
+            var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(),
+                Model.LinksSource.Cast<LinkModel>());
+
+            var resAStar = AStarTask5.StartAStar(mappedList, StartNode.Key, FinishNode.Key);
+            var cost = 0;
+            resAStar.Key.ForEach(t =>
+            {
+                var fromNode = Model.GetFromNodeForLink(t);
+                if (!fromNode.IsFinishNode && !fromNode.IsStartNode)
+                    fromNode.IsSelected = true;
+
+                t.IsSelected = true;
+                var parseResult = int.TryParse(t.Text, out var res);
+
+                if (parseResult)
+                    cost += res;
+            });
+            ShowWaySearchResult(cost, resAStar.Value);
+
+        }
+
+        #endregion
 
         #region task 6
 
