@@ -11,6 +11,7 @@ using DevExpress.Mvvm.Native;
 using Graphs.Sources.Helpers;
 using Graphs.Sources.Models;
 using Graphs.Sources.Tasks;
+using Graphs.Sources.Tasks.Task6;
 using Graphs.Sources.Tools;
 using Northwoods.GoXam;
 using Northwoods.GoXam.Model;
@@ -81,6 +82,8 @@ namespace Graphs.Sources.ViewModels
             ConnectivityCommand= new DelegateCommand(StartConnectivity);
 
             DijkstraMatrixCommand = new DelegateCommand(StartDijkstraMatrix);
+
+            Task6Command = new DelegateCommand(StartTask6);
         }
 
 
@@ -473,7 +476,7 @@ namespace Graphs.Sources.ViewModels
 
         public DelegateCommand BfsCommand { get; }
 
-        public void StartBfs()
+        private void StartBfs()
         {
             if (StartNode != null && FinishNode != null)
             {
@@ -481,16 +484,17 @@ namespace Graphs.Sources.ViewModels
                 var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(),
                     Model.LinksSource.Cast<LinkModel>());
 
+            var resBFS = BFSTask2.BreadthFirstSearch(mappedList, "A", "B");
+            var cost = 0;
+            resBFS.Key.ForEach(t =>
+            {
+                t.IsSelected = true;
+                var parseResult = int.TryParse(t.Text, out var res);
 
-                var resBFS = BFSTask2.BreadthFirstSearch(mappedList, StartNode.Key, FinishNode.Key);
-                resBFS.ForEach(t =>
-                {
-                    var fromNode = Model.GetFromNodeForLink(t);
-                    if (!fromNode.IsFinishNode && !fromNode.IsStartNode)
-                        fromNode.IsSelected = true;
-                    t.IsSelected = true;
-                });
-            }
+                if (parseResult)
+                    cost += res;
+            });
+            ShowWaySearchResult(cost, resBFS.Value);
         }
 
         #endregion
@@ -500,7 +504,7 @@ namespace Graphs.Sources.ViewModels
 
         public DelegateCommand BestfsCommand { get; }
 
-        public void StartBestfs()
+        private void StartBestfs()
         {
             if (StartNode != null && FinishNode != null)
             {
@@ -589,6 +593,31 @@ namespace Graphs.Sources.ViewModels
         #endregion
 
 
+        #region task 6
+
+        public DelegateCommand Task6Command { get; }
+
+        public void StartTask6()
+        {
+
+            ClearGraph();
+            var checkRes = CheckGraphsLinksWithMsg(true);
+            if (checkRes == false)
+                return;
+
+            var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(),
+                Model.LinksSource.Cast<LinkModel>());
+
+            var t6 = new Task6Logick();
+            var resTask6 = t6.BeginTask6(mappedList);
+
+            var resWindow = new Task6Window(resTask6);
+            resWindow.Show();
+
+        }
+
+        #endregion
+
 
         private void ClearGraph()
         {
@@ -618,9 +647,13 @@ namespace Graphs.Sources.ViewModels
                 }
 
                 if (onlyPlus && ignored < 0)
+                {
                     MessageBox.Show(
                         $"Cannot start func because one of link has wrong cost [{(LinkModel) o}] required > 0", "Alert",
                         MessageBoxButton.OK, MessageBoxImage.Error);
+                    return false;
+                }
+
 
             }
             return true;
@@ -671,7 +704,7 @@ namespace Graphs.Sources.ViewModels
             }
         }
 
-        private void SaveVector(string vector)
+        public static void SaveVector(string vector)
         {
             var saveFileDialog = new SaveFileDialog();
             saveFileDialog.Filter = "Simple text (*.txt)|*.txt";
@@ -682,6 +715,29 @@ namespace Graphs.Sources.ViewModels
                     using (var sw = new StreamWriter(saveFileDialog.FileName))
                     {
                         sw.WriteLine(vector);
+                    }
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.Message, "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+
+        public static void SaveVectors(IEnumerable<string> vectors)
+        {
+            var saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "Simple text (*.txt)|*.txt";
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                try
+                {
+                    using (var sw = new StreamWriter(saveFileDialog.FileName))
+                    {
+                        foreach (var vector in vectors)
+                        {
+                            sw.WriteLine(vector);
+                        }
                     }
                 }
                 catch (Exception e)

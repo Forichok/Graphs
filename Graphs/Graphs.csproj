@@ -204,12 +204,17 @@
     <Compile Include="Sources\Models\MappedNode.cs" />
     <Compile Include="Sources\Models\UniversalGraphNodeData.cs" />
     <Compile Include="Sources\Models\NodeModel.cs" />
+    <Compile Include="Sources\Tasks\AStarTask5.cs" />
     <Compile Include="Sources\Tasks\BestFSTask3.cs" />
     <Compile Include="Sources\Tasks\BFSTask2.cs" />
     <Compile Include="Sources\Tasks\ConnectivityTask8.cs" />
     <Compile Include="Sources\Tasks\IsomorphismTask7.cs" />
     <Compile Include="Sources\Tasks\DijkstraTask4.cs" />
     <Compile Include="Sources\Tasks\MainModel.cs" />
+    <Compile Include="Sources\Tasks\Task6\Task6Logick.cs" />
+    <Compile Include="Sources\Tasks\Task6\Task6Window.xaml.cs">
+      <DependentUpon>Task6Window.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Sources\Tools\CustomPartManager.cs" />
     <Compile Include="Sources\ViewModels\MainViewModel.cs" />
     <Page Include="DijkstraResultWindow.xaml">
@@ -228,6 +233,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Sources\Tasks\Task6\Task6Window.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">

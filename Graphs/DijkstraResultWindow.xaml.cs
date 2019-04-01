@@ -1,18 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+using System.Windows.Forms;
 using Graphs.Sources.Models;
+using Graphs.Sources.ViewModels;
+using MessageBox = System.Windows.MessageBox;
 
 namespace Graphs
 {
@@ -75,13 +69,29 @@ namespace Graphs
 
         private void MenuItemSaveMatrix_OnClick(object sender, RoutedEventArgs e)
         {
-            
+            var saveFileDialog = new SaveFileDialog {Filter = @"Simple text (*.txt)|*.txt"};
+            if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                try
+                {
+                    using (var sw = new StreamWriter(saveFileDialog.FileName))
+                    {
+                        foreach (DataObject res in ResultGrid.ItemsSource)
+                        {
+                            sw.WriteLine($"{res.Names} -> {res.Values}");
+                        }
+                    }
+                }
+                catch (Exception exception)
+                {
+                    MessageBox.Show(exception.Message, "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
         }
 
         private void MenuItemSaveVectors_OnClick(object sender, RoutedEventArgs e)
         {
-            
-
+            MainViewModel.SaveVectors(_vectors.Values);
         }
     }
 }

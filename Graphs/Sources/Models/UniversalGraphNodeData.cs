@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
@@ -20,15 +21,26 @@ namespace Graphs.Sources.Models
 
             while (dataDict[nextMaped.Node.Key].ParentLink != null)
             {
-                sb.Insert(0, "->" + dataDict[nextMaped.Node.Key].Node.Node.Key);//и дописываем к пути
+                sb.Insert(0, "->" + dataDict[nextMaped.Node.Key].Node.Node.Text + $" [{dataDict[nextMaped.Node.Key].Node.Node.Key}]");//и дописываем к пути
 
                 nextMaped = dataDict[nextMaped.Node.Key].ParentMappedNode; //переходим в неё
 
             }
 
-            sb.Insert(0, nextMaped.Node.Key);
+            sb.Insert(0, nextMaped.Node.Text + $" [{nextMaped.Node.Key}]");
 
             return sb.ToString();
+        }
+
+        public static string GetVector(IEnumerable<UniversalGraphNodeData> dataList, string to)
+        {
+            var dataDict = new Dictionary<string, UniversalGraphNodeData>();
+
+            foreach (var data in dataList)
+            {
+                dataDict.Add(data.Node.Node.Key, data);
+            }
+            return GetVector(dataDict, to);
         }
     }
 }

@@ -57,10 +57,17 @@
 
                     </go:NodeShape.Stroke>
                 </go:NodeShape>
+                <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
                 <TextBlock Text="{Binding Path=Data.Text, Mode=TwoWay}"
-                   TextWrapping="Wrap" Margin="10" Cursor="Arrow"
+                           MinWidth="10"
+                   TextWrapping="Wrap" Margin="10, 3" Cursor="Arrow"
                    go:Node.LinkableFrom="False" go:Node.LinkableTo="False"
                    go:Part.TextEditable="True" />
+                <TextBlock Text="{Binding Path=Data.Key}"
+                           TextAlignment="Center"
+                           Margin="10,0"
+                           go:Part.TextEditable="False" />
+                </StackPanel>
                 <ContextMenuService.ContextMenu>
                     <ContextMenu>
                         <MenuItem Header="Start Node" Command="{Binding Source={StaticResource Vm},Path=SetStartNodeCommand}" CommandParameter="{Binding}"></MenuItem>
@@ -171,6 +178,8 @@
 
                     <MenuItem Header="7.Isomorphism" Command="{Binding IsomorphismCommand}"/>
                     <MenuItem Header="8.Connectivity" Command="{Binding ConnectivityCommand}"/>
+
+                    <MenuItem Header="6.Radius, Diameter" Command="{Binding Task6Command}"/>
                 </MenuItem>
 
                 <MenuItem Header="About">
