@@ -475,6 +475,9 @@ namespace Graphs.Sources.ViewModels
         {
 
             ClearGraph();
+            var checkRes = CheckGraphsLinksWithMsg(true);
+            if (checkRes == false)
+                return;
 
             var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(),
                 Model.LinksSource.Cast<LinkModel>());
@@ -511,9 +514,13 @@ namespace Graphs.Sources.ViewModels
                 }
 
                 if (onlyPlus && ignored < 0)
+                {
                     MessageBox.Show(
                         $"Cannot start func because one of link has wrong cost [{(LinkModel) o}] required > 0", "Alert",
                         MessageBoxButton.OK, MessageBoxImage.Error);
+                    return false;
+                }
+
 
             }
             return true;

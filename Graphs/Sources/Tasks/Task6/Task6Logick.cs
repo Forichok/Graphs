@@ -13,6 +13,8 @@ namespace Graphs.Sources.Tasks.Task6
             public KeyValuePair<int, string> DiametrData { get; set; }
             
             public string DegreeVector { get; set; }
+
+            public Dictionary<string, List<KeyValuePair<string, int>>> AllCosts { get; set; }
         }
 
         private ResultData _result;
@@ -21,6 +23,7 @@ namespace Graphs.Sources.Tasks.Task6
         {
             _result = new ResultData();
             var mappedList = mapedEnumerable.ToList();
+            _result.AllCosts = new Dictionary<string, List<KeyValuePair<string, int>>>();
 
             FindRadiusAndDim(mappedList);
             CreateDegreeVector(mappedList);
@@ -34,6 +37,7 @@ namespace Graphs.Sources.Tasks.Task6
             foreach (var mappedNode in mappedList)
             {
                 dataDict.Add(mappedNode.Node.Key, 0);
+                
             }
 
             foreach (var mappedNode in mappedList)
@@ -78,9 +82,17 @@ namespace Graphs.Sources.Tasks.Task6
 
             foreach (var mappedNode in mapped)
             {
+                _result.AllCosts.Add(mappedNode.Node.Key, new List<KeyValuePair<string, int>>());
+            }
+
+            foreach (var mappedNode in mapped)
+            {
+
                 var djResult = DijkstraTask4.StartDijkstra(mapped, mappedNode.Node.Key);
                 foreach (var universalGraphNodeData in djResult.Values)
-                {
+                {   
+                    if(universalGraphNodeData.Node.Node.Key != mappedNode.Node.Key)
+                        _result.AllCosts[universalGraphNodeData.Node.Node.Key].Add(new KeyValuePair<string, int>(mappedNode.Node.Key, universalGraphNodeData.Cost)); 
                     if(universalGraphNodeData.Node == mappedNode)
                         continue;
 

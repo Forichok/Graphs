@@ -36,5 +36,17 @@
                 <TextBlock x:Name="DegreeVector" Foreground="Red"/>
             </StackPanel>
         </StackPanel>
+        
+        <DataGrid Grid.Row="2" AutoGenerateColumns="False" 
+                  HorizontalAlignment="Left" 
+                  Margin="20,0"
+                  Name="ResultGrid" 
+                  VerticalAlignment="Top" 
+                  IsReadOnly="True">
+            <DataGrid.Columns >
+                <DataGridTextColumn Binding="{Binding Path=NodeName}" MinWidth="50" />
+                <DataGridTextColumn Binding="{Binding Path=Costs}" MinWidth="50" />
+            </DataGrid.Columns>
+        </DataGrid>
     </Grid>
 </Window>
