@@ -1,0 +1,9 @@
+Radius Cost -> 1 Vector -> A [A]->D [D]
+Diameter Cost -> 6 Vector -> B [B]->D [D]->F [F]->A [A]
+Table:: 
+To: A From: [B, 6], [C, 5], [D, 5], [E, -1], [F, 3]
+To: B From: [A, 3], [C, 3], [D, 3], [E, -1], [F, 1]
+To: C From: [A, 2], [B, 2], [D, 1], [E, -1], [F, 3]
+To: D From: [A, 1], [B, 1], [C, 4], [E, -1], [F, 2]
+To: E From: [A, 2], [B, 4], [C, 2], [D, 3], [F, 5]
+To: F From: [A, 3], [B, 3], [C, 2], [D, 2], [E, -1]

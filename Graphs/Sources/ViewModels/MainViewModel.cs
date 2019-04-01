@@ -559,6 +559,7 @@ namespace Graphs.Sources.ViewModels
 
         #endregion
 
+
         #region task 4
 
         public DelegateCommand DijkstraMatrixCommand { get; }
@@ -588,6 +589,7 @@ namespace Graphs.Sources.ViewModels
 
         #endregion
 
+
         #region task 6
 
         public DelegateCommand Task6Command { get; }
@@ -613,6 +615,7 @@ namespace Graphs.Sources.ViewModels
 
         #endregion
         
+
         #region task 7 Isomorphism
 
         public DelegateCommand IsomorphismCommand { get; }
@@ -633,6 +636,7 @@ namespace Graphs.Sources.ViewModels
 
         #endregion
 
+
         #region Task 8 Connectivity 
 
         public DelegateCommand ConnectivityCommand { get; }
@@ -652,6 +656,7 @@ namespace Graphs.Sources.ViewModels
         }
 
         #endregion
+
 
         private void ClearGraph()
         {
