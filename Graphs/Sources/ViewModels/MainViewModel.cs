@@ -61,7 +61,7 @@ namespace Graphs.Sources.ViewModels
 
             ExitCommand = new DelegateCommand(Exit);
 
-            ResetGraphCommand=new DelegateCommand(ResetGraph);
+            ResetGraphCommand = new DelegateCommand(ResetGraph);
 
             ReverseMenuCommand = new DelegateCommand<object>(ReverseMenu);
             ChangeLinkDirectionMenuCommand = new DelegateCommand<object>(ChangeLinkDirectionMenu);
@@ -79,7 +79,7 @@ namespace Graphs.Sources.ViewModels
             BfsCommand = new DelegateCommand(StartBfs);
             BestfsCommand = new DelegateCommand(StartBestfs);
             IsomorphismCommand = new DelegateCommand(StartIsomorphism);
-            ConnectivityCommand= new DelegateCommand(StartConnectivity);
+            ConnectivityCommand = new DelegateCommand(StartConnectivity);
 
             DijkstraMatrixCommand = new DelegateCommand(StartDijkstraMatrix);
 
@@ -146,6 +146,7 @@ namespace Graphs.Sources.ViewModels
                 StartNode.IsStartNode = false;
                 StartNode.IsSelected = false;
             }
+
             StartNode = (sender as PartManager.PartBinding).Data as NodeModel;
 
             StartNode.IsStartNode = true;
@@ -160,9 +161,10 @@ namespace Graphs.Sources.ViewModels
                 FinishNode.IsStartNode = false;
                 FinishNode.IsSelected = false;
             }
+
             FinishNode = (sender as PartManager.PartBinding).Data as NodeModel;
-            
-            FinishNode.IsFinishNode=true;
+
+            FinishNode.IsFinishNode = true;
             FinishNode.IsStartNode = false;
         }
 
@@ -200,6 +202,7 @@ namespace Graphs.Sources.ViewModels
 
             myDiagram.CommitTransaction("Add NodeModel");
         }
+
         #endregion
 
         #region background commands
@@ -219,7 +222,7 @@ namespace Graphs.Sources.ViewModels
                 node.IsStartNode = false;
                 node.IsSelected = false;
             }
-            
+
         }
 
         #endregion
@@ -277,6 +280,7 @@ namespace Graphs.Sources.ViewModels
             {
                 MessageBox.Show(e.Message, "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+
             OnFileLoaded();
         }
 
@@ -315,6 +319,7 @@ namespace Graphs.Sources.ViewModels
             {
                 MessageBox.Show(e.Message, "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+
             OnFileLoaded();
         }
 
@@ -353,6 +358,7 @@ namespace Graphs.Sources.ViewModels
             {
                 MessageBox.Show(e.Message, "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+
             OnFileLoaded();
         }
 
@@ -434,6 +440,7 @@ namespace Graphs.Sources.ViewModels
                     linkModel.Points = new List<Point>(link.Route.Points);
                 }
             }
+
             var root = Model.Save<NodeModel, LinkModel>("StateChart", "NodeModel", "LinkModel");
             var saveFileDialog1 = new SaveFileDialog();
 
@@ -466,6 +473,7 @@ namespace Graphs.Sources.ViewModels
                 }
 
             }
+
             if (Application.Current.MainWindow != null) Application.Current.MainWindow.Close();
         }
 
@@ -478,23 +486,34 @@ namespace Graphs.Sources.ViewModels
 
         private void StartBfs()
         {
-            if (StartNode != null && FinishNode != null)
+            if (StartNode == null || FinishNode == null)
             {
-                ClearGraph();
-                var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(),
-                    Model.LinksSource.Cast<LinkModel>());
+                MessageBox.Show("Please select start and finish nodes.", "Error", MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+                return;
+            }
 
-            var resBFS = BFSTask2.BreadthFirstSearch(mappedList, "A", "B");
+            ClearGraph();
+            var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(),
+                Model.LinksSource.Cast<LinkModel>());
+
+
+            var resBFS = BFSTask2.BreadthFirstSearch(mappedList, StartNode.Key, FinishNode.Key);
             var cost = 0;
             resBFS.Key.ForEach(t =>
             {
+                var fromNode = Model.GetFromNodeForLink(t);
+                if (!fromNode.IsFinishNode && !fromNode.IsStartNode)
+                    fromNode.IsSelected = true;
                 t.IsSelected = true;
+
                 var parseResult = int.TryParse(t.Text, out var res);
 
                 if (parseResult)
                     cost += res;
             });
             ShowWaySearchResult(cost, resBFS.Value);
+
         }
 
         #endregion
@@ -506,29 +525,94 @@ namespace Graphs.Sources.ViewModels
 
         private void StartBestfs()
         {
-            if (StartNode != null && FinishNode != null)
+            if (StartNode == null || FinishNode == null)
             {
-                ClearGraph();
-                var checkRes = CheckGraphsLinksWithMsg();
-                if (checkRes == false)
-                    return;
-                var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(),
-                    Model.LinksSource.Cast<LinkModel>());
-
-                var resBestFS = BestFSTask3.StartBestFs(mappedList, StartNode.Key, FinishNode.Key);
-                resBestFS.ForEach(t =>
-                {
-                    var fromNode = Model.GetFromNodeForLink(t);
-                    if (!fromNode.IsFinishNode && !fromNode.IsStartNode)
-                        fromNode.IsSelected = true;
-                    t.IsSelected = true;
-                });
+                MessageBox.Show("Please select start and finish nodes.", "Error", MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+                return;
             }
+
+            ClearGraph();
+
+            var checkRes = CheckGraphsLinksWithMsg();
+            if (checkRes == false)
+                return;
+            var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(),
+                Model.LinksSource.Cast<LinkModel>());
+
+            var resBestFS = BestFSTask3.StartBestFs(mappedList, StartNode.Key, FinishNode.Key);
+            var cost = 0;
+            resBestFS.Key.ForEach(t =>
+            {
+                var fromNode = Model.GetFromNodeForLink(t);
+                if (!fromNode.IsFinishNode && !fromNode.IsStartNode)
+                    fromNode.IsSelected = true;
+
+                t.IsSelected = true;
+                var parseResult = int.TryParse(t.Text, out var res);
+
+                if (parseResult)
+                    cost += res;
+            });
+            ShowWaySearchResult(cost, resBestFS.Value);
         }
 
         #endregion
 
+        #region task 4
 
+        public DelegateCommand DijkstraMatrixCommand { get; }
+
+        public void StartDijkstraMatrix()
+        {
+            if (StartNode == null)
+            {
+                MessageBox.Show("Please select start node.", "Error", MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+                return;
+            }
+
+            ClearGraph();
+            var checkRes = CheckGraphsLinksWithMsg(true);
+            if (checkRes == false)
+                return;
+            var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(),
+                Model.LinksSource.Cast<LinkModel>());
+
+            var resDijkstra = DijkstraTask4.StartDijkstra(mappedList, StartNode.Key);
+
+            var resWindow = new DijkstraResultWindow((Dictionary<string, UniversalGraphNodeData>)resDijkstra, StartNode.Key);
+            resWindow.Show();
+
+        }
+
+        #endregion
+
+        #region task 6
+
+        public DelegateCommand Task6Command { get; }
+
+        public void StartTask6()
+        {
+
+            ClearGraph();
+            var checkRes = CheckGraphsLinksWithMsg(true);
+            if (checkRes == false)
+                return;
+
+            var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(),
+                Model.LinksSource.Cast<LinkModel>());
+
+            var t6 = new Task6Logick();
+            var resTask6 = t6.BeginTask6(mappedList);
+
+            var resWindow = new Task6Window(resTask6);
+            resWindow.Show();
+
+        }
+
+        #endregion
+        
         #region task 7 Isomorphism
 
         public DelegateCommand IsomorphismCommand { get; }
@@ -569,56 +653,6 @@ namespace Graphs.Sources.ViewModels
 
         #endregion
 
-        #region task 4
-
-        public DelegateCommand DijkstraMatrixCommand { get; }
-
-        public void StartDijkstraMatrix()
-        {
-
-            ClearGraph();
-            var checkRes = CheckGraphsLinksWithMsg(true);
-            if (checkRes == false)
-                return;
-            var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(),
-                Model.LinksSource.Cast<LinkModel>());
-
-            var resDijkstra = DijkstraTask4.StartDijkstra(mappedList, "A");
-
-            var resWindow = new DijkstraResultWindow((Dictionary<string, UniversalGraphNodeData>) resDijkstra, "A");
-            resWindow.Show();
-
-        }
-
-        #endregion
-
-
-        #region task 6
-
-        public DelegateCommand Task6Command { get; }
-
-        public void StartTask6()
-        {
-
-            ClearGraph();
-            var checkRes = CheckGraphsLinksWithMsg(true);
-            if (checkRes == false)
-                return;
-
-            var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(),
-                Model.LinksSource.Cast<LinkModel>());
-
-            var t6 = new Task6Logick();
-            var resTask6 = t6.BeginTask6(mappedList);
-
-            var resWindow = new Task6Window(resTask6);
-            resWindow.Show();
-
-        }
-
-        #endregion
-
-
         private void ClearGraph()
         {
             foreach (LinkModel link in Model.LinksSource)
@@ -656,6 +690,7 @@ namespace Graphs.Sources.ViewModels
 
 
             }
+
             return true;
         }
 
@@ -699,7 +734,7 @@ namespace Graphs.Sources.ViewModels
             switch (result)
             {
                 case MessageBoxResult.Yes:
-                    SaveVector(vector);        
+                    SaveVector(vector);
                     break;
             }
         }
@@ -746,8 +781,8 @@ namespace Graphs.Sources.ViewModels
                 }
             }
         }
-    
-              
+
+
 
         protected virtual void OnFileLoaded()
         {

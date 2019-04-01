@@ -175,11 +175,11 @@
                     <MenuItem Header="2.BFS" Command="{Binding BfsCommand}"/>
                     <MenuItem Header="3.BestFS" Command="{Binding BestfsCommand}"/>
                     <MenuItem Header="4.Dijkstra Matrix" Command="{Binding DijkstraMatrixCommand}"/>
-
+                    <MenuItem Header="6.Radius, Diameter" Command="{Binding Task6Command}"/>
                     <MenuItem Header="7.Isomorphism" Command="{Binding IsomorphismCommand}"/>
                     <MenuItem Header="8.Connectivity" Command="{Binding ConnectivityCommand}"/>
 
-                    <MenuItem Header="6.Radius, Diameter" Command="{Binding Task6Command}"/>
+                    
                 </MenuItem>
 
                 <MenuItem Header="About">
