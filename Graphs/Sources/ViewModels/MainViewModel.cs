@@ -88,6 +88,8 @@ namespace Graphs.Sources.ViewModels
 
             CheckToFullCommand = new DelegateCommand(StartCheckToFull);
             CreateFullCommand = new DelegateCommand(StartCreateFull);
+
+            KruskalCommand = new DelegateCommand(StartKruskal);
         }
 
 
@@ -752,6 +754,32 @@ namespace Graphs.Sources.ViewModels
         #endregion
 
 
+        #region Task 13
+
+        public DelegateCommand KruskalCommand { get; }
+
+        private void StartKruskal()
+        {
+            var isOrientated = CheckOnOrientated();
+            if (isOrientated)
+            {
+                var result = MessageBox.Show("You have orienated graph, prgram can work with errors? do you want to continue?",
+                    "Are you sure?", MessageBoxButton.YesNo);
+                switch (result)
+                {
+                    case MessageBoxResult.Yes:
+                        break;
+
+                    case MessageBoxResult.No:
+                        return;
+                }
+
+                
+            }
+        }
+
+        #endregion
+
         private void ClearGraph()
         {
             foreach (LinkModel link in Model.LinksSource)
@@ -881,7 +909,15 @@ namespace Graphs.Sources.ViewModels
             }
         }
 
-
+        public bool CheckOnOrientated()
+        {
+            foreach (LinkModel link in Model.LinksSource)
+            {
+                if (link.IsOriented)
+                    return false;
+            }
+            return true;
+        }
 
         protected virtual void OnFileLoaded()
         {
