@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Graphs.Sources.Models;
 
@@ -10,6 +11,8 @@ namespace Graphs.Sources.Tasks.Task6
         {
             public KeyValuePair<int, string> RadiusData { get; set; }
             public KeyValuePair<int, string> DiametrData { get; set; }
+            
+            public string DegreeVector { get; set; }
         }
 
         private ResultData _result;
@@ -20,13 +23,52 @@ namespace Graphs.Sources.Tasks.Task6
             var mappedList = mapedEnumerable.ToList();
 
             FindRadiusAndDim(mappedList);
+            CreateDegreeVector(mappedList);
 
             return _result;
         }
 
+        private void CreateDegreeVector(List<MappedNode> mappedList)
+        {
+            var dataDict = new Dictionary<string, int>();
+            foreach (var mappedNode in mappedList)
+            {
+                dataDict.Add(mappedNode.Node.Key, 0);
+            }
+
+            foreach (var mappedNode in mappedList)
+            {
+                foreach (var link in mappedNode.Links)
+                {
+                    if (link.To == link.From)
+                        dataDict[mappedNode.Node.Key] += 2;
+                    else
+                    {
+                        dataDict[mappedNode.Node.Key] += 1;
+                        if(link.IsOriented)
+                            dataDict[link.GetTo(mappedNode.Node.Key)] += 1;
+                    }
+                }       
+            }
+
+            var degreeVector = dataDict.Values.Select((t)=>t).ToList();
+            degreeVector.Sort((f, s) =>
+            {
+
+                if (f > s)
+                    return -1;
+                if (f == s)
+                    return 0;
+
+                return 1;
+            });
+
+            _result.DegreeVector = string.Join(", ", degreeVector);
+        }
+
         private void FindRadiusAndDim(List<MappedNode> mapped)
         {
-            var minCost = 0;
+            var minCost = Int32.MaxValue;
             var minName = "";
             List<UniversalGraphNodeData> minVector = null;
 
@@ -39,13 +81,17 @@ namespace Graphs.Sources.Tasks.Task6
                 var djResult = DijkstraTask4.StartDijkstra(mapped, mappedNode.Node.Key);
                 foreach (var universalGraphNodeData in djResult.Values)
                 {
+                    if(universalGraphNodeData.Node == mappedNode)
+                        continue;
+
                     if (universalGraphNodeData.Cost > maxCost)
                     {
                         maxCost = universalGraphNodeData.Cost;
                         maxName = universalGraphNodeData.Node.Node.Key;
                         maxVector = djResult.Values.ToList();
                     }
-                    else if (universalGraphNodeData.Cost < minCost)
+
+                    if (universalGraphNodeData.Cost < minCost & universalGraphNodeData.Cost != -1)
                     {
                         minCost = universalGraphNodeData.Cost;
                         minName = universalGraphNodeData.Node.Node.Key;
@@ -54,9 +100,18 @@ namespace Graphs.Sources.Tasks.Task6
                 }
             }   
 
-            _result.RadiusData = new KeyValuePair<int, string>(minCost, UniversalGraphNodeData.GetVector(minVector, minName));
-            _result.DiametrData = new KeyValuePair<int, string>(maxCost, UniversalGraphNodeData.GetVector(maxVector, maxName));
+            if(minVector != null)
+                _result.RadiusData = new KeyValuePair<int, string>(minCost, UniversalGraphNodeData.GetVector(minVector, minName));
+            else
+                _result.RadiusData = new KeyValuePair<int, string>(-1, "none");
+
+            if(maxVector != null)
+                _result.DiametrData = new KeyValuePair<int, string>(maxCost, UniversalGraphNodeData.GetVector(maxVector, maxName));
+            else
+                _result.DiametrData = new KeyValuePair<int, string>(-1, "none");
 
         }
+
+       
     }
 }
