@@ -208,6 +208,7 @@
     <Compile Include="Sources\Tasks\BestFSTask3.cs" />
     <Compile Include="Sources\Tasks\BFSTask2.cs" />
     <Compile Include="Sources\Tasks\ConnectivityTask8.cs" />
+    <Compile Include="Sources\Tasks\FullGraphTask9.cs" />
     <Compile Include="Sources\Tasks\IsomorphismTask7.cs" />
     <Compile Include="Sources\Tasks\DijkstraTask4.cs" />
     <Compile Include="Sources\Tasks\MainModel.cs" />

@@ -8,5 +8,6 @@ namespace Graphs.Sources.Models
 
         public List<LinkModel> Links { get; } = new List<LinkModel>();
 
+        public List<LinkModel> LinksIn { get;  } = new List<LinkModel>();
     }
 }

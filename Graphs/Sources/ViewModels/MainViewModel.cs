@@ -85,6 +85,8 @@ namespace Graphs.Sources.ViewModels
 
             AStarCommand = new DelegateCommand(StartAStar);
             Task6Command = new DelegateCommand(StartTask6);
+
+            CheckToFullCommand = new DelegateCommand(StartCheckToFull);
         }
 
 
@@ -631,6 +633,7 @@ namespace Graphs.Sources.ViewModels
 
         #endregion
 
+
         #region task 6
 
         public DelegateCommand Task6Command { get; }
@@ -696,6 +699,29 @@ namespace Graphs.Sources.ViewModels
 
         }
 
+        #endregion
+
+
+        #region Task 9
+        public DelegateCommand CheckToFullCommand { get; }
+        public DelegateCommand CommandCreateFullCommand { get; }
+
+        public void StartCheckToFull()
+        {
+            var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(),
+                Model.LinksSource.Cast<LinkModel>());
+
+            var res = FullGraphTask9.Check(mappedList);
+            if (res)
+            {
+                MessageBox.Show("Graphs is full", "9(1) Result", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else
+            {
+                MessageBox.Show("Graphs isn't full", "9(1) Result", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+
+        }
         #endregion
 
 
