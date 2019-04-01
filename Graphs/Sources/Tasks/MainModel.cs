@@ -485,8 +485,9 @@ namespace Graphs.Sources.Tasks
 
             foreach (var link in linksList)
             {
+
                 var findedNode = nodesList.Find((t) => t.Key == link.From);
-                var findedMapedNode = result.Find((t)=> t.Node.Key == findedNode.Key);
+                var findedMapedNode = result.Find((t) => t.Node.Key == findedNode.Key);
                 findedMapedNode.Links.Add(link);
 
                 if (!link.IsOriented)
@@ -494,6 +495,15 @@ namespace Graphs.Sources.Tasks
                     var findedDestNode = nodesList.Find((t) => t.Key == link.To);
                     var findedDestMapedNode = result.Find((t) => t.Node.Key == findedDestNode.Key);
                     findedDestMapedNode.Links.Add(link);
+                    findedDestMapedNode.LinksIn.Add(link);
+
+                    findedMapedNode.LinksIn.Add(link);
+                }
+                else
+                {
+                    var findedToNode = nodesList.Find((t) => t.Key == link.To);
+                    var findedToMapedNode = result.Find((t) => t.Node.Key == findedToNode.Key);
+                    findedToMapedNode.LinksIn.Add(link);
                 }
             }
 

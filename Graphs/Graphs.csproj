@@ -213,8 +213,10 @@
     <Compile Include="Sources\Tasks\BestFSTask3.cs" />
     <Compile Include="Sources\Tasks\BFSTask2.cs" />
     <Compile Include="Sources\Tasks\Task8\ConnectivityTask8.cs" />
+    <Compile Include="Sources\Tasks\FullGraphTask9.cs" />
     <Compile Include="Sources\Tasks\IsomorphismTask7.cs" />
     <Compile Include="Sources\Tasks\DijkstraTask4.cs" />
+    <Compile Include="Sources\Tasks\KruskalTask13.cs" />
     <Compile Include="Sources\Tasks\MainModel.cs" />
     <Compile Include="Sources\Tasks\Task6\Task6Logick.cs" />
     <Compile Include="Sources\Tasks\Task6\Task6Window.xaml.cs">

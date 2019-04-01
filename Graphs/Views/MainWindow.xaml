@@ -175,12 +175,18 @@
                     <MenuItem Header="2.BFS" Command="{Binding BfsCommand}"/>
                     <MenuItem Header="3.BestFS" Command="{Binding BestfsCommand}"/>
                     <MenuItem Header="4.Dijkstra Matrix" Command="{Binding DijkstraMatrixCommand}"/>
+                    <MenuItem Header="5.A*" Command="{Binding AStarCommand}"/>
                     <MenuItem Header="6.Radius, Diameter" Command="{Binding Task6Command}"/>
                     <MenuItem Header="7.Isomorphism" Command="{Binding IsomorphismCommand}"/>
                     <MenuItem Header="8.Connectivity" Command="{Binding ConnectivityCommand}"/>
                     <MenuItem Header="15.Colorer" Command="{Binding ColorerCommand}"/>
 
                     
+                    <MenuItem Header="9. Full graph">
+                        <MenuItem Header="9 (1).Check to full" Command="{Binding CheckToFullCommand}"/>
+                        <MenuItem Header="9 (2).Create full" Command="{Binding CreateFullCommand}"/>
+                    </MenuItem>
+
                 </MenuItem>
 
                 <MenuItem Header="About">

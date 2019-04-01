@@ -1,6 +1,10 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.IO;
 using System.Windows;
+using System.Windows.Forms;
 using Graphs.Sources.Models;
+using MessageBox = System.Windows.MessageBox;
 
 namespace Graphs.Sources.Tasks.Task6
 {
@@ -37,7 +41,28 @@ namespace Graphs.Sources.Tasks.Task6
 
         private void SaveAll(object sender, RoutedEventArgs e)
         {
+            var saveFileDialog = new SaveFileDialog { Filter = @"Simple text (*.txt)|*.txt" };
+            if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                try
+                {
+                    using (var sw = new StreamWriter(saveFileDialog.FileName))
+                    {
+                        sw.WriteLine($"Radius Cost -> {RadiusCost.Text} Vector -> {RadiusVector.Text}");
+                        sw.WriteLine($"Diameter Cost -> {DiameterCost.Text} Vector -> {DiamterVector.Text}");
 
+                        sw.WriteLine($"Table:: ");
+                        foreach (DataObject res in ResultGrid.ItemsSource)
+                        {
+                            sw.WriteLine($"To: {res.NodeName} From: {res.Costs}");
+                        }
+                    }
+                }
+                catch (Exception exception)
+                {
+                    MessageBox.Show(exception.Message, "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
         }
     }
 }

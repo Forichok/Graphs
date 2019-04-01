@@ -86,7 +86,13 @@ namespace Graphs.Sources.ViewModels
 
             DijkstraMatrixCommand = new DelegateCommand(StartDijkstraMatrix);
 
+            AStarCommand = new DelegateCommand(StartAStar);
             Task6Command = new DelegateCommand(StartTask6);
+
+            CheckToFullCommand = new DelegateCommand(StartCheckToFull);
+            CreateFullCommand = new DelegateCommand(StartCreateFull);
+
+            KruskalCommand = new DelegateCommand(StartKruskal);
         }
 
 
@@ -564,6 +570,7 @@ namespace Graphs.Sources.ViewModels
 
         #endregion
 
+
         #region task 4
 
         public DelegateCommand DijkstraMatrixCommand { get; }
@@ -593,6 +600,48 @@ namespace Graphs.Sources.ViewModels
 
         #endregion
 
+
+        #region task 5
+
+        public DelegateCommand AStarCommand { get; }
+
+        public void StartAStar()
+        {
+            if (StartNode == null)
+            {
+                MessageBox.Show("Please select start node.", "Error", MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+                return;
+            }
+
+            ClearGraph();
+            var checkRes = CheckGraphsLinksWithMsg(true);
+            if (checkRes == false)
+                return;
+            var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(),
+                Model.LinksSource.Cast<LinkModel>());
+
+            var resAStar = AStarTask5.StartAStar(mappedList, StartNode.Key, FinishNode.Key);
+            var cost = 0;
+            resAStar.Key.ForEach(t =>
+            {
+                var fromNode = Model.GetFromNodeForLink(t);
+                if (!fromNode.IsFinishNode && !fromNode.IsStartNode)
+                    fromNode.IsSelected = true;
+
+                t.IsSelected = true;
+                var parseResult = int.TryParse(t.Text, out var res);
+
+                if (parseResult)
+                    cost += res;
+            });
+            ShowWaySearchResult(cost, resAStar.Value);
+
+        }
+
+        #endregion
+
+
         #region task 6
 
         public DelegateCommand Task6Command { get; }
@@ -618,6 +667,7 @@ namespace Graphs.Sources.ViewModels
 
         #endregion
         
+
         #region task 7 Isomorphism
 
         public DelegateCommand IsomorphismCommand { get; }
@@ -637,6 +687,7 @@ namespace Graphs.Sources.ViewModels
         }
 
         #endregion
+
 
         #region Task 8 Connectivity 
 
@@ -679,6 +730,82 @@ namespace Graphs.Sources.ViewModels
                     return node;
 
             return null;
+        }
+
+        #endregion
+
+
+        #region Task 9
+        public DelegateCommand CheckToFullCommand { get; }
+        public DelegateCommand CreateFullCommand { get; }
+
+        public void StartCheckToFull()
+        {
+            var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(),
+                Model.LinksSource.Cast<LinkModel>());
+
+            var res = FullGraphTask9.Check(mappedList);
+            if (res)
+            {
+                MessageBox.Show("Graphs is full", "9(1) Result", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else
+            {
+                MessageBox.Show("Graphs isn't full", "9(1) Result", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+
+        }
+
+        public void StartCreateFull()
+        {
+            var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(),
+                Model.LinksSource.Cast<LinkModel>());
+
+            
+
+            var additionalLinks = FullGraphTask9.GetFull(mappedList);
+
+            if (additionalLinks.Count == 0)
+            {
+                MessageBox.Show("Graphs is already full", "9(1) Result", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            Model.StartTransaction("full");
+
+            foreach (var link in additionalLinks)
+            {
+                Model.AddLink(link);
+            }
+            Model.CommitTransaction("full");
+
+            OnFileLoaded();
+        }
+        #endregion
+
+
+        #region Task 13
+
+        public DelegateCommand KruskalCommand { get; }
+
+        private void StartKruskal()
+        {
+            var isOrientated = CheckOnOrientated();
+            if (isOrientated)
+            {
+                var result = MessageBox.Show("You have orienated graph, prgram can work with errors? do you want to continue?",
+                    "Are you sure?", MessageBoxButton.YesNo);
+                switch (result)
+                {
+                    case MessageBoxResult.Yes:
+                        break;
+
+                    case MessageBoxResult.No:
+                        return;
+                }
+
+                
+            }
         }
 
         #endregion
@@ -813,7 +940,15 @@ namespace Graphs.Sources.ViewModels
             }
         }
 
-
+        public bool CheckOnOrientated()
+        {
+            foreach (LinkModel link in Model.LinksSource)
+            {
+                if (link.IsOriented)
+                    return false;
+            }
+            return true;
+        }
 
         protected virtual void OnFileLoaded()
         {
