@@ -185,6 +185,12 @@
                     <MenuItem Header="Help"/>
                     <MenuItem Header="About"/>
                 </MenuItem>
+                <MenuItem Header="Setting">
+                    <WrapPanel>
+                        <Label Content="Oriented Edges"></Label>
+                        <CheckBox VerticalAlignment="Center" Name="IsOrientedCheckBox"></CheckBox>
+                    </WrapPanel>
+                </MenuItem>
                 <MenuItem Header="Switch Graph" Command="{Binding SwitchGraphCommand}"></MenuItem>
             </Menu>
 

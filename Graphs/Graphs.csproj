@@ -194,6 +194,8 @@
       <DependentUpon>DijkstraResultWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Sources\Converters\SelectionConverter.cs" />
+    <Compile Include="Sources\Tasks\Task8\BridgeFinder.cs" />
+    <Compile Include="Sources\Tasks\Task8\DiGraph.cs" />
     <Compile Include="Sources\Helpers\GraphHelper.cs" />
     <Compile Include="Sources\Helpers\NodeFigureCreator.cs" />
     <Compile Include="Sources\Helpers\NodeKeyCreator.cs" />
@@ -207,7 +209,7 @@
     <Compile Include="Sources\Tasks\AStarTask5.cs" />
     <Compile Include="Sources\Tasks\BestFSTask3.cs" />
     <Compile Include="Sources\Tasks\BFSTask2.cs" />
-    <Compile Include="Sources\Tasks\ConnectivityTask8.cs" />
+    <Compile Include="Sources\Tasks\Task8\ConnectivityTask8.cs" />
     <Compile Include="Sources\Tasks\IsomorphismTask7.cs" />
     <Compile Include="Sources\Tasks\DijkstraTask4.cs" />
     <Compile Include="Sources\Tasks\MainModel.cs" />
@@ -215,6 +217,7 @@
     <Compile Include="Sources\Tasks\Task6\Task6Window.xaml.cs">
       <DependentUpon>Task6Window.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Sources\Tasks\Task8\Graph.cs" />
     <Compile Include="Sources\Tools\CustomPartManager.cs" />
     <Compile Include="Sources\ViewModels\MainViewModel.cs" />
     <Page Include="DijkstraResultWindow.xaml">

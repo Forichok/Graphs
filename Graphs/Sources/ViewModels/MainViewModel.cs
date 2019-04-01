@@ -639,15 +639,8 @@ namespace Graphs.Sources.ViewModels
 
         public void StartConnectivity()
         {
-            var task7 = new IsomorphismTask7(Model, model2);
-            if (task7.IsIsomorphy())
-            {
-                MessageBox.Show("Graphs are isomorphic");
-            }
-            else
-            {
-                MessageBox.Show("Graphs aren't isomorphic");
-            }
+            var task8 = new ConnectivityTask8(Model);
+            
 
         }
 

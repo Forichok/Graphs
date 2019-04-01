@@ -130,8 +130,11 @@ namespace Graphs
         {
             try
             {
+
                 var linkModel = e.Part.Data as LinkModel;
                 linkModel.Weight=((int) (GetNode(linkModel.From).Location - GetNode(linkModel.To).Location).Length / 100).ToString();
+
+                linkModel.IsOriented = (bool) IsOrientedCheckBox.IsChecked;
 
                 int from = getNodeIndex(linkModel.From, myDiagram.Model.NodesSource);
                 int to = getNodeIndex(linkModel.To, myDiagram.Model.NodesSource);
