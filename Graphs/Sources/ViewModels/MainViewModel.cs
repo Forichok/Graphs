@@ -83,26 +83,26 @@ namespace Graphs.Sources.ViewModels
             LoadCommand = new DelegateCommand<Diagram>(LoadUniversal);
             SaveCommand = new DelegateCommand<Diagram>(SaveUniversal);
 
-            BfsCommand = new DelegateCommand(StartBfs);
-            BestfsCommand = new DelegateCommand(StartBestfs);
-            IsomorphismCommand = new DelegateCommand(StartIsomorphism);
-            ConnectivityCommand = new DelegateCommand(StartConnectivity);
-            ColorerCommand = new DelegateCommand(StartColorer);
+            BfsCommand = new DelegateCommand(TaskStarter(StartBfs));
+            BestfsCommand = new DelegateCommand(TaskStarter(StartBestfs));
+            IsomorphismCommand = new DelegateCommand(TaskStarter(StartIsomorphism));
+            ConnectivityCommand = new DelegateCommand(TaskStarter(StartConnectivity));
+            ColorerCommand = new DelegateCommand(TaskStarter(StartColorer));
 
-            DijkstraMatrixCommand = new DelegateCommand(StartDijkstraMatrix);
+            DijkstraMatrixCommand = new DelegateCommand(TaskStarter(StartDijkstraMatrix));
 
-            AStarCommand = new DelegateCommand(StartAStar);
-            Task6Command = new DelegateCommand(StartTask6);
+            AStarCommand = new DelegateCommand(TaskStarter(StartAStar));
+            Task6Command = new DelegateCommand(TaskStarter(StartTask6));
 
-            CheckToFullCommand = new DelegateCommand(StartCheckToFull);
-            CreateFullCommand = new DelegateCommand(StartCreateFull);
+            CheckToFullCommand = new DelegateCommand(TaskStarter(StartCheckToFull));
+            CreateFullCommand = new DelegateCommand(TaskStarter(StartCreateFull));
 
-            KruskalCommand = new DelegateCommand(StartKruskal);
+            KruskalCommand = new DelegateCommand(TaskStarter(StartKruskal));
 
             HelpCommand = new DelegateCommand(Help);
             AboutCommand = new DelegateCommand(About);
 
-            CheckCycleCommand = new DelegateCommand(CheckCycle);
+            CheckCycleCommand = new DelegateCommand(TaskStarter(CheckCycle));
         }
 
 
@@ -1063,7 +1063,16 @@ namespace Graphs.Sources.ViewModels
 
 
 
+        private Action TaskStarter(Action task)
+        {
+            return new Action(() =>
+            {
+                Model.StartTransaction("Task");
+                task.Invoke();
+                Model.CommitTransaction("Task");
+            });
 
+        }
         private void ClearGraph()
         {
             try
