@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Media;
 using Graphs.Sources.Advanced.Algorithms.DataStructures.Graph.AdjacencyList;
 using Graphs.Sources.Models;
 using Northwoods.GoXam.Model;
@@ -29,16 +30,25 @@ namespace Graphs.Sources.Tasks.Task15
 
         public MColorResult<string, string> Paint()
         {
+            if (model.LinksSource.Cast<LinkModel>().Count() == 0)
+                return null;
+
             var graph = new Graph<String>();
 
             foreach (NodeModel node in model.NodesSource)
             {
+                var linksFromNode = model.GetLinksForNode(node);
+                if (linksFromNode.Count() == 0)
+                {
+                    node.Color = (SolidColorBrush)(new BrushConverter().ConvertFrom($"#{ColorValues.Last()}"));
+                    continue;
+                }
                 graph.AddVertex(node.Key);
             }
 
             foreach (LinkModel link in model.LinksSource)
             {
-                //graph.AddEdge(link.From, link.To);
+                graph.AddEdge(link.From, link.To);
                 if (!link.IsOriented)
                     graph.AddEdge(link.To, link.From);
             }
@@ -53,7 +63,7 @@ namespace Graphs.Sources.Tasks.Task15
                 colors = ColorValues.Take(colorsCount++);
                 result = algorithm.Color(graph, colors.ToArray());
                 if (colorsCount > ColorValues.Count)
-                    return null;
+                    break;
             }
 
             return result;

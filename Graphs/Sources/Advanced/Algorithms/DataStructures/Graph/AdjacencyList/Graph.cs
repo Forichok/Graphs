@@ -98,7 +98,7 @@ namespace Graphs.Sources.Advanced.Algorithms.DataStructures.Graph.AdjacencyList
             if (Vertices[source].Edges.Contains(Vertices[dest])
                 || Vertices[dest].Edges.Contains(Vertices[source]))
             {
-                throw new Exception("Edge already exists.");
+               // throw new Exception("Edge already exists.");
             }
 
             Vertices[source].Edges.Add(Vertices[dest]);

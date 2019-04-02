@@ -1012,18 +1012,19 @@ namespace Graphs.Sources.ViewModels
         {
             try
             {
-                if (Model.IsOriented())
-                {
-                    MessageBox.Show($"Graph is orientated, sorry :)", "Error", MessageBoxButton.OK,
-                        MessageBoxImage.Error);
-                    return;
-                }
 
                 var task15 = new ColorerTask15(Model);
                 var result = task15.Paint();
+
+                if (result == null)
+                {
+                    MessageBox.Show($"Chromatic number: 1", "Done", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
+                    
                 var parts = result.Partitions;
-                MessageBox.Show($"Chromatic number: {parts.Keys.Count}", "Done", MessageBoxButton.OK,
-                    MessageBoxImage.Information);
+                
+                MessageBox.Show($"Chromatic number: {parts.Keys.Count}", "Done", MessageBoxButton.OK, MessageBoxImage.Information);
                 foreach (var color in parts.Keys)
                 {
                     foreach (var nodeKey in parts[color])
@@ -1065,14 +1066,14 @@ namespace Graphs.Sources.ViewModels
 
         private Action TaskStarter(Action task)
         {
-            return new Action(() =>
+            return () =>
             {
                 Model.StartTransaction("Task");
                 task.Invoke();
                 Model.CommitTransaction("Task");
-            });
-
+            };
         }
+
         private void ClearGraph()
         {
             try
