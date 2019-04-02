@@ -29,6 +29,7 @@ namespace Graphs
         private CancellationTokenSource source;
         private CancellationToken token;
         private Task updateTask;
+
         public MainWindow()
         {
 
@@ -112,12 +113,10 @@ namespace Graphs
                     }
                     else
                     {
-                        linkModel = new LinkModel(from, to, "") {model = model, DiagramModel = diagram};
+                        linkModel = new LinkModel(from, to, "") {model = model};
                     }
 
                     routes.Add(linkModel);
-
-
                 }
 
                 lines.Add(new Line() {Heading = from, Values = routes});
@@ -130,15 +129,17 @@ namespace Graphs
         {
             try
             {
-
                 var linkModel = e.Part.Data as LinkModel;
                 linkModel.Weight=((int) (GetNode(linkModel.From).Location - GetNode(linkModel.To).Location).Length / 100).ToString();
 
                 linkModel.IsOriented = (bool) IsOrientedCheckBox.IsChecked;
 
+
                 int from = getNodeIndex(linkModel.From, myDiagram.Model.NodesSource);
                 int to = getNodeIndex(linkModel.To, myDiagram.Model.NodesSource);
 
+                if(!linkModel.IsOriented)
+                    matrixData[to].Values[from] = linkModel;
                 matrixData[from].Values[to] = linkModel;
             }
             catch (Exception exception)
@@ -188,8 +189,7 @@ namespace Graphs
             {
                 var linkModel = new LinkModel(key, node.Key, "")
                 {
-                    model = myDiagram.Model as GraphLinksModel<NodeModel, string, string, LinkModel>,
-                    DiagramModel = myDiagram
+                    model = myDiagram.Model as GraphLinksModel<NodeModel, string, string, LinkModel>
                 };
                 //linkModel.LinkChangedHandler += LinkChanged;
                 values.Add(linkModel);
@@ -199,8 +199,7 @@ namespace Graphs
             {
                 line.Values.Add(new LinkModel(line.Heading, key, "")
                 {
-                    model = myDiagram.Model as GraphLinksModel<NodeModel, string, string, LinkModel>,
-                    DiagramModel = myDiagram
+                    model = myDiagram.Model as GraphLinksModel<NodeModel, string, string, LinkModel>
                 });
             }
 
@@ -255,8 +254,7 @@ namespace Graphs
             {
                 matrixData[to].Values[from] = new LinkModel(linkModel.From, linkModel.To, "")
                 {
-                    model = myDiagram.Model as GraphLinksModel<NodeModel, string, string, LinkModel>,
-                    DiagramModel = myDiagram
+                    model = myDiagram.Model as GraphLinksModel<NodeModel, string, string, LinkModel>
                 };
             }
 
@@ -271,8 +269,7 @@ namespace Graphs
                 int to = getNodeIndex(linkModel.To, myDiagram.Model.NodesSource);
                 matrixData[from].Values[to] = new LinkModel(linkModel.From, linkModel.To, "")
                 {
-                    model = myDiagram.Model as GraphLinksModel<NodeModel, string, string, LinkModel>,
-                    DiagramModel = myDiagram
+                    model = myDiagram.Model as GraphLinksModel<NodeModel, string, string, LinkModel>
                 };
                 matrixData[to].Values[from] = linkModel;
             }
@@ -308,6 +305,7 @@ namespace Graphs
             updateTask.Start();
                 }
         }
+
     }
 
     public class Line

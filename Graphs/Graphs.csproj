@@ -190,6 +190,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Sources\Helpers\ModelExtension.cs" />
     <Compile Include="Sources\Tasks\Task15\Colorer.cs" />
     <Compile Include="Sources\Tasks\Task15\ColorerTask15.cs" />
     <Compile Include="Sources\Tasks\Task8\ArticulationPointsFinder.cs" />

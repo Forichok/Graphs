@@ -24,17 +24,26 @@ namespace Graphs.Sources.Tasks
 
         public String CheckConnectivity()
         {
+            var isOriented = model.IsOriented();
+
             StringBuilder result = new StringBuilder();
 
             var connectedComponents = GetConnectivityComponents();
 
-            var bridges = GetBridges();
+            var bridges = isOriented ? null : GetBridges();
 
-            result.Append(connectedComponents.Count == 1 ? "1. Graph is connected\n\n" : "1. Graph isn't connected\n\n");
+            result.Append(connectedComponents.Count == 1
+                ? "1. Graph is connected\n\n"
+                : "1. Graph isn't connected\n\n");
 
-            result.Append(connectedComponents.Count == 1 ? "2. Graph is strongly connected" : (IsWeaklyConnected() ? "2. Graph is weakly connected" : "2. Graph isn't connected"));
+            result.Append(isOriented
+                ? "2.Graph isn't oriented."
+                : (connectedComponents.Count == 1
+                    ? "2. Graph is strongly connected"
+                    : (IsWeaklyConnected() ? "2. Graph is weakly connected" : "2. Graph isn't connected")));
 
             result.Append("\n\n3. Connectivity components:");
+
             for (int i = 0; i < connectedComponents.Count; i++)
             {
                 result.Append($"\n{i + 1}: ");
@@ -47,7 +56,7 @@ namespace Graphs.Sources.Tasks
 
             if (bridges == null || bridges.Count == 0)
             {
-                result.Append("\n\n4. No bridges");
+                result.Append(bridges == null ? "\n\n4. Graph is oriented." : "\n\n4. No bridges");
             }
             else
             {
@@ -58,15 +67,17 @@ namespace Graphs.Sources.Tasks
                 }
             }
 
-
-            var articulationPoints = TarjansArticulationFinder<String>.FindArticulationPoints(graph);
-            result.Append("\n\n5. Articulation points: ");
-
-            foreach (var point in articulationPoints)
+            if (!isOriented)
             {
-                result.Append(point + " ");
-            }
+                var articulationPoints = TarjansArticulationFinder<String>.FindArticulationPoints(graph);
+                result.Append("\n\n5. Articulation points: ");
 
+                foreach (var point in articulationPoints)
+                {
+                    result.Append(point + " ");
+                }
+            }else
+                result.Append("\n\n5. Graph is oriented");
 
             return result.ToString();
         }
@@ -99,7 +110,8 @@ namespace Graphs.Sources.Tasks
             return bridgeFinder.FindBridges(graph);
         }
 
-        private bool IsWeaklyConnected() // Ориентированный граф называется слабо-связным, если является связным неориентированный граф, полученный из него заменой ориентированных рёбер неориентированными.
+        private bool
+            IsWeaklyConnected() // Ориентированный граф называется слабо-связным, если является связным неориентированный граф, полученный из него заменой ориентированных рёбер неориентированными.
         {
             var graph = new DiGraph<String>();
 
@@ -115,7 +127,7 @@ namespace Graphs.Sources.Tasks
             }
 
             var connectivityComponentsFinder = new KosarajuStronglyConnected<String>();
-            return connectivityComponentsFinder.FindStronglyConnectedComponents(graph).Count==1;
+            return connectivityComponentsFinder.FindStronglyConnectedComponents(graph).Count == 1;
         }
 
         private List<List<string>> GetConnectivityComponents()
@@ -144,7 +156,9 @@ namespace Graphs.Sources.Tasks
     /// <summary>
     /// A Kosaraju Strong Connected Component Algorithm Implementation.
     /// </summary>
-    public class KosarajuStronglyConnected<T> //Ориентированный граф называется сильно-связным, если в нём существует(ориентированный) путь из любой вершины в любую другую
+    public class
+        KosarajuStronglyConnected<
+            T> //Ориентированный граф называется сильно-связным, если в нём существует(ориентированный) путь из любой вершины в любую другую
     {
         /// <summary>
         /// Returns all Connected Components using Kosaraju's Algorithm.

@@ -14,7 +14,7 @@ namespace Graphs.Sources.Models
         // this property remembers the curviness;
         // Double.NaN means let it use a default calculated value
         // default value of NaN causes Route to calculate it
-        public Diagram DiagramModel;
+        
         public GraphLinksModel<NodeModel, string, string, LinkModel> model;
 
         public bool IsOriented { get; set; }
@@ -44,6 +44,7 @@ namespace Graphs.Sources.Models
             Curviness = double.NaN;
             IsOriented = true;
             IsSelected = false;
+            this.PropertyChanged += LinkModel_PropertyChanged;
         }
 
         public LinkModel(string from, string to, string text) : base(from, to)
@@ -65,18 +66,18 @@ namespace Graphs.Sources.Models
                 var n = 0;
                 if (Weight.Length != 0 && !isContains && int.TryParse(Weight, out n)&&n>=0)
                 {
-                    DiagramModel.StartTransaction("Add LinkModel");
+                    model.StartTransaction("Add LinkModel");
                     model.AddLink(this);
                     model.DoLinkAdded(this);
-                    DiagramModel.CommitTransaction("Add LinkModel");
+                    model.CommitTransaction("Add LinkModel");
 
                 }
                 else if (isContains && !int.TryParse(Weight, out n) && n <= 0)
                 {
-                    DiagramModel.StartTransaction("Remove LinkModel");
+                    model.StartTransaction("Remove LinkModel");
                     model.RemoveLink(this);
                     model.DoLinkRemoved(this);
-                    DiagramModel.CommitTransaction("Remove LinkModel");
+                    model.CommitTransaction("Remove LinkModel");
                 }
             }
             catch (Exception exception)
