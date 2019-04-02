@@ -206,7 +206,7 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"></ColumnDefinition>
                     <ColumnDefinition Width="Auto"></ColumnDefinition>
-                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="3*"/>
                 </Grid.ColumnDefinitions>
 
                 <GridSplitter Grid.Column="1" ShowsPreview="False" Width="5"
@@ -215,7 +215,7 @@
                 <TabControl Grid.Column="0">
 
                     <TabItem Header="Matrix">
-                       <ScrollViewer HorizontalScrollBarVisibility="Auto">
+                       <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
                         <StackPanel>
                             <ItemsControl Name="MatrixControl">
                                 <ItemsControl.ItemsPanel>
