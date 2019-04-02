@@ -3,7 +3,6 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows;
 using System.Windows.Forms;
-using Graphs.Sources.Models;
 using MessageBox = System.Windows.MessageBox;
 
 namespace Graphs.Sources.Tasks.Task6

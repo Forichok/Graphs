@@ -2,7 +2,6 @@
 using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Media;
-using Graphs.Sources.Models;
 
 namespace Graphs.Sources.Converters
 {

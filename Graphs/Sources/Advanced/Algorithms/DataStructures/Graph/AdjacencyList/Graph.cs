@@ -2,10 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Graphs.Sources.Tasks.Task8
+namespace Graphs.Sources.Advanced.Algorithms.DataStructures.Graph.AdjacencyList
 {
     /// </summary>
     public class Graph<T> : IEnumerable<T>

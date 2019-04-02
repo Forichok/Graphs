@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Graphs.Sources.Models;
 
 namespace Graphs.Sources.Tasks

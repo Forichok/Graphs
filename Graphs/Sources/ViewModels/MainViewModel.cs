@@ -7,7 +7,6 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Xml.Linq;
-using Advanced.Algorithms.Graph;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.Native;
 using Graphs.Sources.Advanced.Algorithms.DataStructures.Graph.AdjacencyList;
@@ -16,7 +15,9 @@ using Graphs.Sources.Models;
 using Graphs.Sources.Tasks;
 using Graphs.Sources.Tasks.Task15;
 using Graphs.Sources.Tasks.Task6;
+using Graphs.Sources.Tasks.Task8;
 using Graphs.Sources.Tools;
+using Graphs.Views;
 using Northwoods.GoXam;
 using Northwoods.GoXam.Model;
 using MessageBox = System.Windows.MessageBox;
@@ -32,6 +33,8 @@ namespace Graphs.Sources.ViewModels
 
         private GraphLinksModel<NodeModel, string, string, LinkModel> model2;
         public NodeModel StartNode { get; set; }
+
+        public bool MenuIsActive { get; set; } = true;
 
         public NodeModel FinishNode { get; set; }
         public CustomPartManager PartManager { get; set; }
@@ -95,6 +98,11 @@ namespace Graphs.Sources.ViewModels
             CreateFullCommand = new DelegateCommand(StartCreateFull);
 
             KruskalCommand = new DelegateCommand(StartKruskal);
+
+            HelpCommand = new DelegateCommand(Help);
+            AboutCommand = new DelegateCommand(About);
+
+            CheckCycleCommand = new DelegateCommand(CheckCycle);
         }
 
 
@@ -111,18 +119,33 @@ namespace Graphs.Sources.ViewModels
 
         private void ReverseMenu(object sender)
         {
-            var link = (sender as PartManager.PartBinding).Data as LinkModel;
-            var tmpStr = link.From;
-            link.From = link.To;
-            link.To = tmpStr;
+            try
+            {
+                var link = (sender as PartManager.PartBinding).Data as LinkModel;
+                var tmpStr = link.From;
+                link.From = link.To;
+                link.To = tmpStr;
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Oops.. something goes wrong...\n\n" + e.Message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            
         }
 
         private void ChangeLinkDirectionMenu(object sender)
         {
-            var link = (sender as PartManager.PartBinding).Data as LinkModel;
-            link.IsOriented = !link.IsOriented;
-            Model.RemoveLink(link);
-            Model.AddLink(link); //?? better way to update??
+            try
+            {
+                var link = (sender as PartManager.PartBinding).Data as LinkModel;
+                link.IsOriented = !link.IsOriented;
+                Model.RemoveLink(link);
+                Model.AddLink(link); //?? better way to update??
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Oops.. something goes wrong...\n\n" + e.Message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         #endregion
@@ -145,73 +168,101 @@ namespace Graphs.Sources.ViewModels
 
         private void ChangeFigureMenu(object sender)
         {
-            var b = (sender as PartManager.PartBinding).Data as NodeModel;
-            b.ChangeFigure();
+            try
+            {
+                var b = (sender as PartManager.PartBinding).Data as NodeModel;
+                b.ChangeFigure();
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Oops.. something goes wrong...\n\n" + e.Message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void SetStartNodeMenu(object sender)
         {
-            if (StartNode != null)
+            try
             {
+                if (StartNode != null)
+                {
+                    StartNode.IsFinishNode = false;
+                    StartNode.IsStartNode = false;
+                    StartNode.IsSelected = false;
+                }
+
+                StartNode = (sender as PartManager.PartBinding).Data as NodeModel;
+
+                StartNode.IsStartNode = true;
                 StartNode.IsFinishNode = false;
-                StartNode.IsStartNode = false;
-                StartNode.IsSelected = false;
             }
-
-            StartNode = (sender as PartManager.PartBinding).Data as NodeModel;
-
-            StartNode.IsStartNode = true;
-            StartNode.IsFinishNode = false;
+            catch (Exception e)
+            {
+                MessageBox.Show("Oops.. something goes wrong...\n\n" + e.Message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void SetFinishNodeMenu(object sender)
         {
-            if (FinishNode != null)
+            try
             {
-                FinishNode.IsFinishNode = false;
+                if (FinishNode != null)
+                {
+                    FinishNode.IsFinishNode = false;
+                    FinishNode.IsStartNode = false;
+                    FinishNode.IsSelected = false;
+                }
+
+                FinishNode = (sender as PartManager.PartBinding).Data as NodeModel;
+
+                FinishNode.IsFinishNode = true;
                 FinishNode.IsStartNode = false;
-                FinishNode.IsSelected = false;
             }
-
-            FinishNode = (sender as PartManager.PartBinding).Data as NodeModel;
-
-            FinishNode.IsFinishNode = true;
-            FinishNode.IsStartNode = false;
+            catch (Exception e)
+            {
+                MessageBox.Show("Oops.. something goes wrong...\n\n" + e.Message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void AddNewNode(PartManager.PartBinding sender)
         {
-            var myDiagram = sender.Part.Diagram;
-            var ad = Part.FindAncestor<Adornment>(sender.Part.SelectionElement); //e.OriginalSource as UIElement
-            if (ad == null) return;
-            // its AdornedPart should be a Node that is bound to a NodeModel object
-            var from = ad.AdornedPart.Data as NodeModel;
-            if (from == null) return;
-            // make all changes to the model within a transaction
-            myDiagram.StartTransaction("Add NodeModel");
-            // create a new NodeModel, add it to the model, and create a link from
-            // the selected node data to the new node data
-
-            var list = MainModel.NodesModelToArr(myDiagram.Model.NodesSource.Cast<NodeModel>());
-            var key = NodeKeyCreator.GetNodeName(list);
-            var to = new NodeModel(key);
-            //  to.Text = "new";
-            var p = from.Location;
-            //?? this isn't a very smart way to decide where to place the node
-            to.Location = new Point(p.X + 200, p.Y);
-            myDiagram.Model.AddNode(to);
-            var newnode = myDiagram.PartManager.FindNodeForData(to, myDiagram.Model);
-            myDiagram.Select(newnode);
-            EventHandler<DiagramEventArgs> show = null;
-            show = (snd, evt) =>
+            try
             {
-                myDiagram.Panel.MakeVisible(newnode, Rect.Empty);
-                myDiagram.LayoutCompleted -= show;
-            };
-            myDiagram.LayoutCompleted += show;
-            myDiagram.Model.AddLink(from, null, to, null);
+                var myDiagram = sender.Part.Diagram;
+                var ad = Part.FindAncestor<Adornment>(sender.Part.SelectionElement); //e.OriginalSource as UIElement
+                if (ad == null) return;
+                // its AdornedPart should be a Node that is bound to a NodeModel object
+                var from = ad.AdornedPart.Data as NodeModel;
+                if (from == null) return;
+                // make all changes to the model within a transaction
+                myDiagram.StartTransaction("Add NodeModel");
+                // create a new NodeModel, add it to the model, and create a link from
+                // the selected node data to the new node data
 
-            myDiagram.CommitTransaction("Add NodeModel");
+                var list = MainModel.NodesModelToArr(myDiagram.Model.NodesSource.Cast<NodeModel>());
+                var key = NodeKeyCreator.GetNodeName(list);
+                var to = new NodeModel(key);
+                //  to.Text = "new";
+                var p = from.Location;
+                //?? this isn't a very smart way to decide where to place the node
+                to.Location = new Point(p.X + 200, p.Y);
+                myDiagram.Model.AddNode(to);
+                var newnode = myDiagram.PartManager.FindNodeForData(to, myDiagram.Model);
+                myDiagram.Select(newnode);
+                EventHandler<DiagramEventArgs> show = null;
+                show = (snd, evt) =>
+                {
+                    myDiagram.Panel.MakeVisible(newnode, Rect.Empty);
+                    myDiagram.LayoutCompleted -= show;
+                };
+                myDiagram.LayoutCompleted += show;
+                myDiagram.Model.AddLink(from, null, to, null);
+
+                myDiagram.CommitTransaction("Add NodeModel");
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Oops.. something goes wrong...\n\n" + e.Message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         #endregion
@@ -223,19 +274,25 @@ namespace Graphs.Sources.ViewModels
 
         private void ResetGraph()
         {
-            foreach (LinkModel link in Model.LinksSource)
+            try
             {
-                link.IsSelected = false;
-            }
+                foreach (LinkModel link in Model.LinksSource)
+                {
+                    link.IsSelected = false;
+                }
 
-            foreach (NodeModel node in Model.NodesSource)
+                foreach (NodeModel node in Model.NodesSource)
+                {
+                    node.IsFinishNode = false;
+                    node.IsStartNode = false;
+                    node.IsSelected = false;
+                    node.Color = null;
+                }
+            }
+            catch (Exception e)
             {
-                node.IsFinishNode = false;
-                node.IsStartNode = false;
-                node.IsSelected = false;
-                node.Color = null;
+                MessageBox.Show("Oops.. something goes wrong...\n\n" + e.Message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-
         }
 
         #endregion
@@ -265,6 +322,11 @@ namespace Graphs.Sources.ViewModels
 
         public DelegateCommand ExitCommand { get; }
 
+        public DelegateCommand HelpCommand { get; }
+
+        public DelegateCommand AboutCommand { get; }
+
+
         #endregion
 
 
@@ -272,10 +334,17 @@ namespace Graphs.Sources.ViewModels
 
         private void SwitchGraph()
         {
-            var tmp = Model;
-            Model = model2;
-            model2 = tmp;
-            OnFileLoaded();
+            try
+            {
+                var tmp = Model;
+                Model = model2;
+                model2 = tmp;
+                OnFileLoaded();
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Oops.. something goes wrong...\n\n" + e.Message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void LoadAdjencyMatrix()
@@ -397,28 +466,35 @@ namespace Graphs.Sources.ViewModels
 
         private void SaveAsImage(Diagram diagram)
         {
-            var b = diagram.Panel.DiagramBounds;
-
-            var l_dialog = new SaveFileDialog();
-
-
-            var dialogResult = l_dialog.ShowDialog();
-
-            if (dialogResult == true)
+            try
             {
-                var image = diagram.Panel.MakeBitmap(new Size(b.Width, b.Height), 96, new Point(b.X, b.Y), 1,
-                    bmp =>
-                    {
-                        var pos = diagram.Panel.Position;
-                        diagram.Panel.Position = new Point(pos.X, pos.Y + 1);
-                        diagram.Panel.Position = pos;
+                var b = diagram.Panel.DiagramBounds;
 
-                        var stream = new FileStream(l_dialog.FileName + ".png", FileMode.Create);
-                        var encoder = new PngBitmapEncoder();
-                        encoder.Frames.Add(BitmapFrame.Create(bmp));
-                        encoder.Save(stream);
-                        stream.Close();
-                    });
+                var l_dialog = new SaveFileDialog();
+
+
+                var dialogResult = l_dialog.ShowDialog();
+
+                if (dialogResult == true)
+                {
+                    var image = diagram.Panel.MakeBitmap(new Size(b.Width, b.Height), 96, new Point(b.X, b.Y), 1,
+                        bmp =>
+                        {
+                            var pos = diagram.Panel.Position;
+                            diagram.Panel.Position = new Point(pos.X, pos.Y + 1);
+                            diagram.Panel.Position = pos;
+
+                            var stream = new FileStream(l_dialog.FileName + ".png", FileMode.Create);
+                            var encoder = new PngBitmapEncoder();
+                            encoder.Frames.Add(BitmapFrame.Create(bmp));
+                            encoder.Save(stream);
+                            stream.Close();
+                        });
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Oops.. something goes wrong...\n\n" + e.Message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -449,51 +525,79 @@ namespace Graphs.Sources.ViewModels
 
         private void SaveUniversal(Diagram myDiagram)
         {
-            if (Model == null) return;
-            // copy the Route.Points into each LinkModel data
-            foreach (var link in myDiagram.Links)
+            try
             {
-                var linkModel = link.Data as LinkModel;
-                if (linkModel != null)
+                if (Model == null) return;
+                // copy the Route.Points into each LinkModel data
+                foreach (var link in myDiagram.Links)
                 {
-                    linkModel.Points = new List<Point>(link.Route.Points);
+                    var linkModel = link.Data as LinkModel;
+                    if (linkModel != null)
+                    {
+                        linkModel.Points = new List<Point>(link.Route.Points);
+                    }
                 }
+
+                var root = Model.Save<NodeModel, LinkModel>("StateChart", "NodeModel", "LinkModel");
+                var saveFileDialog1 = new SaveFileDialog();
+
+                saveFileDialog1.Filter = "Xml files (*.xml)|*.xml";
+                saveFileDialog1.FilterIndex = 2;
+                saveFileDialog1.RestoreDirectory = true;
+
+                if (saveFileDialog1.ShowDialog() == true)
+                {
+                    using (var sw = new StreamWriter(saveFileDialog1.FileName))
+                    {
+                        sw.Write(root.ToString());
+                    }
+                }
+
+                Model.IsModified = false;
             }
-
-            var root = Model.Save<NodeModel, LinkModel>("StateChart", "NodeModel", "LinkModel");
-            var saveFileDialog1 = new SaveFileDialog();
-
-            saveFileDialog1.Filter = "Xml files (*.xml)|*.xml";
-            saveFileDialog1.FilterIndex = 2;
-            saveFileDialog1.RestoreDirectory = true;
-
-            if (saveFileDialog1.ShowDialog() == true)
+            catch (Exception e)
             {
-                using (var sw = new StreamWriter(saveFileDialog1.FileName))
-                {
-                    sw.Write(root.ToString());
-                }
+                MessageBox.Show("Oops.. something goes wrong...\n\n" + e.Message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-
-            Model.IsModified = false;
         }
 
         private void Exit()
         {
-            if (Model.IsModified)
+            try
             {
-                var result = MessageBox.Show("You have unsaved changes, do you want to save it in xml?",
-                    "Are you sure?", MessageBoxButton.YesNo);
-                switch (result)
+                if (Model.IsModified)
                 {
-                    case MessageBoxResult.Yes:
+                    var result = MessageBox.Show("You have unsaved changes, do you want to save it in xml?",
+                        "Are you sure?", MessageBoxButton.YesNo);
+                    switch (result)
+                    {
+                        case MessageBoxResult.Yes:
 
-                        break;
+                            break;
+                    }
+
                 }
 
+                if (Application.Current.MainWindow != null) Application.Current.MainWindow.Close();
             }
+            catch (Exception e)
+            {
+                MessageBox.Show("Oops.. something goes wrong...\n\n" + e.Message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
 
-            if (Application.Current.MainWindow != null) Application.Current.MainWindow.Close();
+        private void Help()
+        {
+            var help = new Help();
+
+            help.Show();
+        }
+
+        private void About()
+        {
+            var help = new AboutWindow();
+
+            help.Show();
         }
 
         #endregion
@@ -505,34 +609,40 @@ namespace Graphs.Sources.ViewModels
 
         private void StartBfs()
         {
-            if (StartNode == null || FinishNode == null)
+            try
             {
-                MessageBox.Show("Please select start and finish nodes.", "Error", MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-                return;
+                if (StartNode == null || FinishNode == null)
+                {
+                    MessageBox.Show("Please select start and finish nodes.", "Error", MessageBoxButton.OK,
+                        MessageBoxImage.Error);
+                    return;
+                }
+
+                ClearGraph();
+                var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(),
+                    Model.LinksSource.Cast<LinkModel>());
+
+
+                var resBFS = BFSTask2.BreadthFirstSearch(mappedList, StartNode.Key, FinishNode.Key);
+                var cost = 0;
+                resBFS.Key.ForEach(t =>
+                {
+                    var fromNode = Model.GetFromNodeForLink(t);
+                    if (!fromNode.IsFinishNode && !fromNode.IsStartNode)
+                        fromNode.IsSelected = true;
+                    t.IsSelected = true;
+
+                    var parseResult = int.TryParse(t.Text, out var res);
+
+                    if (parseResult)
+                        cost += res;
+                });
+                ShowWaySearchResult(cost, resBFS.Value);
             }
-
-            ClearGraph();
-            var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(),
-                Model.LinksSource.Cast<LinkModel>());
-
-
-            var resBFS = BFSTask2.BreadthFirstSearch(mappedList, StartNode.Key, FinishNode.Key);
-            var cost = 0;
-            resBFS.Key.ForEach(t =>
+            catch (Exception e)
             {
-                var fromNode = Model.GetFromNodeForLink(t);
-                if (!fromNode.IsFinishNode && !fromNode.IsStartNode)
-                    fromNode.IsSelected = true;
-                t.IsSelected = true;
-
-                var parseResult = int.TryParse(t.Text, out var res);
-
-                if (parseResult)
-                    cost += res;
-            });
-            ShowWaySearchResult(cost, resBFS.Value);
-
+                MessageBox.Show("Oops.. something goes wrong...\n\n" + e.Message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         #endregion
@@ -544,36 +654,43 @@ namespace Graphs.Sources.ViewModels
 
         private void StartBestfs()
         {
-            if (StartNode == null || FinishNode == null)
+            try
             {
-                MessageBox.Show("Please select start and finish nodes.", "Error", MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-                return;
+                if (StartNode == null || FinishNode == null)
+                {
+                    MessageBox.Show("Please select start and finish nodes.", "Error", MessageBoxButton.OK,
+                        MessageBoxImage.Error);
+                    return;
+                }
+
+                ClearGraph();
+
+                var checkRes = CheckGraphsLinksWithMsg();
+                if (checkRes == false)
+                    return;
+                var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(),
+                    Model.LinksSource.Cast<LinkModel>());
+
+                var resBestFS = BestFSTask3.StartBestFs(mappedList, StartNode.Key, FinishNode.Key);
+                var cost = 0;
+                resBestFS.Key.ForEach(t =>
+                {
+                    var fromNode = Model.GetFromNodeForLink(t);
+                    if (!fromNode.IsFinishNode && !fromNode.IsStartNode)
+                        fromNode.IsSelected = true;
+
+                    t.IsSelected = true;
+                    var parseResult = int.TryParse(t.Text, out var res);
+
+                    if (parseResult)
+                        cost += res;
+                });
+                ShowWaySearchResult(cost, resBestFS.Value);
             }
-
-            ClearGraph();
-
-            var checkRes = CheckGraphsLinksWithMsg();
-            if (checkRes == false)
-                return;
-            var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(),
-                Model.LinksSource.Cast<LinkModel>());
-
-            var resBestFS = BestFSTask3.StartBestFs(mappedList, StartNode.Key, FinishNode.Key);
-            var cost = 0;
-            resBestFS.Key.ForEach(t =>
+            catch (Exception e)
             {
-                var fromNode = Model.GetFromNodeForLink(t);
-                if (!fromNode.IsFinishNode && !fromNode.IsStartNode)
-                    fromNode.IsSelected = true;
-
-                t.IsSelected = true;
-                var parseResult = int.TryParse(t.Text, out var res);
-
-                if (parseResult)
-                    cost += res;
-            });
-            ShowWaySearchResult(cost, resBestFS.Value);
+                MessageBox.Show("Oops.. something goes wrong...\n\n" + e.Message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         #endregion
@@ -585,24 +702,32 @@ namespace Graphs.Sources.ViewModels
 
         public void StartDijkstraMatrix()
         {
-            if (StartNode == null)
+            try
             {
-                MessageBox.Show("Please select start node.", "Error", MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-                return;
+                if (StartNode == null)
+                {
+                    MessageBox.Show("Please select start node.", "Error", MessageBoxButton.OK,
+                        MessageBoxImage.Error);
+                    return;
+                }
+
+                ClearGraph();
+                var checkRes = CheckGraphsLinksWithMsg(true);
+                if (checkRes == false)
+                    return;
+                var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(),
+                    Model.LinksSource.Cast<LinkModel>());
+
+                var resDijkstra = DijkstraTask4.StartDijkstra(mappedList, StartNode.Key);
+
+                var resWindow = new Views.DijkstraResultWindow((Dictionary<string, UniversalGraphNodeData>) resDijkstra,
+                    StartNode.Key);
+                resWindow.Show();
             }
-
-            ClearGraph();
-            var checkRes = CheckGraphsLinksWithMsg(true);
-            if (checkRes == false)
-                return;
-            var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(),
-                Model.LinksSource.Cast<LinkModel>());
-
-            var resDijkstra = DijkstraTask4.StartDijkstra(mappedList, StartNode.Key);
-
-            var resWindow = new DijkstraResultWindow((Dictionary<string, UniversalGraphNodeData>)resDijkstra, StartNode.Key);
-            resWindow.Show();
+            catch (Exception e)
+            {
+                MessageBox.Show("Oops.. something goes wrong...\n\n" + e.Message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
 
         }
 
@@ -615,36 +740,42 @@ namespace Graphs.Sources.ViewModels
 
         public void StartAStar()
         {
-            if (StartNode == null)
+            try
             {
-                MessageBox.Show("Please select start node.", "Error", MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-                return;
+                if (StartNode == null)
+                {
+                    MessageBox.Show("Please select start node.", "Error", MessageBoxButton.OK,
+                        MessageBoxImage.Error);
+                    return;
+                }
+
+                ClearGraph();
+                var checkRes = CheckGraphsLinksWithMsg(true);
+                if (checkRes == false)
+                    return;
+                var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(),
+                    Model.LinksSource.Cast<LinkModel>());
+
+                var resAStar = AStarTask5.StartAStar(mappedList, StartNode.Key, FinishNode.Key);
+                var cost = 0;
+                resAStar.Key.ForEach(t =>
+                {
+                    var fromNode = Model.GetFromNodeForLink(t);
+                    if (!fromNode.IsFinishNode && !fromNode.IsStartNode)
+                        fromNode.IsSelected = true;
+
+                    t.IsSelected = true;
+                    var parseResult = int.TryParse(t.Text, out var res);
+
+                    if (parseResult)
+                        cost += res;
+                });
+                ShowWaySearchResult(cost, resAStar.Value);
             }
-
-            ClearGraph();
-            var checkRes = CheckGraphsLinksWithMsg(true);
-            if (checkRes == false)
-                return;
-            var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(),
-                Model.LinksSource.Cast<LinkModel>());
-
-            var resAStar = AStarTask5.StartAStar(mappedList, StartNode.Key, FinishNode.Key);
-            var cost = 0;
-            resAStar.Key.ForEach(t =>
+            catch (Exception e)
             {
-                var fromNode = Model.GetFromNodeForLink(t);
-                if (!fromNode.IsFinishNode && !fromNode.IsStartNode)
-                    fromNode.IsSelected = true;
-
-                t.IsSelected = true;
-                var parseResult = int.TryParse(t.Text, out var res);
-
-                if (parseResult)
-                    cost += res;
-            });
-            ShowWaySearchResult(cost, resAStar.Value);
-
+                MessageBox.Show("Oops.. something goes wrong...\n\n" + e.Message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         #endregion
@@ -656,21 +787,26 @@ namespace Graphs.Sources.ViewModels
 
         public void StartTask6()
         {
+            try
+            {
+                ClearGraph();
+                var checkRes = CheckGraphsLinksWithMsg(true);
+                if (checkRes == false)
+                    return;
 
-            ClearGraph();
-            var checkRes = CheckGraphsLinksWithMsg(true);
-            if (checkRes == false)
-                return;
+                var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(),
+                    Model.LinksSource.Cast<LinkModel>());
 
-            var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(),
-                Model.LinksSource.Cast<LinkModel>());
+                var t6 = new Task6Logick();
+                var resTask6 = t6.BeginTask6(mappedList);
 
-            var t6 = new Task6Logick();
-            var resTask6 = t6.BeginTask6(mappedList);
-
-            var resWindow = new Task6Window(resTask6);
-            resWindow.Show();
-
+                var resWindow = new Task6Window(resTask6);
+                resWindow.Show();
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Oops.. something goes wrong...\n\n" + e.Message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         #endregion
@@ -682,16 +818,24 @@ namespace Graphs.Sources.ViewModels
 
         public void StartIsomorphism()
         {
-            var task7 = new IsomorphismTask7(Model, model2);
-            if (task7.IsIsomorphy())
+            try
             {
-                MessageBox.Show("Graphs are isomorphic");
+                var task7 = new IsomorphismTask7(Model, model2);
+                if (task7.IsIsomorphy())
+                {
+                    MessageBox.Show("Graphs are isomorphic");
+                }
+                else
+                {
+                    MessageBox.Show("Graphs aren't isomorphic");
+                }
+               
             }
-            else
+            catch (Exception e)
             {
-                MessageBox.Show("Graphs aren't isomorphic");
+                MessageBox.Show("Oops.. something goes wrong...\n\n" + e.Message, "Error!", MessageBoxButton.OK,
+                    MessageBoxImage.Error);
             }
-
         }
 
         #endregion
@@ -703,9 +847,17 @@ namespace Graphs.Sources.ViewModels
 
         private void StartConnectivity()
         {
-            var task8 = new ConnectivityTask8(Model);
-            var result = task8.CheckConnectivity();
-            MessageBox.Show(result, "Done", MessageBoxButton.OK, MessageBoxImage.Information);
+            try
+            {
+                var task8 = new ConnectivityTask8(Model);
+                var result = task8.CheckConnectivity();
+                MessageBox.Show(result, "Done", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Oops.. something goes wrong...\n\n" + e.Message, "Error!", MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
 
         }
 
@@ -718,45 +870,60 @@ namespace Graphs.Sources.ViewModels
 
         public void StartCheckToFull()
         {
-            var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(),
-                Model.LinksSource.Cast<LinkModel>());
-
-            var res = FullGraphTask9.Check(mappedList);
-            if (res)
+            try
             {
-                MessageBox.Show("Graphs is full", "9(1) Result", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-            else
-            {
-                MessageBox.Show("Graphs isn't full", "9(1) Result", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
+                var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(),
+                    Model.LinksSource.Cast<LinkModel>());
 
+                var res = FullGraphTask9.Check(mappedList);
+                if (res)
+                {
+                    MessageBox.Show("Graphs is full", "9(1) Result", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else
+                {
+                    MessageBox.Show("Graphs isn't full", "9(1) Result", MessageBoxButton.OK,
+                        MessageBoxImage.Information);
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Oops.. something goes wrong...\n\n" + e.Message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         public void StartCreateFull()
         {
-            var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(),
-                Model.LinksSource.Cast<LinkModel>());
-
-
-
-            var additionalLinks = FullGraphTask9.GetFull(mappedList);
-
-            if (additionalLinks.Count == 0)
+            try
             {
-                MessageBox.Show("Graphs is already full", "9(1) Result", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
+                var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(),
+                    Model.LinksSource.Cast<LinkModel>());
+
+
+
+                var additionalLinks = FullGraphTask9.GetFull(mappedList);
+
+                if (additionalLinks.Count == 0)
+                {
+                    MessageBox.Show("Graphs is already full", "9(1) Result", MessageBoxButton.OK,
+                        MessageBoxImage.Warning);
+                    return;
+                }
+
+                Model.StartTransaction("full");
+
+                foreach (var link in additionalLinks)
+                {
+                    Model.AddLink(link);
+                }
+                Model.CommitTransaction("full");
+
+                OnFileLoaded();
             }
-
-            Model.StartTransaction("full");
-
-            foreach (var link in additionalLinks)
+            catch (Exception e)
             {
-                Model.AddLink(link);
+                MessageBox.Show("Oops.. something goes wrong...\n\n" + e.Message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            Model.CommitTransaction("full");
-
-            OnFileLoaded();
         }
         #endregion
 
@@ -826,13 +993,27 @@ namespace Graphs.Sources.ViewModels
         #endregion
 
 
+        #region Task 14 Cycle
+
+        public DelegateCommand CheckCycleCommand { get; set; }
+
+        private void CheckCycle()
+        {
+            var diGraph = DiGraph<string>.GetDiGraph(Model.NodesSource.Cast<NodeModel>(), Model.LinksSource.Cast<LinkModel>());
+        }
+
+        #endregion
+
+
         #region Task 15 Colorer
 
         public DelegateCommand ColorerCommand { get; }
 
         public void StartColorer()
         {
-            if (Model.IsOriented())
+            try
+            {
+                if (Model.IsOriented())
             {
                 MessageBox.Show($"Graph is orientated, sorry :)", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
@@ -848,61 +1029,93 @@ namespace Graphs.Sources.ViewModels
                     var node = GetNode(nodeKey);
                     node.Color= (SolidColorBrush)(new BrushConverter().ConvertFrom($"#{color}"));
                 }
+
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Oops.. something goes wrong...\n\n" + e.Message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
             }
         }
 
         private NodeModel GetNode(string key)
         {
-            foreach (NodeModel node in Model.NodesSource)
-                if (node.Key == key)
-                    return node;
+            try
+            {
+                foreach (NodeModel node in Model.NodesSource)
+                    if (node.Key == key)
+                        return node;
 
-            return null;
+                return null;
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Oops.. something goes wrong...\n\n" + e.Message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
+                return null;
+            }
         }
 
         #endregion
 
 
+
+
         private void ClearGraph()
         {
-            foreach (LinkModel link in Model.LinksSource)
+            try
             {
-                link.IsSelected = false;
-            }
+                foreach (LinkModel link in Model.LinksSource)
+                {
+                    link.IsSelected = false;
+                }
 
-            foreach (NodeModel node in Model.NodesSource)
+                foreach (NodeModel node in Model.NodesSource)
+                {
+                    node.IsSelected = false;
+                    node.Color = null;
+                }
+            }
+            catch (Exception e)
             {
-                node.IsSelected = false;
-                node.Color = null;
+                MessageBox.Show("Oops.. something goes wrong...\n\n" + e.Message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-
 
         }
 
         private bool CheckGraphsLinksWithMsg(bool onlyPlus = false)
         {
-            foreach (var o in Model.LinksSource)
+            try
             {
-                var parseResult = int.TryParse(((LinkModel) o).Text, out var ignored);
-                if (parseResult == false)
+                foreach (var o in Model.LinksSource)
                 {
-                    MessageBox.Show($"Cannot start func because one of link has wrong cost [{(LinkModel) o}]", "Alert",
-                        MessageBoxButton.OK, MessageBoxImage.Error);
-                    return false;
+                    var parseResult = int.TryParse(((LinkModel) o).Text, out var ignored);
+                    if (parseResult == false)
+                    {
+                        MessageBox.Show($"Cannot start func because one of link has wrong cost [{(LinkModel) o}]",
+                            "Alert",
+                            MessageBoxButton.OK, MessageBoxImage.Error);
+                        return false;
+                    }
+
+                    if (onlyPlus && ignored < 0)
+                    {
+                        MessageBox.Show(
+                            $"Cannot start func because one of link has wrong cost [{(LinkModel) o}] required > 0",
+                            "Alert",
+                            MessageBoxButton.OK, MessageBoxImage.Error);
+                        return false;
+                    }
+
+
                 }
 
-                if (onlyPlus && ignored < 0)
-                {
-                    MessageBox.Show(
-                        $"Cannot start func because one of link has wrong cost [{(LinkModel) o}] required > 0", "Alert",
-                        MessageBoxButton.OK, MessageBoxImage.Error);
-                    return false;
-                }
-
-
+                return true;
             }
-
-            return true;
+            catch (Exception e)
+            {
+                MessageBox.Show("Oops.. something goes wrong...\n\n" + e.Message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
         }
 
         private void UpdateMatrix(IEnumerable<NodeModel> nodes, IEnumerable<LinkModel> links)
@@ -913,116 +1126,167 @@ namespace Graphs.Sources.ViewModels
 
         private string LoadFromFile()
         {
-            var fileContent = string.Empty;
-            var filePath = string.Empty;
-
-            var openFileDialog = new OpenFileDialog();
-            openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-            openFileDialog.Filter = "Xml files (*.xml)|*.xml";
-            openFileDialog.FilterIndex = 2;
-            openFileDialog.RestoreDirectory = true;
-            if (openFileDialog.ShowDialog() == true)
+            try
             {
-                //Get the path of specified file
-                filePath = openFileDialog.FileName;
+                var fileContent = string.Empty;
+                var filePath = string.Empty;
 
-                //Read the contents of the file into a stream
-                var fileStream = openFileDialog.OpenFile();
-
-                using (var reader = new StreamReader(fileStream))
+                var openFileDialog = new OpenFileDialog();
+                openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+                openFileDialog.Filter = "Xml files (*.xml)|*.xml";
+                openFileDialog.FilterIndex = 2;
+                openFileDialog.RestoreDirectory = true;
+                if (openFileDialog.ShowDialog() == true)
                 {
-                    fileContent = reader.ReadToEnd();
-                }
-            }
+                    //Get the path of specified file
+                    filePath = openFileDialog.FileName;
 
-            return fileContent;
+                    //Read the contents of the file into a stream
+                    var fileStream = openFileDialog.OpenFile();
+
+                    using (var reader = new StreamReader(fileStream))
+                    {
+                        fileContent = reader.ReadToEnd();
+                    }
+                }
+
+                return fileContent;
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Oops.. something goes wrong...\n\n" + e.Message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            return "";
         }
 
         private void ShowWaySearchResult(int cost, string vector)
         {
-            var result = MessageBox.Show($"Path cost: {cost}, Do you want to save vector?",
-                "Search result", MessageBoxButton.YesNo);
-            switch (result)
+            try
             {
-                case MessageBoxResult.Yes:
-                    SaveVector(vector);
-                    break;
+                var result = MessageBox.Show($"Path cost: {cost}, Do you want to save vector?",
+                    "Search result", MessageBoxButton.YesNo);
+                switch (result)
+                {
+                    case MessageBoxResult.Yes:
+                        SaveVector(vector);
+                        break;
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Oops.. something goes wrong...\n\n" + e.Message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
         public static void SaveVector(string vector)
         {
-            var saveFileDialog = new SaveFileDialog();
-            saveFileDialog.Filter = "Simple text (*.txt)|*.txt";
-            if (saveFileDialog.ShowDialog() == true)
+            try
             {
-                try
+                var saveFileDialog = new SaveFileDialog();
+                saveFileDialog.Filter = "Simple text (*.txt)|*.txt";
+                if (saveFileDialog.ShowDialog() == true)
                 {
-                    using (var sw = new StreamWriter(saveFileDialog.FileName))
+                    try
                     {
-                        sw.WriteLine(vector);
+                        using (var sw = new StreamWriter(saveFileDialog.FileName))
+                        {
+                            sw.WriteLine(vector);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        MessageBox.Show(e.Message, "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                 }
-                catch (Exception e)
-                {
-                    MessageBox.Show(e.Message, "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Oops.. something goes wrong...\n\n" + e.Message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
         public static void SaveVectors(IEnumerable<string> vectors)
         {
-            var saveFileDialog = new SaveFileDialog();
-            saveFileDialog.Filter = "Simple text (*.txt)|*.txt";
-            if (saveFileDialog.ShowDialog() == true)
+            try
             {
-                try
+                var saveFileDialog = new SaveFileDialog();
+                saveFileDialog.Filter = "Simple text (*.txt)|*.txt";
+                if (saveFileDialog.ShowDialog() == true)
                 {
-                    using (var sw = new StreamWriter(saveFileDialog.FileName))
+                    try
                     {
-                        foreach (var vector in vectors)
+                        using (var sw = new StreamWriter(saveFileDialog.FileName))
                         {
-                            sw.WriteLine(vector);
+                            foreach (var vector in vectors)
+                            {
+                                sw.WriteLine(vector);
+                            }
                         }
                     }
+                    catch (Exception e)
+                    {
+                        MessageBox.Show(e.Message, "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
                 }
-                catch (Exception e)
-                {
-                    MessageBox.Show(e.Message, "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Oops.. something goes wrong...\n\n" + e.Message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
         public bool CheckOnOrientated()
         {
-            foreach (LinkModel link in Model.LinksSource)
+            try
             {
-                if (link.IsOriented)
-                    return false;
+                foreach (LinkModel link in Model.LinksSource)
+                {
+                    if (link.IsOriented)
+                        return false;
+                }
+                return true;
             }
-            return true;
+            catch (Exception e)
+            {
+                MessageBox.Show("Oops.. something goes wrong...\n\n" + e.Message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
         }
 
         protected virtual void OnFileLoaded()
         {
-            RaisePropertyChanged("Model");
-            FileLoaded?.Invoke(this, EventArgs.Empty);
+            try
+            {
+                RaisePropertyChanged("Model");
+                FileLoaded?.Invoke(this, EventArgs.Empty);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Oops.. something goes wrong...\n\n" + e.Message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void UpdateRoutes(object sender, DiagramEventArgs e)
         {
-            var myDiagram = sender as Diagram;
-            // just set the Route points once per Load
-            myDiagram.LayoutCompleted -= UpdateRoutes;
-            foreach (Link link in myDiagram.Links)
+            try
             {
-                LinkModel transition = link.Data as LinkModel;
-                if (transition != null && transition.Points != null && transition.Points.Count() > 1)
+                var myDiagram = sender as Diagram;
+                // just set the Route points once per Load
+                myDiagram.LayoutCompleted -= UpdateRoutes;
+                foreach (Link link in myDiagram.Links)
                 {
-                    link.Route.Points = (IList<Point>)transition.Points;
+                    LinkModel transition = link.Data as LinkModel;
+                    if (transition != null && transition.Points != null && transition.Points.Count() > 1)
+                    {
+                        link.Route.Points = (IList<Point>) transition.Points;
+                    }
                 }
+                PartManager.UpdatesRouteDataPoints = true; // OK for CustomPartManager to update Transition.Points 
             }
-            PartManager.UpdatesRouteDataPoints = true;  // OK for CustomPartManager to update Transition.Points automatically
+            catch (Exception ex)
+            {
+                MessageBox.Show("Oops.. something goes wrong...\n\n" + ex.Message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }
