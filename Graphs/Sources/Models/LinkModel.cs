@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Windows;
 using System.Xml.Linq;
-using Northwoods.GoXam;
 using Northwoods.GoXam.Model;
 
 namespace Graphs.Sources.Models

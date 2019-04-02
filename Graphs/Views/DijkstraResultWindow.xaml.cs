@@ -8,7 +8,7 @@ using Graphs.Sources.Models;
 using Graphs.Sources.ViewModels;
 using MessageBox = System.Windows.MessageBox;
 
-namespace Graphs
+namespace Graphs.Views
 {
     /// <summary>
     /// Логика взаимодействия для DijkstraResultWindow.xaml

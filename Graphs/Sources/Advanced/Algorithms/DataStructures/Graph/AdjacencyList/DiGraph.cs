@@ -2,10 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Graphs.Sources.Models;
 
-namespace Graphs.Sources.Helpers
+namespace Graphs.Sources.Advanced.Algorithms.DataStructures.Graph.AdjacencyList
 {
     public class DiGraph<T> : IEnumerable<T>
     {
@@ -17,7 +16,30 @@ namespace Graphs.Sources.Helpers
             Vertices = new Dictionary<T, DiGraphVertex<T>>();
         }
 
-        /// <summary>
+        public static DiGraph<string> GetDiGraph(IEnumerable<NodeModel> nodes, IEnumerable<LinkModel> links)
+        {
+            var resGraph = new DiGraph<string>();
+
+            foreach (var nodeModel in nodes)
+            {
+                resGraph.AddVertex(nodeModel.Key);
+            }
+
+            foreach (var link in links)
+            {
+                if (link.IsOriented)
+                    resGraph.AddEdge(link.From, link.To);
+                else
+                {
+                    resGraph.AddEdge(link.From, link.To);
+                    resGraph.AddEdge(link.To, link.From);
+                }
+            }
+
+            return resGraph;
+        }
+
+    /// <summary>
         /// Return a reference vertex to start traversing Vertices
         /// Time complexity: O(1).
         /// </summary>

@@ -1,4 +1,4 @@
-﻿<Window x:Class="Graphs.MainWindow"
+﻿<Window x:Class="Graphs.Views.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -149,7 +149,7 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <Menu Grid.Row="0">
+            <Menu Grid.Row="0" IsEnabled="{Binding MenuIsActive}">
                 <MenuItem Header="File">
                     <MenuItem Header="Adjacency matrix">
                         <MenuItem Header="Load Adjency matrix" Command="{Binding LoadAdjencyMatrixCommand}"/>
@@ -173,19 +173,24 @@
                 </MenuItem>
 
                 <MenuItem Header="Tasks">
-                    <MenuItem Header="2.BFS" Command="{Binding BfsCommand}"/>
-                    <MenuItem Header="3.BestFS" Command="{Binding BestfsCommand}"/>
-                    <MenuItem Header="4.Dijkstra Matrix" Command="{Binding DijkstraMatrixCommand}"/>
-                    <MenuItem Header="5.A*" Command="{Binding AStarCommand}"/>
-                    <MenuItem Header="6.Radius, Diameter" Command="{Binding Task6Command}"/>
-                    <MenuItem Header="7.Isomorphism" Command="{Binding IsomorphismCommand}"/>
-                    <MenuItem Header="8.Connectivity" Command="{Binding ConnectivityCommand}"/>
-                    <MenuItem Header="9. Full graph">
-                        <MenuItem Header="9 (1).Check to full" Command="{Binding CheckToFullCommand}"/>
-                        <MenuItem Header="9 (2).Create full" Command="{Binding CreateFullCommand}"/>
+                    <MenuItem Header="2-9">
+                        <MenuItem Header="2.BFS" Command="{Binding BfsCommand}"/>
+                        <MenuItem Header="3.BestFS" Command="{Binding BestfsCommand}"/>
+                        <MenuItem Header="4.Dijkstra Matrix" Command="{Binding DijkstraMatrixCommand}"/>
+                        <MenuItem Header="5.A*" Command="{Binding AStarCommand}"/>
+                        <MenuItem Header="6.Radius, Diameter" Command="{Binding Task6Command}"/>
+                        <MenuItem Header="7.Isomorphism" Command="{Binding IsomorphismCommand}"/>
+                        <MenuItem Header="8.Connectivity" Command="{Binding ConnectivityCommand}"/>
+                        <MenuItem Header="9. Full graph">
+                            <MenuItem Header="9 (1).Check to full" Command="{Binding CheckToFullCommand}"/>
+                            <MenuItem Header="9 (2).Create full" Command="{Binding CreateFullCommand}"/>
+                        </MenuItem>
                     </MenuItem>
-                    <MenuItem Header="13.Kruskal" Command="{Binding KruskalCommand}"/>
-                    <MenuItem Header="15.Colorer" Command="{Binding ColorerCommand}"/>
+                    <MenuItem Header="10-21">
+                        <MenuItem Header="13.Kruskal" Command="{Binding KruskalCommand}"/>
+                        <MenuItem Header="14.Check cycles" Command="{Binding CheckCycleCommand}"/>
+                        <MenuItem Header="15.Colorer" Command="{Binding ColorerCommand}"/>
+                    </MenuItem>
                 </MenuItem>
 
                 <MenuItem Header="About">

@@ -1,16 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Windows.Navigation;
+using Graphs.Sources.Advanced.Algorithms.DataStructures.Graph.AdjacencyList;
 using Graphs.Sources.Helpers;
 using Graphs.Sources.Models;
-using Graphs.Sources.Tasks.Task8;
 using Northwoods.GoXam.Model;
 
-namespace Graphs.Sources.Tasks
+namespace Graphs.Sources.Tasks.Task8
 {
     class ConnectivityTask8
     {

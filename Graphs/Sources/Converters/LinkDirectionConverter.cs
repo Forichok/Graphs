@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Globalization;
 using System.Windows.Data;
-using Graphs.Sources.Models;
-using Northwoods.GoXam;
 
 namespace Graphs.Sources.Converters
 {

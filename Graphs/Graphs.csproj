@@ -198,6 +198,7 @@
     </ApplicationDefinition>
     <Compile Include="Sources\Helpers\ModelExtension.cs" />
     <Compile Include="Sources\Advanced\Algorithms\DataStructures\Graph\AdjacencyList\WeightedGraph.cs" />
+    <Compile Include="Sources\Tasks\Task14\CycleDetector.cs" />
     <Compile Include="Sources\Tasks\Task15\Colorer.cs" />
     <Compile Include="Sources\Tasks\Task15\ColorerTask15.cs" />
     <Compile Include="Sources\Tasks\Task8\ArticulationPointsFinder.cs" />
@@ -209,7 +210,7 @@
     </Compile>
     <Compile Include="Sources\Converters\SelectionConverter.cs" />
     <Compile Include="Sources\Tasks\Task8\BridgeFinder.cs" />
-    <Compile Include="Sources\Tasks\Task8\DiGraph.cs" />
+    <Compile Include="Sources\Advanced\Algorithms\DataStructures\Graph\AdjacencyList\DiGraph.cs" />
     <Compile Include="Sources\Helpers\GraphHelper.cs" />
     <Compile Include="Sources\Helpers\NodeFigureCreator.cs" />
     <Compile Include="Sources\Helpers\NodeKeyCreator.cs" />
@@ -233,7 +234,7 @@
     <Compile Include="Sources\Tasks\Task6\Task6Window.xaml.cs">
       <DependentUpon>Task6Window.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Sources\Tasks\Task8\Graph.cs" />
+    <Compile Include="Sources\Advanced\Algorithms\DataStructures\Graph\AdjacencyList\Graph.cs" />
     <Compile Include="Sources\Tools\CustomPartManager.cs" />
     <Compile Include="Sources\ViewModels\MainViewModel.cs" />
     <Page Include="Views\AboutWindow.xaml">

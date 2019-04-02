@@ -7,7 +7,6 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Xml.Linq;
-using Advanced.Algorithms.Graph;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.Native;
 using Graphs.Sources.Advanced.Algorithms.DataStructures.Graph.AdjacencyList;
@@ -16,6 +15,7 @@ using Graphs.Sources.Models;
 using Graphs.Sources.Tasks;
 using Graphs.Sources.Tasks.Task15;
 using Graphs.Sources.Tasks.Task6;
+using Graphs.Sources.Tasks.Task8;
 using Graphs.Sources.Tools;
 using Graphs.Views;
 using Northwoods.GoXam;
@@ -33,6 +33,8 @@ namespace Graphs.Sources.ViewModels
 
         private GraphLinksModel<NodeModel, string, string, LinkModel> model2;
         public NodeModel StartNode { get; set; }
+
+        public bool MenuIsActive { get; set; } = true;
 
         public NodeModel FinishNode { get; set; }
         public CustomPartManager PartManager { get; set; }
@@ -99,6 +101,8 @@ namespace Graphs.Sources.ViewModels
 
             HelpCommand = new DelegateCommand(Help);
             AboutCommand = new DelegateCommand(About);
+
+            CheckCycleCommand = new DelegateCommand(CheckCycle);
         }
 
 
@@ -716,7 +720,7 @@ namespace Graphs.Sources.ViewModels
 
                 var resDijkstra = DijkstraTask4.StartDijkstra(mappedList, StartNode.Key);
 
-                var resWindow = new DijkstraResultWindow((Dictionary<string, UniversalGraphNodeData>) resDijkstra,
+                var resWindow = new Views.DijkstraResultWindow((Dictionary<string, UniversalGraphNodeData>) resDijkstra,
                     StartNode.Key);
                 resWindow.Show();
             }
@@ -989,6 +993,18 @@ namespace Graphs.Sources.ViewModels
         #endregion
 
 
+        #region Task 14 Cycle
+
+        public DelegateCommand CheckCycleCommand { get; set; }
+
+        private void CheckCycle()
+        {
+            var diGraph = DiGraph<string>.GetDiGraph(Model.NodesSource.Cast<NodeModel>(), Model.LinksSource.Cast<LinkModel>());
+        }
+
+        #endregion
+
+
         #region Task 15 Colorer
 
         public DelegateCommand ColorerCommand { get; }
@@ -1035,6 +1051,8 @@ namespace Graphs.Sources.ViewModels
         }
 
         #endregion
+
+
 
 
         private void ClearGraph()
