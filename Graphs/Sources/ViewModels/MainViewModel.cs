@@ -7,8 +7,10 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Xml.Linq;
+using Advanced.Algorithms.Graph;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.Native;
+using Graphs.Sources.Advanced.Algorithms.DataStructures.Graph.AdjacencyList;
 using Graphs.Sources.Helpers;
 using Graphs.Sources.Models;
 using Graphs.Sources.Tasks;
@@ -75,7 +77,7 @@ namespace Graphs.Sources.ViewModels
             SetStartNodeCommand = new DelegateCommand<object>(SetStartNodeMenu);
 
             SaveAsImageCommand = new DelegateCommand<Diagram>(SaveAsImage);
-            LoadCommand = new DelegateCommand(LoadUniversal);
+            LoadCommand = new DelegateCommand<Diagram>(LoadUniversal);
             SaveCommand = new DelegateCommand<Diagram>(SaveUniversal);
 
             BfsCommand = new DelegateCommand(StartBfs);
@@ -214,6 +216,7 @@ namespace Graphs.Sources.ViewModels
 
         #endregion
 
+
         #region background commands
 
         public DelegateCommand ResetGraphCommand { get; }
@@ -254,7 +257,7 @@ namespace Graphs.Sources.ViewModels
 
         public DelegateCommand<Diagram> SaveAsImageCommand { get; }
 
-        public DelegateCommand LoadCommand { get; }
+        public DelegateCommand<Diagram> LoadCommand { get; }
 
         public DelegateCommand SwitchGraphCommand { get; }
 
@@ -419,16 +422,20 @@ namespace Graphs.Sources.ViewModels
             }
         }
 
-        private void LoadUniversal()
+        private void LoadUniversal(Diagram diagram)
         {
             if (Model == null) return;
             try
             {
+
+                // set the Route.Points after nodes have been built and the layout has finished
+                // tell the CustomPartManager that we're loading
+
                 var root = XElement.Parse(LoadFromFile());
                 // set the Route.Points after nodes have been built and the layout has finished
-                //myDiagram.LayoutCompleted += UpdateRoutes;
+                diagram.LayoutCompleted += UpdateRoutes;
                 // tell the CustomPartManager that we're loading
-                //PartManager.UpdatesRouteDataPoints = false;
+                PartManager.UpdatesRouteDataPoints = false;
                 Model.Load<NodeModel, LinkModel>(root, "NodeModel", "LinkModel");
             }
             catch (Exception ex)
@@ -694,7 +701,7 @@ namespace Graphs.Sources.ViewModels
 
         public DelegateCommand ConnectivityCommand { get; }
 
-        public void StartConnectivity()
+        private void StartConnectivity()
         {
             var task8 = new ConnectivityTask8(Model);
             var result = task8.CheckConnectivity();
@@ -703,6 +710,121 @@ namespace Graphs.Sources.ViewModels
         }
 
         #endregion
+
+
+        #region Task 9
+        public DelegateCommand CheckToFullCommand { get; }
+        public DelegateCommand CreateFullCommand { get; }
+
+        public void StartCheckToFull()
+        {
+            var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(),
+                Model.LinksSource.Cast<LinkModel>());
+
+            var res = FullGraphTask9.Check(mappedList);
+            if (res)
+            {
+                MessageBox.Show("Graphs is full", "9(1) Result", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else
+            {
+                MessageBox.Show("Graphs isn't full", "9(1) Result", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+
+        }
+
+        public void StartCreateFull()
+        {
+            var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(),
+                Model.LinksSource.Cast<LinkModel>());
+
+
+
+            var additionalLinks = FullGraphTask9.GetFull(mappedList);
+
+            if (additionalLinks.Count == 0)
+            {
+                MessageBox.Show("Graphs is already full", "9(1) Result", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            Model.StartTransaction("full");
+
+            foreach (var link in additionalLinks)
+            {
+                Model.AddLink(link);
+            }
+            Model.CommitTransaction("full");
+
+            OnFileLoaded();
+        }
+        #endregion
+
+
+        #region Task 13
+
+        public DelegateCommand KruskalCommand { get; }
+
+        private void StartKruskal()
+        {
+            var wightCheckRes = CheckGraphsLinksWithMsg();
+            if (!wightCheckRes)
+                return;
+
+            var isOrientated = !CheckOnOrientated();
+            if (isOrientated)
+            {
+                var result = MessageBox.Show("You have orienated graph, prgram can work with error. Do you want to continue?",
+                    "Are you sure?", MessageBoxButton.YesNo);
+                switch (result)
+                {
+                    case MessageBoxResult.Yes:
+                        break;
+
+                    case MessageBoxResult.No:
+                        return;
+                }
+            }
+
+
+            try
+            {
+                var graph = WeightedGraph<string, int>.GetGraph(Model.LinksSource.Cast<LinkModel>(), Model.NodesSource.Cast<NodeModel>());
+                var algorithm = new KruskalTask13<string, int>();
+                var resultKruskal = algorithm.StartKruskal(graph);
+
+                model2 = new GraphLinksModel<NodeModel, string, string, LinkModel>()
+                {
+                    Modifiable = true,
+                    HasUndoManager = true
+                };
+
+                foreach (var edge in resultKruskal)
+                {
+                    var fromNode = Model.FindNodeByKey(edge.Source);
+                    var toNode = Model.FindNodeByKey(edge.Destination);
+
+                    if (model2.FindNodeByKey(edge.Source) == null)
+                        model2.AddNode((NodeModel)fromNode.Clone());
+
+                    if (model2.FindNodeByKey(edge.Destination) == null)
+                        model2.AddNode((NodeModel)toNode.Clone());
+
+                    model2.AddLink(
+                        new LinkModel(edge.Source, edge.Destination, edge.Weight.ToString()) { IsOriented = false });
+                }
+
+                SwitchGraph();
+
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        #endregion
+
 
         #region Task 15 Colorer
 
@@ -735,81 +857,6 @@ namespace Graphs.Sources.ViewModels
 
         #endregion
 
-
-        #region Task 9
-        public DelegateCommand CheckToFullCommand { get; }
-        public DelegateCommand CreateFullCommand { get; }
-
-        public void StartCheckToFull()
-        {
-            var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(),
-                Model.LinksSource.Cast<LinkModel>());
-
-            var res = FullGraphTask9.Check(mappedList);
-            if (res)
-            {
-                MessageBox.Show("Graphs is full", "9(1) Result", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-            else
-            {
-                MessageBox.Show("Graphs isn't full", "9(1) Result", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-
-        }
-
-        public void StartCreateFull()
-        {
-            var mappedList = MainModel.CreateMapedList(Model.NodesSource.Cast<NodeModel>(),
-                Model.LinksSource.Cast<LinkModel>());
-
-            
-
-            var additionalLinks = FullGraphTask9.GetFull(mappedList);
-
-            if (additionalLinks.Count == 0)
-            {
-                MessageBox.Show("Graphs is already full", "9(1) Result", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            Model.StartTransaction("full");
-
-            foreach (var link in additionalLinks)
-            {
-                Model.AddLink(link);
-            }
-            Model.CommitTransaction("full");
-
-            OnFileLoaded();
-        }
-        #endregion
-
-
-        #region Task 13
-
-        public DelegateCommand KruskalCommand { get; }
-
-        private void StartKruskal()
-        {
-            var isOrientated = CheckOnOrientated();
-            if (isOrientated)
-            {
-                var result = MessageBox.Show("You have orienated graph, prgram can work with errors? do you want to continue?",
-                    "Are you sure?", MessageBoxButton.YesNo);
-                switch (result)
-                {
-                    case MessageBoxResult.Yes:
-                        break;
-
-                    case MessageBoxResult.No:
-                        return;
-                }
-
-                
-            }
-        }
-
-        #endregion
 
         private void ClearGraph()
         {
@@ -955,6 +1002,22 @@ namespace Graphs.Sources.ViewModels
         {
             RaisePropertyChanged("Model");
             FileLoaded?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void UpdateRoutes(object sender, DiagramEventArgs e)
+        {
+            var myDiagram = sender as Diagram;
+            // just set the Route points once per Load
+            myDiagram.LayoutCompleted -= UpdateRoutes;
+            foreach (Link link in myDiagram.Links)
+            {
+                LinkModel transition = link.Data as LinkModel;
+                if (transition != null && transition.Points != null && transition.Points.Count() > 1)
+                {
+                    link.Route.Points = (IList<Point>)transition.Points;
+                }
+            }
+            PartManager.UpdatesRouteDataPoints = true;  // OK for CustomPartManager to update Transition.Points automatically
         }
     }
 }

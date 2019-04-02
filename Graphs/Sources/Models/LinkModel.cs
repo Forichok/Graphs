@@ -93,7 +93,9 @@ namespace Graphs.Sources.Models
         {
             XElement e = base.MakeXElement(n);
             e.Add(XHelper.Attribute("Curviness", this.Curviness, double.NaN));
-            e.Add(XHelper.Attribute("Offset", this.Offset, new Point(0, 0)));
+            e.Add(XHelper.Attribute("X", this.Offset.X, 0));
+            e.Add(XHelper.Attribute("Y", this.Offset.Y, 0));
+            e.Add(XHelper.Attribute("IsOriented", this.IsOriented, false));
             return e;
         }
 
@@ -102,7 +104,11 @@ namespace Graphs.Sources.Models
         {
             base.LoadFromXElement(e);
             this.Curviness = XHelper.Read("Curviness", e, double.NaN);
-            this.Offset = XHelper.Read("Offset", e, new Point(0, 0));
+            var x = XHelper.Read("X", e, 0);
+            var y = XHelper.Read("Y", e, 0);
+            this.Offset=new Point(x, y);
+            //this.Offset = XHelper.Read("Offset", e, new Point(0, 0));
+            this.IsOriented = XHelper.Read("IsOriented", e, false);
         }
 
         public string GetTo(string startNode)

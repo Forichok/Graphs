@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Windows;
 using System.Windows.Media;
+using System.Xml.Linq;
 using Graphs.Sources.Helpers;
 using Northwoods.GoXam.Model;
 
@@ -47,7 +49,20 @@ namespace Graphs.Sources.Models
         }
 
 
-        //TODO new read and write overwrite 
+        public override XElement MakeXElement(XName n)
+        {
+            XElement e = base.MakeXElement(n);
+            e.Add(XHelper.Attribute("Figure", this.Figure, "RoundedRectangle"));
+            return e;
+        }
+
+        // read the extra property on the link data
+        public override void LoadFromXElement(XElement e)
+        {
+            base.LoadFromXElement(e);
+            this.Figure = XHelper.Read("Figure", e, "RoundedRectangle");
+        }
+
     }
 
 }
