@@ -832,6 +832,11 @@ namespace Graphs.Sources.ViewModels
 
         public void StartColorer()
         {
+            if (Model.IsOriented())
+            {
+                MessageBox.Show($"Graph is orientated, sorry :)", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
             var task15 = new ColorerTask15(Model);
             var result = task15.Paint();
             var parts = result.Partitions;
