@@ -16,7 +16,7 @@ namespace Graphs.Sources.Tasks.Task15
             this.model = model;
         }
 
-        static List<String> ColorValues = new List<string>()
+        static readonly List<String> ColorValues = new List<string>()
         {
             "FF0000", "00FF00", "0000FF", "FFFF00","FF00FF","00FFFF","000000","800000","008000",
             "000080","808000","800080","008080","808080","C00000","00C000","0000C0","C0C000",
@@ -52,6 +52,8 @@ namespace Graphs.Sources.Tasks.Task15
             {
                 colors = ColorValues.Take(colorsCount++);
                 result = algorithm.Color(graph, colors.ToArray());
+                if (colorsCount > ColorValues.Count)
+                    return null;
             }
 
             return result;

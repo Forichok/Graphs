@@ -239,7 +239,7 @@ namespace Graphs.Sources.ViewModels
                 // the selected node data to the new node data
 
                 var list = MainModel.NodesModelToArr(myDiagram.Model.NodesSource.Cast<NodeModel>());
-                var key = NodeKeyCreator.GetNodeName(list);
+                var key = NodeKeyCreator.GetNodeName(list,Model.NodesSource.Cast<NodeModel>().Select(i=>i.Key));
                 var to = new NodeModel(key);
                 //  to.Text = "new";
                 var p = from.Location;
@@ -462,7 +462,6 @@ namespace Graphs.Sources.ViewModels
                 }
 
         }
-
 
         private void SaveAsImage(Diagram diagram)
         {
@@ -1014,29 +1013,34 @@ namespace Graphs.Sources.ViewModels
             try
             {
                 if (Model.IsOriented())
-            {
-                MessageBox.Show($"Graph is orientated, sorry :)", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-            var task15 = new ColorerTask15(Model);
-            var result = task15.Paint();
-            var parts = result.Partitions;
-            MessageBox.Show($"Chromatic number: {parts.Keys.Count}", "Done", MessageBoxButton.OK, MessageBoxImage.Information);
-            foreach (var color in parts.Keys)
-            {
-                foreach (var nodeKey in parts[color])
                 {
-                    var node = GetNode(nodeKey);
-                    node.Color= (SolidColorBrush)(new BrushConverter().ConvertFrom($"#{color}"));
+                    MessageBox.Show($"Graph is orientated, sorry :)", "Error", MessageBoxButton.OK,
+                        MessageBoxImage.Error);
+                    return;
                 }
 
+                var task15 = new ColorerTask15(Model);
+                var result = task15.Paint();
+                var parts = result.Partitions;
+                MessageBox.Show($"Chromatic number: {parts.Keys.Count}", "Done", MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+                foreach (var color in parts.Keys)
+                {
+                    foreach (var nodeKey in parts[color])
+                    {
+                        var node = GetNode(nodeKey);
+                        node.Color = (SolidColorBrush) (new BrushConverter().ConvertFrom($"#{color}"));
+                    }
+
+                }
             }
             catch (Exception e)
             {
-                MessageBox.Show("Oops.. something goes wrong...\n\n" + e.Message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+                MessageBox.Show("Oops.. something goes wrong...\n\n" + e.Message, "Error!", MessageBoxButton.OK,
+                    MessageBoxImage.Error);
             }
         }
+        
 
         private NodeModel GetNode(string key)
         {

@@ -173,7 +173,7 @@ namespace Graphs.Views
         private void MyDiagram_NodeCreated(object sender, DiagramEventArgs e)
         {
             var nodeModel = e.Part.Data as NodeModel;
-            var key = NodeKeyCreator.GetNodeName(myDiagram.Model.NodesSource.Cast<NodeModel>().Select(i => i.Key));
+            var key = NodeKeyCreator.GetNodeName(myDiagram.Model.NodesSource.Cast<NodeModel>().Select(i => i.Key), myDiagram.Model.NodesSource.Cast<NodeModel>().Select(i => i.Key));
 
 
             nodeModel.Text = key;

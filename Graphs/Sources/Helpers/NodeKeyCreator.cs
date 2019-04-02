@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Graphs.Sources.Helpers
@@ -6,28 +7,29 @@ namespace Graphs.Sources.Helpers
     static class NodeKeyCreator
     {
         private static readonly char[] Alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
-        public static int _alphaPosition;
-        
 
-        public static string GetNodeName(IEnumerable<string> nodes)
+        public static string GetNodeName(IEnumerable<string> nodes,IEnumerable<string> nodeKeys)
         {
-            var curent = "";
+            var current = "";
+            var _alphaPosition = 0;
 
-            while (nodes.Contains(curent) || string.IsNullOrEmpty(curent))
+            while (nodes.Contains(current) || string.IsNullOrEmpty(current))
             {
                 var a = _alphaPosition / (Alpha.Length);
                 if (a >= 1)
                 {
-                    curent = Alpha[_alphaPosition++ - (Alpha.Length) * a].ToString() + (a - 1);
+                    current = Alpha[_alphaPosition++ - (Alpha.Length) * a].ToString() + (a - 1);
+                    if(!nodeKeys.Contains(current))
+                        break;
                 }
                 else
                 {
-                    curent = Alpha[_alphaPosition++].ToString();
+                    current = Alpha[_alphaPosition++].ToString();
+                    if (!nodeKeys.Contains(current))
+                        break;
                 }
             }
-
-            return curent;
+            return current;
         }
-
     }
 }
