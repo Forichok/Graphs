@@ -189,8 +189,8 @@
                 </MenuItem>
 
                 <MenuItem Header="About">
-                    <MenuItem Header="Help"/>
-                    <MenuItem Header="About"/>
+                    <MenuItem Header="Help" Command="{Binding HelpCommand}"/>
+                    <MenuItem Header="About" Command="{Binding AboutCommand}"/>
                 </MenuItem>
                 <MenuItem Header="Setting">
                     <WrapPanel>

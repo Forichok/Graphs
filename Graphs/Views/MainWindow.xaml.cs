@@ -1,5 +1,4 @@
-﻿using DevExpress.Mvvm.Native;
-using Graphs.Sources.Helpers;
+﻿using Graphs.Sources.Helpers;
 using Graphs.Sources.Models;
 using Graphs.Sources.ViewModels;
 using Northwoods.GoXam;
@@ -8,7 +7,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Data;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;

@@ -17,6 +17,7 @@ using Graphs.Sources.Tasks;
 using Graphs.Sources.Tasks.Task15;
 using Graphs.Sources.Tasks.Task6;
 using Graphs.Sources.Tools;
+using Graphs.Views;
 using Northwoods.GoXam;
 using Northwoods.GoXam.Model;
 using MessageBox = System.Windows.MessageBox;
@@ -95,6 +96,9 @@ namespace Graphs.Sources.ViewModels
             CreateFullCommand = new DelegateCommand(StartCreateFull);
 
             KruskalCommand = new DelegateCommand(StartKruskal);
+
+            HelpCommand = new DelegateCommand(Help);
+            AboutCommand = new DelegateCommand(About);
         }
 
 
@@ -313,6 +317,11 @@ namespace Graphs.Sources.ViewModels
         public DelegateCommand<Diagram> SaveCommand { get; }
 
         public DelegateCommand ExitCommand { get; }
+
+        public DelegateCommand HelpCommand { get; }
+
+        public DelegateCommand AboutCommand { get; }
+
 
         #endregion
 
@@ -571,6 +580,20 @@ namespace Graphs.Sources.ViewModels
             {
                 MessageBox.Show("Oops.. something goes wrong...\n\n" + e.Message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private void Help()
+        {
+            var help = new Help();
+
+            help.Show();
+        }
+
+        private void About()
+        {
+            var help = new AboutWindow();
+
+            help.Show();
         }
 
         #endregion
