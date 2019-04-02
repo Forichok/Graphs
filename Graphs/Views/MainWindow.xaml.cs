@@ -1,5 +1,4 @@
-﻿using DevExpress.Mvvm.Native;
-using Graphs.Sources.Helpers;
+﻿using Graphs.Sources.Helpers;
 using Graphs.Sources.Models;
 using Graphs.Sources.ViewModels;
 using Northwoods.GoXam;
@@ -8,7 +7,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Data;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -51,9 +49,12 @@ namespace Graphs
 
             myDiagram.LayoutCompleted += UpdateRoutes;
 
-            (myDiagram.DataContext as MainViewModel).FileLoaded += MainWindow_FileLoaded;
+            myDiagram.SelectionCopied += UpdateMatrix;
+
+            (myDiagram.DataContext as MainViewModel).FileLoaded += UpdateMatrix;
 
             //var tool = new SimpleLabelDraggingTool();
+
             //tool.Diagram = myDiagram;
 
             //myDiagram.MouseMoveTools.Insert(0, tool);
@@ -69,7 +70,7 @@ namespace Graphs
             MatrixControl.ItemsSource = matrixData;
         }
 
-        private void MainWindow_FileLoaded(object sender, EventArgs e)
+        private void UpdateMatrix(object sender, EventArgs e)
         {
             UpdateMatrix();
         }
@@ -86,7 +87,6 @@ namespace Graphs
                 {
                     var a = new Dictionary<String, LinkModel>();
                     dictionary.Add(node.Key, a);
-
                 }
             }
 
@@ -229,14 +229,11 @@ namespace Graphs
 
         private void MainWindow_OnKeyDown(object sender, KeyEventArgs e)
         {
-
-            if ((Keyboard.Modifiers == ModifierKeys.Control && (e.Key == Key.Z || e.Key == Key.Y)) ||
+            if ((Keyboard.Modifiers == ModifierKeys.Control && (e.Key == Key.Z || e.Key == Key.Y || e.Key == Key.V)) ||
                 e.Key == Key.Delete)
             {
                 UpdateMatrix();
             }
-
-
         }
 
         private void ChangeOrientationClick(object sender, RoutedEventArgs e)
@@ -257,7 +254,6 @@ namespace Graphs
                     model = myDiagram.Model as GraphLinksModel<NodeModel, string, string, LinkModel>
                 };
             }
-
         }
 
         private void ReverseClick(object sender, RoutedEventArgs e)
