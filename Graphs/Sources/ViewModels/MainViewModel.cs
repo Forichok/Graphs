@@ -1099,7 +1099,6 @@ namespace Graphs.Sources.ViewModels
             {
                 MessageBox.Show("Oops.. something goes wrong...\n\n" + e.Message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-
         }
 
         private bool CheckGraphsLinksWithMsg(bool onlyPlus = false)
