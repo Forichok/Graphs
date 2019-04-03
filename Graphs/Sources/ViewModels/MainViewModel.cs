@@ -1073,7 +1073,6 @@ namespace Graphs.Sources.ViewModels
                 Model.CommitTransaction("Task");
             };
         }
-
         private void ClearGraph()
         {
             try
