@@ -129,8 +129,11 @@ namespace Graphs.Sources.Tasks
 
                 if (!string.IsNullOrEmpty(result[fromIndex, toIndex, 0]))
                     throw new Exception("#Error in save adj: multigraph");
-
+                
                 result[fromIndex, toIndex, 0] = text;
+                if(!LinkModel.IsOriented)
+                    result[toIndex, fromIndex, 0] = text;
+
             }
 
             return result;
