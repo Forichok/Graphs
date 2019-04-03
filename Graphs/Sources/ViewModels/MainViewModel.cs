@@ -13,6 +13,7 @@ using Graphs.Sources.Advanced.Algorithms.DataStructures.Graph.AdjacencyList;
 using Graphs.Sources.Helpers;
 using Graphs.Sources.Models;
 using Graphs.Sources.Tasks;
+using Graphs.Sources.Tasks.Task14;
 using Graphs.Sources.Tasks.Task15;
 using Graphs.Sources.Tasks.Task6;
 using Graphs.Sources.Tasks.Task8;
@@ -999,6 +1000,12 @@ namespace Graphs.Sources.ViewModels
         private void CheckCycle()
         {
             var diGraph = DiGraph<string>.GetDiGraph(Model.NodesSource.Cast<NodeModel>(), Model.LinksSource.Cast<LinkModel>());
+
+            var algorithm = new CycleDetector<string>();
+
+            var HasCycle = algorithm.HasCycle(diGraph);
+
+            MessageBox.Show(HasCycle.ToString());
         }
 
         #endregion

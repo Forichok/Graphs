@@ -69,6 +69,9 @@ namespace Graphs.Sources.Tasks
 
                     for (var i = 0; i < splitedLine.Length; i++)
                     {
+                        if (!int.TryParse(splitedLine[i], out var s))
+                            throw new Exception($"#Error in AdjencyMatrix: Not number in matrix {linesCount} in po {i+1}");
+
                         if (splitedLine[i] == "0")
                             continue;
                         var LinkModel = new LinkModel(nodesList[linesCount - 1].Key, nodesList[i].Key, splitedLine[i]);
@@ -129,8 +132,11 @@ namespace Graphs.Sources.Tasks
 
                 if (!string.IsNullOrEmpty(result[fromIndex, toIndex, 0]))
                     throw new Exception("#Error in save adj: multigraph");
-
+                
                 result[fromIndex, toIndex, 0] = text;
+                if(!LinkModel.IsOriented)
+                    result[toIndex, fromIndex, 0] = text;
+
             }
 
             return result;
@@ -189,10 +195,12 @@ namespace Graphs.Sources.Tasks
                         }
                     }
                     else if (checkSum != splitedLine.Length)
-                        throw new Exception("#Error in AdjencyMatrix: Lines have different sizes");
+                        throw new Exception("#Error in IncidenceMatrix: Lines have different sizes");
 
                     for (var i = 0; i < splitedLine.Length; i++)
                     {
+                        if (!int.TryParse(splitedLine[i], out var s))
+                            throw new Exception($"#Error in IncidenceMatrix: Not number in matrix ");
                         matrix[i].Add(splitedLine[i]);
                     }
                 }
@@ -341,7 +349,7 @@ namespace Graphs.Sources.Tasks
                         sb.Append("Edges{");
                     }
 
-                    var orientatedChar = link.IsOriented ? "1" : "0";
+                    var orientatedChar = link.IsOriented ? "1" : "-1";
                     var nameFrom = nodesNameList[nodesKeyList.IndexOf(link.From)];
                     var nameTo = nodesNameList[nodesKeyList.IndexOf(link.To)];
 

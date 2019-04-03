@@ -31,7 +31,8 @@ namespace Graphs.Sources.Advanced.Algorithms.DataStructures.Graph.AdjacencyList
 
             foreach (var link in links)
             {
-                newGraph.AddEdge(link.From, link.To, Int32.Parse(link.Text));
+                if(!newGraph.HasEdge(link.From, link.To))
+                    newGraph.AddEdge(link.From, link.To, Int32.Parse(link.Text));
             }
 
             return newGraph;
