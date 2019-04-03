@@ -69,6 +69,9 @@ namespace Graphs.Sources.Tasks
 
                     for (var i = 0; i < splitedLine.Length; i++)
                     {
+                        if (!int.TryParse(splitedLine[i], out var s))
+                            throw new Exception($"#Error in AdjencyMatrix: Not number in matrix {linesCount} in po {i+1}");
+
                         if (splitedLine[i] == "0")
                             continue;
                         var LinkModel = new LinkModel(nodesList[linesCount - 1].Key, nodesList[i].Key, splitedLine[i]);
@@ -192,10 +195,12 @@ namespace Graphs.Sources.Tasks
                         }
                     }
                     else if (checkSum != splitedLine.Length)
-                        throw new Exception("#Error in AdjencyMatrix: Lines have different sizes");
+                        throw new Exception("#Error in IncidenceMatrix: Lines have different sizes");
 
                     for (var i = 0; i < splitedLine.Length; i++)
                     {
+                        if (!int.TryParse(splitedLine[i], out var s))
+                            throw new Exception($"#Error in IncidenceMatrix: Not number in matrix ");
                         matrix[i].Add(splitedLine[i]);
                     }
                 }
