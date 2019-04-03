@@ -344,7 +344,7 @@ namespace Graphs.Sources.Tasks
                         sb.Append("Edges{");
                     }
 
-                    var orientatedChar = link.IsOriented ? "1" : "0";
+                    var orientatedChar = link.IsOriented ? "1" : "-1";
                     var nameFrom = nodesNameList[nodesKeyList.IndexOf(link.From)];
                     var nameTo = nodesNameList[nodesKeyList.IndexOf(link.To)];
 
