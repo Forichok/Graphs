@@ -33,7 +33,7 @@ namespace Graphs.Sources.Tasks.Task8
                 : "1. Graph isn't connected\n\n");
 
             result.Append(isOriented
-                ? "2.Graph isn't oriented."
+                ? "2.Graph is oriented."
                 : (connectedComponents.Count == 1
                     ? "2. Graph is strongly connected"
                     : (IsWeaklyConnected() ? "2. Graph is weakly connected" : "2. Graph isn't connected")));
